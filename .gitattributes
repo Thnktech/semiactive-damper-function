@@ -1,0 +1,6 @@
+# Normalize text to LF so Linux CI and Windows checkouts match byte-for-byte
+* text=auto eol=lf
+*.slx binary
+*.mat binary
+*.png binary
+*.gif binary

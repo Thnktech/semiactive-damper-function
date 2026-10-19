@@ -1,0 +1,26 @@
+# MATLAB / Simulink
+*.asv
+*.autosave
+*.slxc
+*.mexw64
+*.mexa64
+slprj/
+*_grt_rtw/
+*_ert_rtw/
+codegen/
+*.mat
+!tests/data/*.mat
+# Python
+__pycache__/
+.venv/
+.pytest_cache/
+*.egg-info/
+# Build
+build/
+*.o
+*.so
+*.dll
+*.dylib
+# OS
+.DS_Store
+Thumbs.db
