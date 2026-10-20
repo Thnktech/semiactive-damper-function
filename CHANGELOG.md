@@ -18,6 +18,10 @@ Version plan: each completed milestone is tagged as a minor release
   `docs/ci.md`.
 - One-page PDF of the CI self-test cheatsheet
   (`docs/ci_selftest_cheatsheet.pdf`).
+- Draft requirements `requirements/REQ.md`: REQ-F-01…05, REQ-P-01…04 with
+  literature check of every threshold.
+- Requirements primer (`docs/requirements_primer.md` + PDF) and one-page
+  `docs/requirements_cheatsheet.pdf`.
 
 ### Changed
 - CI self-test rewritten as a cheatsheet (where / do / signal / why); the
