@@ -40,7 +40,7 @@ model/harness/harness.slx           slbuild('controller')   (M5)
 | 8 | Harness → Library Browser → Ports & Subsystems → **Model** | Drag in; double-click; Model name = `controller` |
 | 9 | Harness | Model block shows 4 inputs and 2 outputs automatically |
 | 10 | Harness → Model Settings → Solver | Fixed-step, `ode4`, `0.001` (D8) |
-| 11 | MATLAB path | `addpath('model/controller','model/harness')`, or a MATLAB Project (planned in M2) |
+| 11 | MATLAB path | Open `semiactive-damper-function.prj` (MATLAB Project): sets the path automatically |
 
 Script form (style of the later `build_*.m` scripts):
 

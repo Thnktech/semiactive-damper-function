@@ -15,6 +15,9 @@ Version plan: each completed milestone is tagged as a minor release
   `docs/model_reference_setup.pdf`.
 - Decision D21: private vehicle data (eROD) kept local only; `.gitignore`
   rules for `src/matlab/vehicles/private/` and eROD-derived results.
+- MATLAB Project `semiactive-damper-function.prj` (+ `resources/project/`)
+  that puts `src/matlab`, `src/matlab/vehicles`, `model/*` and
+  `tests/matlab` on the path when opened.
 
 ## [0.2.0] - 2026-10-20
 
