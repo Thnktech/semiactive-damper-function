@@ -44,6 +44,48 @@ reported. When the real back-to-back tests arrive in M5, the plumbing is
 already known to work, so any failure points at the tests or the code, not
 at the CI setup.
 
+## How the workflow file maps to a run
+
+| Line in `ci.yml` | What GitHub does |
+|---|---|
+| `on: [push, pull_request, workflow_dispatch]` | Start a run on every push, every pull request, or when **Run workflow** is clicked |
+| `runs-on: ubuntu-latest` | Rent a fresh Ubuntu virtual machine; it is deleted after the run |
+| `actions/checkout` | Download this repository at the pushed commit |
+| `actions/setup-python` with `3.11` | Install Python 3.11 |
+| `pip install -r requirements.txt` | Install numpy, pandas, pytest |
+| `pytest -q tests/python` | Run the tests. Any failing test → exit code ≠ 0 → run fails |
+
+Every step must succeed for the run to pass. The first failing step stops the
+run and is marked with a red cross.
+
+## Run and check CI yourself
+
+**Start a run**
+
+- Push any commit (`git push`), or
+- GitHub → **Actions** → **ci** (left sidebar) → **Run workflow** → branch
+  `main` → **Run workflow**, or
+- Open an existing run → **Re-run all jobs**.
+
+**See that it is running**
+
+- Actions tab: the newest run has a yellow spinning circle.
+- Click the run → job **test** → each step's log appears live.
+- A run takes about 30–60 s.
+
+**Read the result**
+
+| Result | Actions / commit icon | README badge |
+|---|---|---|
+| Passed | green tick | `ci: passing` |
+| Failed | red cross | `ci: failing` (GitHub also emails you) |
+
+On failure, open the run → job → the step marked with a red cross; for a test
+failure the end of the `pytest` log names the test and the reason.
+
+**From the terminal** (after `gh auth login` once): `gh run list`,
+`gh run watch`, `gh run view --log-failed`.
+
 ## Running the same checks locally
 
 ```bash
