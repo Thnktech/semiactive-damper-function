@@ -9,7 +9,16 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
+M1: requirements and signal interface.
+
 ### Added
+- `interface/signals.md`: controller I/O (order, unit, type, rate, range,
+  init), sign convention, mode semantics, input handling; decisions D19
+  (registered outputs) and D20 (invalid mode → passive).
+- `docs/mil_to_sil.md`: MiL modelling and logging rules for the
+  generated-code back-to-back.
 - `docs/DECISIONS.md` (D1–D15: scope, toolchain, vehicle set and switching,
   proposed reference-vehicle parameters) and `docs/DEVLOG.md`.
 - Manual **Run workflow** trigger (`workflow_dispatch`) in CI, and a
@@ -34,6 +43,8 @@ Version plan: each completed milestone is tagged as a minor release
   replaced by published data when found) accepted.
 - D16 scaled variant targets (small car, SUV, light van) added to
   `docs/DECISIONS.md`.
+- `requirements/REQ.md` baselined; REQ-F-03 reworded for registered outputs.
+- README: M1 marked done.
 
 ## [0.1.0] - 2026-10-20
 
@@ -53,5 +64,6 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Thnktech/semiactive-damper-function/releases/tag/v0.1.0

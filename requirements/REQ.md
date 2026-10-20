@@ -1,8 +1,8 @@
 # Requirements – Semi-Active Damper Function
 
-Status of this document: **Draft** (M1). Complete set: REQ-F-01…05,
-REQ-P-01…04, REQ-S-01…02, REQ-V-01…02. Acceptance criteria are reviewed
-once more at the end of M1.
+Status of this document: **Baseline** (end of M1, 2026-10-20). Complete set:
+REQ-F-01…05, REQ-P-01…04, REQ-S-01…02, REQ-V-01…02. Changes after the
+baseline are logged at the end of this file with date and reason.
 
 ## Conventions
 
@@ -59,7 +59,7 @@ fixed passive damping c<sub>passive</sub> (defined in M2).
 |---|---|---|---|---|---|---|---|
 | REQ-F-01 | Current limits | The function shall keep the current command `i_cmd` within [I<sub>min</sub>, I<sub>max</sub>] for all inputs. | The valve has a physical operating range | Test, SC-ALL, plus out-of-range input injection | I<sub>min</sub> ≤ `i_cmd` ≤ I<sub>max</sub> at every sample; no tolerance | – | Unverified |
 | REQ-F-02 | Sample time | The function shall execute at a fixed sample time of T<sub>s</sub> = 1 ms. | Back-to-back comparison and discrete design assume a fixed rate (D8) | Inspection (model configuration) + test (logged time steps) | Configured sample time = 0.001 s; all logged controller time steps = 0.001 s ± 1e-12 s | – | Unverified |
-| REQ-F-03 | Initialization | After initialization and before the first controller step, the function shall output `i_cmd` = I<sub>default</sub>. | Defined output before any sensor data has been processed | Test (MiL initial output; generated code after `initialize`) | `i_cmd` = I<sub>default</sub> exactly at the initial sample | – | Unverified |
+| REQ-F-03 | Initialization | After initialization, the function shall output `i_cmd` = I<sub>default</sub> and `fault_active` = 0 at the first step (k = 0). | Defined output before any sensor data has been processed; outputs are registered (D19) | Test (MiL log row k = 0; generated code: first `step` after `initialize`) | `i_cmd`(0) = I<sub>default</sub> and `fault_active`(0) = 0 exactly | – | Unverified |
 | REQ-F-04 | Rate limit | The function shall limit the change of `i_cmd` between consecutive samples to ΔI<sub>max</sub>. | Protects the valve and avoids force steps faster than the actuator can follow | Test, SC-ALL, plus step inputs | \|`i_cmd`(k) − `i_cmd`(k−1)\| ≤ ΔI<sub>max</sub> + 1e-12 A at every sample | – | Unverified |
 | REQ-F-05 | Finite output | For any finite input, including v<sub>rel</sub> = 0, the function shall produce finite outputs. | The control law divides by v<sub>rel</sub>; the ε guard must prevent NaN/Inf | Test: input sweep including v<sub>rel</sub> ∈ [−2ε, 2ε] and exact 0 | No NaN or Inf in `i_cmd` or `fault_active` | – | Unverified |
 
@@ -118,3 +118,9 @@ judgment, not literature values.
 
 Added 2026-10-20: REQ-S-01, REQ-S-02, REQ-V-01, REQ-V-02, scenario SC-FAULT,
 parameters t<sub>react</sub>, tol<sub>I</sub>, atol/rtol.
+
+Baseline review 2026-10-20 (end of M1): every requirement checked for ID,
+rationale, verification method and numeric acceptance criterion; every
+threshold labelled *(PA)* or derived. REQ-F-03 reworded for registered
+outputs (D19): "before the first step" → "at the first step (k = 0)",
+`fault_active`(0) = 0 added.

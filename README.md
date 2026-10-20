@@ -88,7 +88,7 @@ Coder) · Python 3.11 · gcc
 | Milestone | Content | Status |
 |---|---|---|
 | M0 | Repository skeleton and CI | Done (`v0.1.0`) |
-| M1 | Requirements and signal interface | Planned |
+| M1 | Requirements and signal interface | Done (`v0.2.0`) |
 | M2 | Plant, passive baseline, roads, KPIs | Planned |
 | M3 | Controller and MiL harness | Planned |
 | M4 | Requirement-based verification | Planned |
