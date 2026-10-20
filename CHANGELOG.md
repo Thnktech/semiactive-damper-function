@@ -24,6 +24,8 @@ Version plan: each completed milestone is tagged as a minor release
   `docs/requirements_cheatsheet.pdf`.
 - Safety and verification requirements REQ-S-01/02, REQ-V-01/02 and fault
   scenario SC-FAULT; decisions D17 (fault transition) and D18 (fault reset).
+- Verification ladder (MiL → SiL → PIL → HiL) in `docs/ci.md` and one-page
+  `docs/verification_ladder.pdf`.
 
 ### Changed
 - CI self-test rewritten as a cheatsheet (where / do / signal / why); the

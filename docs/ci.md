@@ -44,6 +44,22 @@ reported. When the real back-to-back tests arrive in M5, the plumbing is
 already known to work, so any failure points at the tests or the code, not
 at the CI setup.
 
+## Where CI sits in the verification ladder
+
+One-page version: [verification_ladder.pdf](verification_ladder.pdf).
+
+In this project CI runs an **open-loop replay** (D7): logged MiL controller
+inputs go through the generated C code, and the outputs are compared with the
+logged MiL outputs. No plant runs in CI.
+
+| Stage | What runs | Plant | Where | CI-capable | This project |
+|---|---|---|---|---|---|
+| MiL | Controller model + plant model | Simulink | Developer PC | No | Yes (M3–M4) |
+| SiL, open-loop replay | Generated C code vs logged MiL data | None | CI | Yes | Yes (M5) |
+| SiL, closed loop | Generated C code + plant code together | C or Python | CI possible | Possible | No (possible extension) |
+| PIL | C code on the real processor (e.g. ESP32), fed by the PC | On the PC | Desk + board | Self-hosted only | No (after v1.0) |
+| HiL | ECU with real I/O + plant in real time | Real-time target (e.g. Speedgoat) | Lab | Self-hosted only | No (out of scope) |
+
 ## How the workflow file maps to a run
 
 | Line in `ci.yml` | What GitHub does |
