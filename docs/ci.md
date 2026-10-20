@@ -86,6 +86,25 @@ failure the end of the `pytest` log names the test and the reason.
 **From the terminal** (after `gh auth login` once): `gh run list`,
 `gh run watch`, `gh run view --log-failed`.
 
+## CI self-test: prove a red run is possible
+
+A green tick only means something if the pipeline can also go red. Run this
+once after setting up CI, and again after any major change to `ci.yml`. Use a
+throwaway branch so `main` and the badge stay green.
+
+| # | Do | Expected |
+|---|---|---|
+| 1 | `git switch -c ci-try` | New local branch |
+| 2 | In `tests/python/test_smoke.py` change `(3, 10)` to `(9, 0)` | Test now demands Python 9 |
+| 3 | `git commit -am "try CI fail"` then `git push -u origin ci-try` | Run for `ci-try` appears in Actions |
+| 4 | Open the run → job **test** | Steps up to install ✅, **Run pytest** ❌ with `1 failed` and the failing assert; email notification |
+| 5 | Change `(9, 0)` back to `(3, 10)`; `git commit -am "try CI pass"`; `git push` | New run ✅ |
+| 6 | `git switch main`, `git branch -D ci-try`, `git push origin --delete ci-try` | Branch removed locally and on GitHub |
+
+Pass criterion: step 4 is red at the pytest step and step 5 is green. If step 4
+is green, CI is not actually running the tests; fix `ci.yml` before trusting
+any badge.
+
 ## Running the same checks locally
 
 ```bash

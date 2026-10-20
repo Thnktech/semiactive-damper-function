@@ -12,6 +12,8 @@ Version plan: each completed milestone is tagged as a minor release
 ### Added
 - Manual **Run workflow** trigger (`workflow_dispatch`) in CI, and a
   "run and check CI yourself" section in `docs/ci.md`.
+- CI self-test procedure (deliberate red run on a throwaway branch) in
+  `docs/ci.md`.
 
 ## [0.1.0] - 2026-10-20
 
