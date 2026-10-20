@@ -88,6 +88,8 @@ failure the end of the `pytest` log names the test and the reason.
 
 ## CI self-test: prove a red run is possible
 
+Printable version: [ci_selftest_cheatsheet.pdf](ci_selftest_cheatsheet.pdf).
+
 When: once after setting up CI, and after any major change to `ci.yml`.
 Pass criterion: the run on `ci-try` is red at **Run pytest**. If it is green,
 CI is not really running the tests.

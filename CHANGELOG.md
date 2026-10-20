@@ -14,6 +14,8 @@ Version plan: each completed milestone is tagged as a minor release
   "run and check CI yourself" section in `docs/ci.md`.
 - CI self-test procedure (deliberate red run on a throwaway branch) in
   `docs/ci.md`.
+- One-page PDF of the CI self-test cheatsheet
+  (`docs/ci_selftest_cheatsheet.pdf`).
 
 ### Changed
 - CI self-test rewritten as a cheatsheet (where / do / signal / why); the
