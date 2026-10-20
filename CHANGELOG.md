@@ -9,20 +9,23 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-20
+
+M0: repository skeleton and CI.
+
 ### Added
-- Implementation guide (`IMPLEMENTATION_GUIDE.md`, PDF copy in `docs/`) and this changelog.
 - Folder structure with a purpose `README.md` per folder, `.gitignore`,
   `.gitattributes` (LF line endings) and MIT `LICENSE`.
+- This changelog.
 - README skeleton with honest status table, `requirements.txt`
   (numpy, pandas, pytest) and Python smoke test.
+- `.gitignore` entries for local planning documents.
 - GitHub Actions CI workflow (`.github/workflows/ci.yml`) running pytest on
   Python 3.11, and `docs/ci.md` explaining CI and the smoke test.
-
-### Removed
-- Implementation guide (`.md` and PDF) from version control; kept local only
-  and listed in `.gitignore`.
+- CI badge in the README; M0 marked done.
 
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/commits/main
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Thnktech/semiactive-damper-function/releases/tag/v0.1.0

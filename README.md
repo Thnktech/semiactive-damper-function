@@ -1,5 +1,7 @@
 # Semi-Active Damper Function
 
+![ci](https://github.com/Thnktech/semiactive-damper-function/actions/workflows/ci.yml/badge.svg)
+
 Requirements-driven development of a semi-active suspension damper controller:
 from requirements through Simulink model-in-the-loop (MiL) verification to
 generated C code verified back-to-back in a MATLAB-free CI pipeline.
@@ -65,7 +67,7 @@ What CI is, why this project uses it and what the smoke test checks:
 
 | Verified | Local (MATLAB) | CI (no MATLAB) |
 |---|---|---|
-| Python smoke test | ✓ | planned (M0) |
+| Python smoke test | ✓ | ✓ |
 | MiL requirement tests | planned (M4) | – |
 | Generated-code back-to-back (REQ-V-01) | planned (M5) | planned (M5) |
 
@@ -85,7 +87,7 @@ Coder) · Python 3.11 · gcc
 
 | Milestone | Content | Status |
 |---|---|---|
-| M0 | Repository skeleton and CI | In progress |
+| M0 | Repository skeleton and CI | Done (`v0.1.0`) |
 | M1 | Requirements and signal interface | Planned |
 | M2 | Plant, passive baseline, roads, KPIs | Planned |
 | M3 | Controller and MiL harness | Planned |
