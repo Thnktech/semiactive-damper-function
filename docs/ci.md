@@ -88,22 +88,32 @@ failure the end of the `pytest` log names the test and the reason.
 
 ## CI self-test: prove a red run is possible
 
-A green tick only means something if the pipeline can also go red. Run this
-once after setting up CI, and again after any major change to `ci.yml`. Use a
-throwaway branch so `main` and the badge stay green.
+When: once after setting up CI, and after any major change to `ci.yml`.
+Pass criterion: the run on `ci-try` is red at **Run pytest**. If it is green,
+CI is not really running the tests.
 
-| # | Do | Expected |
-|---|---|---|
-| 1 | `git switch -c ci-try` | New local branch |
-| 2 | In `tests/python/test_smoke.py` change `(3, 10)` to `(9, 0)` | Test now demands Python 9 |
-| 3 | `git commit -am "try CI fail"` then `git push -u origin ci-try` | Run for `ci-try` appears in Actions |
-| 4 | Open the run → job **test** | Steps up to install ✅, **Run pytest** ❌ with `1 failed` and the failing assert; email notification |
-| 5 | Change `(9, 0)` back to `(3, 10)`; `git commit -am "try CI pass"`; `git push` | New run ✅ |
-| 6 | `git switch main`, `git branch -D ci-try`, `git push origin --delete ci-try` | Branch removed locally and on GitHub |
+| # | Where | Do | Signal | Why |
+|---|---|---|---|---|
+| 1 | Terminal | `git switch main` · `git status` | `On branch main`, `working tree clean` | Branch starts from clean `main`; uncommitted edits would travel along |
+| 2 | Terminal | `git switch -c ci-try` | `Switched to a new branch 'ci-try'`; VS Code bottom-left shows `ci-try` | Experiment off `main`, so `main` and the badge stay green |
+| 3 | `tests/python/test_smoke.py` | Change `(3, 10)` → `(9, 0)`, save | Optional: `pytest -q tests/python` → `1 failed` | A test that must fail |
+| 4 | Terminal | `git commit -am "try CI fail"` | `1 file changed` | Commit exists only on `ci-try` |
+| 5 | Terminal | `git push -u origin ci-try` (first push; later just `git push`) | `* [new branch] ci-try -> ci-try` | Push triggers CI; `-u` links the branch to GitHub |
+| 6 | GitHub → Actions | Open the run labeled `ci-try` → **test** | 🟡 → ❌; **Run pytest** ❌ `1 failed`; earlier steps ✅; email | Proves CI runs the tests and can go red |
+| 7 | GitHub → repo page | Look at the badge | Still `passing` | Badge tracks `main` only |
+| 8 | Terminal | `git switch main` | `Switched to branch 'main'`; file shows `(3, 10)` again | Back to real work; broken version stays on `ci-try` |
+| 9 | Terminal | `git branch -a` | `* main`, `ci-try`, `remotes/origin/ci-try` | Confirms which branch you are on and that `ci-try` is kept |
 
-Pass criterion: step 4 is red at the pytest step and step 5 is green. If step 4
-is green, CI is not actually running the tests; fix `ci.yml` before trusting
-any badge.
+**Reuse later**
+
+| Do | Command |
+|---|---|
+| Go to the test branch | `git switch ci-try` |
+| Bring it up to date with `main` first | `git merge main` |
+| Back to work | `git switch main` |
+| Delete (optional) | `git branch -D ci-try` · `git push origin --delete ci-try` |
+
+Rule: check you are on `main` before real work (`git status`, first line).
 
 ## Running the same checks locally
 

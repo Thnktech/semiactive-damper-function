@@ -15,6 +15,10 @@ Version plan: each completed milestone is tagged as a minor release
 - CI self-test procedure (deliberate red run on a throwaway branch) in
   `docs/ci.md`.
 
+### Changed
+- CI self-test rewritten as a cheatsheet (where / do / signal / why); the
+  test branch is kept for reuse instead of deleted.
+
 ## [0.1.0] - 2026-10-20
 
 M0: repository skeleton and CI.
