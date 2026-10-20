@@ -10,8 +10,11 @@ Version plan: each completed milestone is tagged as a minor release
 ## [Unreleased]
 
 ### Added
-- Implementation guide (`IMPLEMENTATION_GUIDE.md`) and this changelog.
+- Implementation guide (`IMPLEMENTATION_GUIDE.md`, PDF copy in `docs/`) and this changelog.
 - Folder structure with a purpose `README.md` per folder, `.gitignore`,
   `.gitattributes` (LF line endings) and MIT `LICENSE`.
+
+### Fixed
+- Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
 [Unreleased]: https://github.com/Thnktech/semiactive-damper-function/commits/main
