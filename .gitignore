@@ -24,3 +24,6 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+# Personal planning documents (kept local only)
+IMPLEMENTATION_GUIDE.md
+docs/Project1_Implementation_Guide.pdf
