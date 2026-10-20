@@ -8,6 +8,90 @@ exactly the inputs the Simulink controller saw and must reproduce exactly the
 outputs it produced. Anything that makes "exactly the inputs" or "exactly the
 outputs" uncertain breaks the comparison.
 
+## 0. One controller file: model referencing
+
+One-page version: [model_reference_setup.pdf](model_reference_setup.pdf).
+
+A **Model block** in the harness holds only a *reference by name* to
+`controller.slx`. When the harness runs, Simulink loads and runs that file.
+Code generation builds the same file. Never copy the controller blocks into
+the harness as a subsystem: a copy can drift from the original.
+
+```text
+model/controller/controller.slx     <- the ONE controller file (edit only this)
+      ^                        ^
+      | referenced by name     | code generated from
+      |                        |
+model/harness/harness.slx           slbuild('controller')   (M5)
+  +- Model block "Controller", ModelName = 'controller'
+```
+
+### Setup steps
+
+| # | Where | Do |
+|---|---|---|
+| 1 | New model | Save as `model/controller/controller.slx` |
+| 2 | Controller | Add 4 Inports and 2 Outports, names and order as in the tables below (port number = order) |
+| 3 | Each Inport | Data type `double`, sample time `0.001` |
+| 4 | Controller → Model Settings → Solver | Fixed-step, discrete (no continuous states), step `0.001` |
+| 5 | Controller → Model Settings → Model Referencing | Total number of instances allowed per top model = **One** |
+| 6 | Controller (placeholder until M3) | Inports → Terminator; Constant → Outports |
+| 7 | New model | Save as `model/harness/harness.slx` |
+| 8 | Harness → Library Browser → Ports & Subsystems → **Model** | Drag in; double-click; Model name = `controller` |
+| 9 | Harness | Model block shows 4 inputs and 2 outputs automatically |
+| 10 | Harness → Model Settings → Solver | Fixed-step, `ode4`, `0.001` (D8) |
+| 11 | MATLAB path | `addpath('model/controller','model/harness')`, or a MATLAB Project (planned in M2) |
+
+Script form (style of the later `build_*.m` scripts):
+
+```matlab
+add_block('simulink/Ports & Subsystems/Model', 'harness/Controller');
+set_param('harness/Controller', 'ModelName', 'controller');
+```
+
+Simulink caches referenced models in `slprj/` and `*.slxc`; both are in
+`.gitignore`.
+
+### Controller inputs
+
+| Port | Signal | Comes from | Meaning | Unit |
+|---|---|---|---|---|
+| 1 | `zs_dot` | Plant | Body (sprung mass) vertical velocity | m/s |
+| 2 | `zu_dot` | Plant | Wheel (unsprung mass) vertical velocity | m/s |
+| 3 | `fault_flag` | Harness (test scenario) | Fault indication, > 0.5 = fault | – |
+| 4 | `mode` | Harness (parameter) | 0 passive, 1 skyhook, 2 hybrid | – |
+
+### Controller outputs
+
+| Port | Signal | Goes to | Meaning | Unit |
+|---|---|---|---|---|
+| 1 | `i_cmd` | Plant (actuator lag → damper map → damper force) | Damper current command, 0.3–1.6 A | A |
+| 2 | `fault_active` | Logging only | 1 = fault mode latched | – |
+
+Full definitions (range, init, rate): `interface/signals.md`.
+
+### Harness wiring
+
+```text
++------------------------------ harness.slx --------------------------------+
+|                                                                           |
+| road (ISO 8608 / bump) --z_r--> +-----------+ --zs_dot--> +-------------+ |
+|                                 |   PLANT   | --zu_dot--> | Model block | |
+|                                 | quarter   |             | "controller"| |
+|                                 | car +     | <--i_cmd--- |             | |
+|                                 | damper +  |             |             |-+--> fault_active
+|                                 | lag       |  fault_flag>|             | |
+|                                 +-----+-----+  mode ----->+-------------+ |
+|                                       |            ^ log all 6 ports here  |
+|                                       v                                    |
+|                         KPIs: zs_ddot, zs - zu, F_tire                     |
++---------------------------------------------------------------------------+
+```
+
+**Rule that makes SiL work:** the controller sees **only these four inputs**,
+never plant internals (masses, road height, tire force). The logged inputs
+therefore drive the generated C code completely in CI, without a plant.
+
 ## 1. Controller model structure (M3)
 
 | # | Rule | Why |
