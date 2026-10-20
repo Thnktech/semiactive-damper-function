@@ -27,6 +27,7 @@ Status: **Accepted** = in force · **Proposed** = awaiting confirmation · **Ope
 | D19 | Registered outputs | Each controller output passes through a one-sample delay initialized to its "Init" value (`i_cmd` = I<sub>default</sub>, `fault_active` = 0) | Makes step 0 exactly defined in Simulink and C (REQ-F-03) and fixes sample alignment for back-to-back; costs 1 ms latency, small against the 10 ms actuator lag and already counted in REQ-S-01 | Accepted | 2026-10-20 |
 | D20 | Invalid mode | `mode` values other than exactly 0, 1 or 2 select passive | Defined behavior for every input; passive is the least demanding mode | Accepted | 2026-10-20 |
 | D21 | Private vehicle data | eROD data is **private**: publication not cleared. Stored only in the git-ignored `src/matlab/vehicles/private/`; results and MiL logs derived from it (`*erod*` in `results/` and `tests/data/`) are git-ignored too. Two local variants: front and rear corner. No eROD values appear in committed files. The vehicle selector must work in a fresh clone without the private folder; CI never uses eROD. REQ-P-04 verdicts in the repository cover the published variants only | Respects data ownership (project rule: no employer or doctoral vehicle data) while still allowing local robustness checks | Accepted | 2026-10-20 |
+| D22 | Damping values | Per vehicle from body-mode damping ratio, c = 2ζ√(k<sub>s</sub>m<sub>s</sub>): ζ<sub>passive</sub> = 0.3, ζ<sub>max</sub> = 0.8, ζ<sub>min</sub> = 0.1 *(PA)*. Vehicles with supplied damping keep their values (eROD front range and passive; eROD rear passive) | ζ = 0.3 is the typical effective mean for passenger cars and 0.8 the upper end for optimum handling (Ślaski 2011, *Transport Problems* 6(2), full text read). ζ<sub>min</sub> = 0.1 is a project assumption below the ≈ 0.2 optimum-ride value, giving the controller a soft end; weaker support (search excerpt: optimal semi-active minimum ≈ 0.2 × passive) | Accepted | 2026-10-20 |
 
 ## D16 – Scaled variant targets
 
@@ -76,3 +77,6 @@ Caveats:
 - Múčka, P. (2018). Simulated road profiles according to ISO 8608 in vibration
   analysis. *Journal of Testing and Evaluation* 46(1). [verify volume/pages
   against the published article]
+- Ślaski, G. (2011). Damping parameters of suspension of passenger vehicle
+  equipped with semi-active dampers with by-pass valve. *Transport Problems*
+  6(2). <http://transportproblems.polsl.pl/pl/archiwum/2011/zeszyt2/2011t6z2_05.pdf>

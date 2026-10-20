@@ -18,6 +18,12 @@ Version plan: each completed milestone is tagged as a minor release
 - MATLAB Project `semiactive-damper-function.prj` (+ `resources/project/`)
   that puts `src/matlab`, `src/matlab/vehicles`, `model/*` and
   `tests/matlab` on the path when opened.
+- Vehicle parameter files (`src/matlab/vehicles/`: `sedan_ref`, `small_car`,
+  `suv`, `light_van`), common struct, D16 solver, selector `get_vehicle` with
+  clear error for missing private vehicles, `project_config.m`, natural
+  frequency function, `tests/matlab/TestVehicles.m`, and
+  `results/vehicles/vehicle_overview.csv` (public vehicles only).
+- Decision D22: damping values from body-mode damping ratio (0.1 / 0.3 / 0.8).
 
 ## [0.2.0] - 2026-10-20
 
