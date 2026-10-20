@@ -13,6 +13,8 @@ Version plan: each completed milestone is tagged as a minor release
 - Model-referencing setup, controller I/O tables and harness wiring in
   `docs/mil_to_sil.md` (section 0) and one-page
   `docs/model_reference_setup.pdf`.
+- Decision D21: private vehicle data (eROD) kept local only; `.gitignore`
+  rules for `src/matlab/vehicles/private/` and eROD-derived results.
 
 ## [0.2.0] - 2026-10-20
 

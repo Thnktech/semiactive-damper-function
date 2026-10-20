@@ -26,6 +26,7 @@ Status: **Accepted** = in force · **Proposed** = awaiting confirmation · **Ope
 | D18 | Fault reset | No reset input. A latched fault is cleared only by re-initialization (`initialize`) | Keeps the interface minimal; a fault must not clear itself when `fault_flag` drops (REQ-S-02) | Accepted | 2026-10-20 |
 | D19 | Registered outputs | Each controller output passes through a one-sample delay initialized to its "Init" value (`i_cmd` = I<sub>default</sub>, `fault_active` = 0) | Makes step 0 exactly defined in Simulink and C (REQ-F-03) and fixes sample alignment for back-to-back; costs 1 ms latency, small against the 10 ms actuator lag and already counted in REQ-S-01 | Accepted | 2026-10-20 |
 | D20 | Invalid mode | `mode` values other than exactly 0, 1 or 2 select passive | Defined behavior for every input; passive is the least demanding mode | Accepted | 2026-10-20 |
+| D21 | Private vehicle data | eROD data is **private**: publication not cleared. Stored only in the git-ignored `src/matlab/vehicles/private/`; results and MiL logs derived from it (`*erod*` in `results/` and `tests/data/`) are git-ignored too. Two local variants: front and rear corner. No eROD values appear in committed files. The vehicle selector must work in a fresh clone without the private folder; CI never uses eROD. REQ-P-04 verdicts in the repository cover the published variants only | Respects data ownership (project rule: no employer or doctoral vehicle data) while still allowing local robustness checks | Accepted | 2026-10-20 |
 
 ## D16 – Scaled variant targets
 
@@ -43,7 +44,7 @@ labelled "scaled variant (project assumption)", not a real vehicle.
 | Sedan (reference) | 230 | 0.15 | 1.21 | 11.0 | 34.5 | 14 559 | 150 190 | Published values (D14), not scaled; listed for comparison |
 | SUV | 420 | 0.14 | 1.15 | 10.5 | 58.8 | 24 259 | 231 342 | Heavy body tuned for comfort; large wheels → lower wheel frequency |
 | Light van | 480 | 0.16 | 1.45 | 11.0 | 76.8 | 45 633 | 320 305 | Stiff springs for payload; heavy axle |
-| eROD | – | – | – | – | – | – | – | Author-supplied data (D12) |
+| eROD front / rear | – | – | – | – | – | – | – | Author-supplied private data, local only (D21); values not published |
 
 Solver check: solving for the reference's own frequencies reproduces its
 k<sub>s</sub> within 1 % (difference from rounding f<sub>wheel</sub> to 11.0 Hz).
@@ -62,9 +63,10 @@ Caveats:
   requirement thresholds (REQ-P) and the regression baseline were derived for
   the old reference. After a switch they must be re-derived and re-run; record
   the switch as a new decision revision.
-- **D12, eROD:** parameters to be supplied by the author. Before committing,
-  confirm the data may be published (project rule: no employer or doctoral
-  vehicle data in the repository).
+- **D12, eROD:** parameters supplied by the author (2026-10-20); publication
+  not cleared, so kept local only (D21). If publication is cleared later,
+  record it as a new decision with the full thesis reference before
+  committing any eROD value.
 
 ## References
 

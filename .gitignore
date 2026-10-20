@@ -27,3 +27,7 @@ Thumbs.db
 # Personal planning documents (kept local only)
 IMPLEMENTATION_GUIDE.md
 docs/Project1_Implementation_Guide.pdf
+# Private vehicle data and anything derived from it (kept local only, D21)
+src/matlab/vehicles/private/
+results/**/*erod*
+tests/data/*erod*
