@@ -22,6 +22,8 @@ Version plan: each completed milestone is tagged as a minor release
 ### Changed
 - CI self-test rewritten as a cheatsheet (where / do / signal / why); the
   test branch is kept for reuse instead of deleted.
+- D14 (reference sedan, Golden Car ratios) accepted; D15 (scaled variants,
+  replaced by published data when found) accepted.
 
 ## [0.1.0] - 2026-10-20
 
