@@ -24,6 +24,8 @@ Version plan: each completed milestone is tagged as a minor release
   test branch is kept for reuse instead of deleted.
 - D14 (reference sedan, Golden Car ratios) accepted; D15 (scaled variants,
   replaced by published data when found) accepted.
+- D16 scaled variant targets (small car, SUV, light van) added to
+  `docs/DECISIONS.md`.
 
 ## [0.1.0] - 2026-10-20
 
