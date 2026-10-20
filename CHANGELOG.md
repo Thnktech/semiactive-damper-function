@@ -13,6 +13,8 @@ Version plan: each completed milestone is tagged as a minor release
 - Implementation guide (`IMPLEMENTATION_GUIDE.md`, PDF copy in `docs/`) and this changelog.
 - Folder structure with a purpose `README.md` per folder, `.gitignore`,
   `.gitattributes` (LF line endings) and MIT `LICENSE`.
+- README skeleton with honest status table, `requirements.txt`
+  (numpy, pandas, pytest) and Python smoke test.
 
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
