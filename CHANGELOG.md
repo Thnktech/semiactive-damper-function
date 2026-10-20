@@ -22,6 +22,8 @@ Version plan: each completed milestone is tagged as a minor release
   literature check of every threshold.
 - Requirements primer (`docs/requirements_primer.md` + PDF) and one-page
   `docs/requirements_cheatsheet.pdf`.
+- Safety and verification requirements REQ-S-01/02, REQ-V-01/02 and fault
+  scenario SC-FAULT; decisions D17 (fault transition) and D18 (fault reset).
 
 ### Changed
 - CI self-test rewritten as a cheatsheet (where / do / signal / why); the

@@ -1,7 +1,8 @@
 # Requirements – Semi-Active Damper Function
 
-Status of this document: **Draft** (M1). Safety (REQ-S) and verification
-(REQ-V) requirements follow in a later revision.
+Status of this document: **Draft** (M1). Complete set: REQ-F-01…05,
+REQ-P-01…04, REQ-S-01…02, REQ-V-01…02. Acceptance criteria are reviewed
+once more at the end of M1.
 
 ## Conventions
 
@@ -24,6 +25,9 @@ Status of this document: **Draft** (M1). Safety (REQ-S) and verification
 | I<sub>default</sub> | 0.95 A *(PA)* | Default current (initialization and fault) | Mid-range damping; a "medium" fail-safe setting exists in production valve designs [L2]. Note: this is the controller's commanded default, not the valve's unpowered (0 A) fail-safe state, which is a hardware property |
 | ΔI<sub>max</sub> | 0.13 A per ms *(PA)* | Maximum change of `i_cmd` per sample | Full range (1.3 A) in ≥ 10 ms; avoids force steps faster than the assumed actuator lag (τ = 10 ms, guide M6). No literature value found |
 | T<sub>s</sub> | 1 ms | Controller sample time | D8 |
+| t<sub>react</sub> | 10 ms *(PA)* | Maximum fault reaction time of `i_cmd` | Worst-case transition \|I<sub>max</sub> − I<sub>default</sub>\| = 0.65 A takes 5 samples at ΔI<sub>max</sub>, plus 1 sample detection; 10 ms leaves margin and stays below the valve's own full adjustment of ≈ 15–35 ms [L10] |
+| tol<sub>I</sub> | 1e-3 A *(PA)* | Settling band around I<sub>default</sub> for t<sub>react</sub> | 0.1 % of the current range; far below any effect on damping force |
+| atol / rtol | 1e-9 / 1e-9 *(PA)* | Back-to-back tolerance, generated code vs MiL | Same double-precision operations on both sides; round-off per operation ≈ 1e-16, so 1e-9 leaves a 10⁶ margin while still exposing any logic or sample-alignment error. Derived; no literature value found |
 
 The damper map becomes c(I) = c<sub>min</sub> + (c<sub>max</sub> − c<sub>min</sub>)·(I − I<sub>min</sub>)/(I<sub>max</sub> − I<sub>min</sub>) (generalizes the guide's map, which assumed I<sub>min</sub> = 0).
 
@@ -33,6 +37,7 @@ The damper map becomes c(I) = c<sub>min</sub> + (c<sub>max</sub> − c<sub>min</
 |---|---|---|
 | SC-C80 | ISO 8608-based random road, class C, 80 km/h, fixed seed, 30 s simulated; KPIs over t ≥ 2 s | 80 km/h is the IRI reference speed [L6]. Transient: with body-mode damping ratio ζ ≈ 0.3, the decay time constant 1/(ζω<sub>n</sub>) ≈ 0.44 s, so 2 s ≈ 4.5 time constants (< 2 % of the initial transient left). 30 s ≈ 36 body-mode periods for a stable RMS. Derived, not from literature |
 | SC-BUMP | Single half-cosine bump, 50 mm high, 0.5 m long, 18 km/h *(PA)*; KPIs over the whole run | Matches a semi-active quarter-car bump case in the literature (0.05 m, 0.5 m, 18 km/h) [L4]; similar published cases: 0.0275 m × 1.4 m at 10 km/h, 0.075 m × 0.5 m at 17.5 km/h [L4] |
+| SC-FAULT | SC-C80 with `fault_flag` stepping 0 → 1 at t = 10 s, in every mode; variants: single-sample pulse, and `fault_flag` toggling 0/1 every 100 ms after t = 10 s | Exercises reaction, latching and toggling robustness |
 | SC-ALL | All scenarios run in M2–M4 (roads A–D, both speeds, bump, fault), all modes | – |
 
 ## KPI definitions
@@ -67,6 +72,23 @@ fixed passive damping c<sub>passive</sub> (defined in M2).
 | REQ-P-03 | Suspension travel | In every mode on SC-BUMP, the function shall keep the maximum suspension travel within the available travel. | Exceeding the travel means hitting the bump stops | KPI test, SC-BUMP, reference vehicle, all modes | max \|z<sub>s</sub> − z<sub>u</sub>\| ≤ **100 mm** *(PA)*: a 10 cm deflection limit is used in a quarter-car bump study [L4]; another study requires ≥ 125 mm total travel [L9] | – | Unverified |
 | REQ-P-04 | Robustness across vehicles | In skyhook mode on SC-C80, the function shall not degrade ride comfort on any vehicle variant compared with that variant's passive baseline. | Shows the controller is not tuned to the reference vehicle only (D12) | KPI test, SC-C80, all variants (D16) | RMS body acceleration ≤ passive (reduction ≥ **0 %**) *(PA)* on every variant | – | Unverified |
 
+### Safety (REQ-S)
+
+Fault detection is external (D6): these requirements verify the **reaction**
+to `fault_flag`, not the detection of a fault.
+
+| ID | Title | Statement | Rationale | Verification | Acceptance | Evidence | Status |
+|---|---|---|---|---|---|---|---|
+| REQ-S-01 | Fault reaction | When `fault_flag` > 0.5, the function shall bring `i_cmd` to I<sub>default</sub> within t<sub>react</sub>. | A known, mid-range damping state is reached quickly when the controller cannot be trusted | Fault-injection test, SC-FAULT, all modes | From the first sample with `fault_flag` > 0.5 to the first sample where \|`i_cmd` − I<sub>default</sub>\| ≤ tol<sub>I</sub> and stays there: ≤ **10 ms** *(PA)* | – | Unverified |
+| REQ-S-02 | Fault latch | Once `fault_flag` > 0.5 has been seen, the function shall keep `fault_active` = 1 and `i_cmd` = I<sub>default</sub> until re-initialization, regardless of later `fault_flag` values. | Prevents oscillation between normal and fault modes; a fault is cleared only by a deliberate restart (D18) | Fault-injection test, SC-FAULT incl. pulse and toggling variants | `fault_active` has exactly one 0 → 1 transition and no 1 → 0 transition; after t<sub>react</sub>, \|`i_cmd` − I<sub>default</sub>\| ≤ tol<sub>I</sub> until the end of the run | – | Unverified |
+
+### Verification (REQ-V)
+
+| ID | Title | Statement | Rationale | Verification | Acceptance | Evidence | Status |
+|---|---|---|---|---|---|---|---|
+| REQ-V-01 | Generated code matches model | Replaying logged MiL controller inputs through the generated code (GRT) shall reproduce the logged MiL outputs. | Back-to-back comparison between model and code is a recommended verification method in ISO 26262-6 [L11]; proves the code implements the verified model (D7) | `pytest` back-to-back test in CI on SC-C80, SC-BUMP and SC-FAULT logs | Every sample: \|`i_cmd`<sub>code</sub> − `i_cmd`<sub>MiL</sub>\| ≤ atol + rtol·\|`i_cmd`<sub>MiL</sub>\|; `fault_active` identical; same sample index k (no offset) | – | Unverified |
+| REQ-V-02 | Reference data provenance | Every MiL reference data file shall carry metadata identifying how it was produced. | Without provenance, a back-to-back pass cannot be tied to a model version | Automated check (pytest, CI) + inspection | Each `tests/data/mil_*.csv` has a `.json` with non-empty: git commit hash, model name, scenario ID, vehicle (D13), road seed, speed, sample time, MATLAB release, generation date | – | Unverified |
+
 ## Literature check of thresholds
 
 Verification level: **F** = value read in the full text · **A** = abstract or
@@ -85,9 +107,14 @@ are cited in the README.
 | L7 | Search excerpt: MR damper quarter car with clipped-optimal skyhook | Body acceleration RMS 2.64 → 2.36 m/s² (−10.6 %) | S |
 | L8 | Search excerpt: review of semi-active control methods | Skyhook improves comfort but worsens road holding | S |
 | L9 | Search excerpt: nonlinear quarter car–seat–driver optimization, citing Baumal et al. | ≥ 125 mm suspension travel required | S |
+| L10 | NATO RTO-MP-AVT-110, paper 02: *Evaluation of active damping for reduction of noise, vibration and …* (solenoid-valve CDC damper measurements) | Force reaction starts after ≈ 5 ms; full adjustment ≈ 15 ms (opening) to ≈ 35 ms (closing) | S |
+| L11 | ISO 26262-6 (software level), back-to-back comparison between model and code; clauses 9.4.2 / 10.4.2 as cited in MathWorks and Reactive Systems documentation | Back-to-back comparison is a recommended verification method | S (standard not read directly) |
 
 Changes after the literature check (2026-10-20): I<sub>min</sub>/I<sub>max</sub>
 0/2.0 A → 0.3/1.6 A; I<sub>default</sub> 1.0 → 0.95 A; REQ-P-01 15 % → 10 %;
 REQ-P-03 80 → 100 mm; bump 1.0 m at 30 km/h → 0.5 m at 18 km/h. Added
 REQ-F-04, REQ-F-05, REQ-P-04. The original proposals were engineering
 judgment, not literature values.
+
+Added 2026-10-20: REQ-S-01, REQ-S-02, REQ-V-01, REQ-V-02, scenario SC-FAULT,
+parameters t<sub>react</sub>, tol<sub>I</sub>, atol/rtol.
