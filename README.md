@@ -60,6 +60,9 @@ MATLAB steps will be added once the models exist (M2–M3).
 
 ## CI vs local verification
 
+What CI is, why this project uses it and what the smoke test checks:
+[docs/ci.md](docs/ci.md).
+
 | Verified | Local (MATLAB) | CI (no MATLAB) |
 |---|---|---|
 | Python smoke test | ✓ | planned (M0) |

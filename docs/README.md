@@ -1,2 +1,2 @@
 # docs
-Design decisions, development log, architecture diagram.
+Design decisions, development log, CI explanation and architecture diagram.

@@ -15,6 +15,12 @@ Version plan: each completed milestone is tagged as a minor release
   `.gitattributes` (LF line endings) and MIT `LICENSE`.
 - README skeleton with honest status table, `requirements.txt`
   (numpy, pandas, pytest) and Python smoke test.
+- GitHub Actions CI workflow (`.github/workflows/ci.yml`) running pytest on
+  Python 3.11, and `docs/ci.md` explaining CI and the smoke test.
+
+### Removed
+- Implementation guide (`.md` and PDF) from version control; kept local only
+  and listed in `.gitignore`.
 
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
