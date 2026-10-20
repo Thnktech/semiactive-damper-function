@@ -1,0 +1,43 @@
+# Design Decisions
+
+Decisions that fix the project scope and setup. Each entry is changed only by
+a new dated revision, never silently.
+
+Status: **Accepted** = in force · **Proposed** = awaiting confirmation · **Open** = not decided yet.
+
+| # | Decision | Value | Rationale | Status | Date |
+|---|---|---|---|---|---|
+| D1 | Repository name | `semiactive-damper-function` | Uses the search keywords; links to the author's AIP papers | Accepted | 2026-10-20 |
+| D2 | MATLAB release | R2026a (MATLAB 26.1): Simulink, MATLAB Coder, Simulink Coder. **No Embedded Coder** | GRT and `packNGo` details depend on the release; every code-generation setting (M5) is checked against R2026a documentation | Accepted | 2026-10-20 |
+| D3 | License | MIT | Simple and employer-friendly for a portfolio project | Accepted | 2026-10-20 |
+| D4 | Spelling | US English ("tire") everywhere | Consistency | Accepted | 2026-10-20 |
+| D5 | Controller sensor inputs | Ideal velocities ż<sub>s</sub>, ż<sub>u</sub> as inputs | State estimation is out of scope; stated as an explicit assumption, not hidden in the model | Accepted | 2026-10-20 |
+| D6 | Fault detection | External `fault_flag` input (double, > 0.5 = fault) | The project verifies the **reaction** to a fault, not its detection | Accepted | 2026-10-20 |
+| D7 | Back-to-back scope | Open-loop replay at controller level: logged MiL controller inputs → generated code → outputs compared. No closed-loop SiL | Achievable without Embedded Coder; isolates the controller as the unit under test | Accepted | 2026-10-20 |
+| D8 | Solver | Whole harness fixed-step `ode4`, 1 ms; controller discrete, 1 ms | Sample-aligned logging for back-to-back; 1 ms resolves wheel hop (≈ 10–15 Hz) well | Accepted | 2026-10-20 |
+| D9 | Damper map | One parameter struct shared by plant and controller | Single source of truth; avoids silent mismatch between plant and controller | Accepted | 2026-10-20 |
+| D10 | Generated-code policy | Commit `packNGo`-extracted sources in `src/generated/`; never commit `*_grt_rtw/`, `slprj/` or object files | CI needs sources, not build output | Accepted | 2026-10-20 |
+| D11 | Thresholds | Every requirement threshold is marked **proposed project assumption** with its rationale | No invented "industry" numbers | Accepted | 2026-10-20 |
+| D12 | Vehicle set | One **reference vehicle** for requirements, MiL tests, back-to-back and all verdicts; **variants** for baseline runs and a robustness comparison (same controller). Reference: mid-size sedan. Planned variants: small car, SUV, light van, eROD | One fixed vehicle keeps requirements and regression tests unambiguous; variants show the controller is not tuned to one car | Accepted | 2026-10-20 |
+| D13 | Vehicle switching | Each vehicle is one parameter file under `src/matlab/vehicles/`, all with the same fields. One selector (`vehicle` in the project configuration) chooses the vehicle; no other file names a vehicle. The vehicle name is written into every result file and MiL metadata JSON | Changing the reference or running a variant is a one-line change; results always show which vehicle produced them | Accepted | 2026-10-20 |
+| D14 | Reference vehicle parameters | Mass and stiffness ratios of the IRI **Golden Car** (Sayers 1995): k<sub>s</sub>/m<sub>s</sub> = 63.3 s⁻², k<sub>t</sub>/m<sub>s</sub> = 653 s⁻², m<sub>u</sub>/m<sub>s</sub> = 0.15; with m<sub>s</sub> = 230 kg as in Múčka (2018) → m<sub>u</sub> = 34.5 kg, k<sub>s</sub> = 14 559 N/m, k<sub>t</sub> = 150 190 N/m. Natural frequencies 1.21 Hz (body), 11.0 Hz (wheel). Damping range c<sub>min</sub>, c<sub>max</sub> and c<sub>passive</sub>: separate project assumptions (M2) | Published, openly available and widely used reference; frequencies in the expected bands. Caveat (Sayers): Golden Car spring rates match typical body/axle frequencies but its damping (c/m<sub>s</sub> = 6.0 s⁻¹) is higher than in most cars and it is not an "average car", so its damping is **not** adopted as the passive baseline | Proposed | 2026-10-20 |
+| D15 | Variant vehicle parameters | Source per variant to be decided | No openly verifiable class-specific parameter sets found yet | Open | 2026-10-20 |
+
+## Notes
+
+- **D13, changing the reference vehicle:** switching is a one-line change, but
+  requirement thresholds (REQ-P) and the regression baseline were derived for
+  the old reference. After a switch they must be re-derived and re-run; record
+  the switch as a new decision revision.
+- **D12, eROD:** parameters to be supplied by the author. Before committing,
+  confirm the data may be published (project rule: no employer or doctoral
+  vehicle data in the repository).
+
+## References
+
+- Sayers, M. W. (1995). On the calculation of International Roughness Index
+  from longitudinal road profile. *Transportation Research Record* 1501, 1–12.
+  <https://onlinepubs.trb.org/Onlinepubs/trr/1995/1501/1501-001.pdf>
+- Múčka, P. (2018). Simulated road profiles according to ISO 8608 in vibration
+  analysis. *Journal of Testing and Evaluation* 46(1). [verify volume/pages
+  against the published article]

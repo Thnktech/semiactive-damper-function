@@ -10,6 +10,8 @@ Version plan: each completed milestone is tagged as a minor release
 ## [Unreleased]
 
 ### Added
+- `docs/DECISIONS.md` (D1–D15: scope, toolchain, vehicle set and switching,
+  proposed reference-vehicle parameters) and `docs/DEVLOG.md`.
 - Manual **Run workflow** trigger (`workflow_dispatch`) in CI, and a
   "run and check CI yourself" section in `docs/ci.md`.
 - CI self-test procedure (deliberate red run on a throwaway branch) in
