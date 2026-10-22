@@ -24,6 +24,8 @@ Version plan: each completed milestone is tagged as a minor release
   frequency function, `tests/matlab/TestVehicles.m`, and
   `results/vehicles/vehicle_overview.csv` (public vehicles only).
 - Decision D22: damping values from body-mode damping ratio (0.1 / 0.3 / 0.8).
+- `docs/plant_build_guide.pdf`: step-by-step guide for building the quarter-car
+  plant by hand in Simulink (ports, equations, block settings, sanity checks).
 
 ## [0.2.0] - 2026-10-20
 
