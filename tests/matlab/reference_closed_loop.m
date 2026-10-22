@@ -2,6 +2,7 @@ function R = reference_closed_loop(P, t, zr, mode, fault)
 %REFERENCE_CLOSED_LOOP Independent plain-MATLAB closed loop: oracle for the MiL harness.
 %   R = REFERENCE_CLOSED_LOOP(P, t, zr, mode)
 %   R = REFERENCE_CLOSED_LOOP(P, t, zr, mode, fault)   fault: fault_flag per sample
+%   mode: scalar, or one value per sample (mode schedule)
 %   re-implements plant + controller with the textbook timing and returns
 %   R.zs_dot, R.zu_dot, R.i_cmd, R.fault_active (columns).
 %
@@ -14,6 +15,7 @@ function R = reference_closed_loop(P, t, zr, mode, fault)
 %   (saturation, rate limit, fault latch; D17, D18).
 
 if nargin < 5, fault = zeros(size(t)); end
+if isscalar(mode), mode = mode*ones(size(t)); end
 h = t(2) - t(1);
 N = numel(t);
 zrf = @(tt) interp1(t, zr, tt, 'linear');
@@ -32,7 +34,7 @@ for k = 1:N
     if latched
         target = P.I_default;                          % fault reaction (D17)
     else
-        target = min(max(law_current(P, x(3), x(5), mode), P.I_min), P.I_max);
+        target = min(max(law_current(P, x(3), x(5), mode(k)), P.I_min), P.I_max);
     end
     di = i + min(max(target - i, -P.dI_max), P.dI_max);   % rate limit (REQ-F-04)
     df = double(latched);

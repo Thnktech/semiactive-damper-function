@@ -97,6 +97,18 @@ classdef TestHarness < matlab.unittest.TestCase
             end
         end
 
+        function mode_schedule_switches_cleanly(tc)
+            % Task 6: mode from workspace can switch mid-run (M5 logs); steps must be clean
+            % (no interpolated 1.5) and every switch must match the reference
+            P = setup_params();
+            [t, zr] = road_iso8608('C', 80, 10, 1);
+            m = 1 + (t >= 2.5) + (t >= 5) - 3*(t >= 7.5);          % 1 -> 2 -> 3 -> 0
+            Y = tc.simulate(P, t, zr, 0*t, m);
+            tc.verifyEqual(Y.mode, m, 'Logged mode must equal the schedule exactly');
+            R = reference_closed_loop(P, t, zr, m);
+            tc.verifyEqual(Y.i_cmd, R.i_cmd, 'AbsTol', 1e-9, 'i_cmd vs reference with mode switches');
+        end
+
         function no_algebraic_loop(tc)
             % D19 delays + D26 setting: the plant-controller loop must not be algebraic
             P = setup_params();
@@ -125,7 +137,8 @@ classdef TestHarness < matlab.unittest.TestCase
             in = in.setVariable('P', P);
             in = in.setVariable('road_in', [t zr]);
             in = in.setVariable('fault_in', [t fault]);
-            in = in.setVariable('mode_sel', mode_sel);
+            if isscalar(mode_sel), mode_sel = mode_sel*ones(size(t)); end
+            in = in.setVariable('mode_in', [t mode_sel(:)]);       % From Workspace 'Mode' (task 6)
             in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
             out = sim(in);

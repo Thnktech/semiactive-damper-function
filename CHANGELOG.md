@@ -49,6 +49,14 @@ Version plan: each completed milestone is tagged as a minor release
 - Reference closed loop extended with saturation, rate limit and fault latch;
   `TestHarness` closed loop with mid-run fault; `TestController` checks both
   outputs are double.
+- Harness `Mode` from workspace (`mode_in`, held, no interpolation): constant
+  or scheduled mode per run.
+- `src/matlab/simulate_harness.m` and `src/matlab/run_comparison.m` (written
+  by the author): passive, skyhook, groundhook, hybrid on the 9 baseline
+  scenarios → `results/comparison/kpi_comparison_sedan_ref.csv` and 2 plots.
+- `tests/matlab/TestComparison.m` (completeness, passive = M2 baseline,
+  deltas, file names, no hard-coded paths); mode-schedule test in
+  `TestHarness`; reference closed loop accepts a mode per sample.
 
 ### Fixed
 - REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.
