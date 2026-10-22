@@ -65,6 +65,12 @@ Version plan: each completed milestone is tagged as a minor release
   (git-ignored); `tests/matlab/TestStudy.m` (6 tests).
 - `results/comparison/comparison_sedan_ref.md`: summary table and the
   author's interpretation (incl. REQ-P-02 failing for skyhook).
+- `src/matlab/log_mil_reference.m`: MiL reference logs for M5 (SC-C80 with
+  every law slot and invalid modes, SC-BUMP, SC-FAULT with pulse and
+  toggling); refuses uncommitted code; CSV `%.17g` + JSON metadata.
+- `tests/matlab/TestMilLogs.m` (bit-exact controller replay of every log,
+  log rules, coverage) and `tests/python/test_mil_metadata.py` (REQ-V-02,
+  runs in CI).
 
 ### Fixed
 - REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.
