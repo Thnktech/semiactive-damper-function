@@ -17,12 +17,17 @@ if nargin < 1
 else
     P = get_vehicle(vehicle);
 end
-P.I_min = 0.3; P.I_max = 1.6; P.I_default = 0.95; P.tau = 0.010;
+P.I_min = 0.3; 
+P.I_max = 1.6; 
+P.I_default = 0.95; 
+P.I_passive = P.I_min + (P.c_passive - P.c_min)/(P.c_max - P.c_min)*(P.I_max - P.I_min);   % passive mode current [A]
+
+P.tau = 0.010;
 P.g = 9.81;
 P.l0 = P.ms*P.g/P.ks;              % spring preload length
 P.Rt0 = (P.ms+P.mu)*P.g/P.kt;      % tire preload
 P.F_static = (P.ms+P.mu)*P.g;      % static tire load
-
+%
 if nargout == 0
     assignin('base', 'P', P);
     clear P

@@ -18,7 +18,7 @@ n = numel(t);
 if numel(zs_ddot) ~= n || numel(F_tire_dyn) ~= n || numel(susp_travel) ~= n
         error('kpi:size', 'Size not equal'); 
 end
-%    TODO: there must be samples after t_skip
+
 w = t >= t_skip; 
 if ~any(w)
     error('kpi:window', 'No samples to analyse'); 

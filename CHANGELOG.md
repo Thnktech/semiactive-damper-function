@@ -9,7 +9,15 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-22
+
+M2: plant, passive baseline, roads, KPIs.
+
 ### Added
+- Passive baseline: `src/matlab/simulate_plant.m`, `src/matlab/run_baseline.m`
+  (roads A–D at 50/80 km/h and SC-BUMP, passive current `P.I_passive`),
+  results `results/baseline/kpi_baseline_sedan_ref.csv` and 3 plots, and
+  `tests/matlab/TestBaseline.m` (6 tests).
 - Model-referencing setup, controller I/O tables and harness wiring in
   `docs/mil_to_sil.md` (section 0).
 - Decision D21: private vehicle data (eROD) kept local only; `.gitignore`
@@ -95,6 +103,7 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Thnktech/semiactive-damper-function/releases/tag/v0.1.0
