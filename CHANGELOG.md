@@ -9,6 +9,10 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-22
+
+M3: controller and MiL harness.
+
 ### Added
 - Controller skeleton `model/controller/controller.slx` (built by the author):
   `Control_law` (placeholder passive) → `Damping_to_current` (clip, inverse
@@ -74,9 +78,6 @@ Version plan: each completed milestone is tagged as a minor release
 - MiL reference logs `tests/data/mil_SC-C80`, `mil_SC-BUMP`, `mil_SC-FAULT`
   (CSV + JSON), produced from commit 09811f7.
 
-### Fixed
-- REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.
-
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N
   reserved for additional strategies; how to add one.
@@ -85,6 +86,9 @@ Version plan: each completed milestone is tagged as a minor release
 - `run_baseline.m`: explanatory comments (no logic change); baseline re-run,
   KPI CSV identical (reproducible), plots re-rendered.
 - `.gitignore`: local-only milestone reports (`docs/milestones/`).
+
+### Fixed
+- REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.
 
 ## [0.3.0] - 2026-10-22
 
@@ -180,7 +184,8 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Thnktech/semiactive-damper-function/releases/tag/v0.1.0

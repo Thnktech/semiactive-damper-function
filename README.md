@@ -90,7 +90,7 @@ Coder) · Python 3.11 · gcc
 | M0 | Repository skeleton and CI | Done (`v0.1.0`) |
 | M1 | Requirements and signal interface | Done (`v0.2.0`) |
 | M2 | Plant, passive baseline, roads, KPIs | Done (`v0.3.0`) |
-| M3 | Controller and MiL harness | Planned |
+| M3 | Controller and MiL harness | Done (`v0.4.0`) |
 | M4 | Requirement-based verification | Planned |
 | M5 | Generated-code back-to-back (GRT) | Planned |
 | M6 | Documentation, sensitivity, release | Planned |
