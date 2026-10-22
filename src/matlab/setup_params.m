@@ -6,6 +6,7 @@ function P = setup_params(vehicle)
 %
 %   P = vehicle fields (GET_VEHICLE) plus:
 %     I_min, I_max, I_default  damper current range / default [A]  (REQ.md)
+%     dI_max                   rate limit per 1 ms step [A]            (REQ-F-04)
 %     tau                      actuator lag time constant [s]
 %     g                        gravity [m/s^2]
 %     l0                       spring preload length ms*g/ks [m]
@@ -23,6 +24,7 @@ end
 P.I_min = 0.3; 
 P.I_max = 1.6; 
 P.I_default = 0.95; 
+P.dI_max = 0.13;                   % rate limit: max change of i_cmd per 1 ms step [A] (REQ-F-04)
 P.I_passive = P.I_min + (P.c_passive - P.c_min)/(P.c_max - P.c_min)*(P.I_max - P.I_min);   % passive mode current [A]
 
 P.tau = 0.010;

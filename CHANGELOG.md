@@ -40,6 +40,7 @@ Version plan: each completed milestone is tagged as a minor release
   indices [0 1 2 3]; hybrid and groundhook tests (α = 1 → skyhook,
   α = 0 → groundhook, blend, inactive part = 0), slot-naming test, closed
   loop vs reference in all four modes.
+- `setup_params.m`: `P.dI_max` = 0.13 A per step (REQ-F-04 rate limit).
 
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N
