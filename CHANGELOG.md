@@ -9,6 +9,12 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Changed
+- Commit history rewritten: attribution trailers removed from all commit
+  messages (all commit IDs and tags changed).
+- MiL reference log metadata regenerated: `git_commit` now points to the
+  rewritten v0.4.0 commit; logged data byte-identical.
+
 ## [0.4.0] - 2026-10-22
 
 M3: controller and MiL harness.
@@ -76,7 +82,7 @@ M3: controller and MiL harness.
   log rules, coverage) and `tests/python/test_mil_metadata.py` (REQ-V-02,
   runs in CI).
 - MiL reference logs `tests/data/mil_SC-C80`, `mil_SC-BUMP`, `mil_SC-FAULT`
-  (CSV + JSON), produced from commit 09811f7.
+  (CSV + JSON).
 
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N

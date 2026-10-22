@@ -11,7 +11,7 @@
   },
   "mode_schedule": "3 [0,7) 1 [7,10]",
   "fault": "pulse at 4.000 s (1 sample); toggling 1/0 every 100 ms from 6 s",
-  "git_commit": "09811f7a12582d74a24a38c8112899dc5a218e6b",
+  "git_commit": "1deaae8b897778a960ba46d782489b59729d3c60",
   "git_dirty": false,
   "model": "controller",
   "harness": "harness",
@@ -30,6 +30,6 @@
   "number_format": "%.17g",
   "matlab_release": "2026a",
   "simulink_version": "26.1",
-  "generated": "2026-10-22T20:52:24Z",
+  "generated": "2026-10-22T21:05:06Z",
   "rules": "docs/mil_to_sil.md; REQ-V-01, REQ-V-02; D7, D19"
 }

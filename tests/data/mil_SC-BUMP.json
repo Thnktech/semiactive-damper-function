@@ -12,7 +12,7 @@
   },
   "mode_schedule": "1 [0,4) 3 [4,6]",
   "fault": "none",
-  "git_commit": "09811f7a12582d74a24a38c8112899dc5a218e6b",
+  "git_commit": "1deaae8b897778a960ba46d782489b59729d3c60",
   "git_dirty": false,
   "model": "controller",
   "harness": "harness",
@@ -31,6 +31,6 @@
   "number_format": "%.17g",
   "matlab_release": "2026a",
   "simulink_version": "26.1",
-  "generated": "2026-10-22T20:52:22Z",
+  "generated": "2026-10-22T21:05:04Z",
   "rules": "docs/mil_to_sil.md; REQ-V-01, REQ-V-02; D7, D19"
 }
