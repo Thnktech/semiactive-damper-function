@@ -42,6 +42,19 @@ switch mode
         else
             c = P.c_min;
         end
+    case 2                                            % Law_2_Groundhook
+        if -zu*v > 0 && abs(v) > P.eps_vrel
+            c = P.c_gnd*(-zu)/v;
+        else
+            c = P.c_min;
+        end
+    case 3                                            % Law_3_Hybrid: inactive parts contribute 0
+        S = 0; G = 0;
+        if abs(v) > P.eps_vrel
+            if zs*v > 0, S = P.c_sky*zs/v; end
+            if -zu*v > 0, G = P.c_gnd*(-zu)/v; end
+        end
+        c = P.alpha*S + (1 - P.alpha)*G;
     otherwise                                         % Law_0_Passive and default (D20)
         c = P.c_passive;
 end

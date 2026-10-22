@@ -36,10 +36,16 @@ Version plan: each completed milestone is tagged as a minor release
   `TestHarness` (closed loop vs reference, no algebraic loop).
 - Decision D26: minimize artificial algebraic loops in the controller model
   (fixes up to 1.3 A deviations); explicit integer check for `mode`.
+- `Law_2_Groundhook` and `Law_3_Hybrid` (built by the author); Multiport
+  indices [0 1 2 3]; hybrid and groundhook tests (α = 1 → skyhook,
+  α = 0 → groundhook, blend, inactive part = 0), slot-naming test, closed
+  loop vs reference in all four modes.
 
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N
   reserved for additional strategies; how to add one.
+- Mode mapping: 2 = groundhook, 3 = hybrid (was 2), first free slot 4;
+  logged in `signals.md`; D20 revised to "any value without a law slot".
 - `run_baseline.m`: explanatory comments (no logic change); baseline re-run,
   KPI CSV identical (reproducible), plots re-rendered.
 - `.gitignore`: local-only milestone reports (`docs/milestones/`).

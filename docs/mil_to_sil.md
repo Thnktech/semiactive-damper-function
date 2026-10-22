@@ -57,7 +57,7 @@ Simulink caches referenced models in `slprj/` and `*.slxc`; both are in
 | 1 | `zs_dot` | Plant | Body (sprung mass) vertical velocity | m/s |
 | 2 | `zu_dot` | Plant | Wheel (unsprung mass) vertical velocity | m/s |
 | 3 | `fault_flag` | Harness (test scenario) | Fault indication, > 0.5 = fault | – |
-| 4 | `mode` | Harness (parameter) | 0 passive, 1 skyhook, 2 hybrid | – |
+| 4 | `mode` | Harness (parameter) | 0 passive, 1 skyhook, 2 groundhook, 3 hybrid (signals.md) | – |
 
 ### Controller outputs
 

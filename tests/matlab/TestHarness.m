@@ -75,7 +75,7 @@ classdef TestHarness < matlab.unittest.TestCase
             % plain MATLAB. Catches artificial-algebraic-loop handling (D26).
             P = setup_params();
             [t, zr] = road_iso8608('C', 80, 10, 1);
-            for m = [0 1]
+            for m = [0 1 2 3]
                 Y = tc.simulate(P, t, zr, 0*t, m);
                 R = reference_closed_loop(P, t, zr, m);
                 tc.verifyEqual(Y.zs_dot, R.zs_dot, 'AbsTol', 1e-9, sprintf('mode %d: zs_dot vs reference', m));
