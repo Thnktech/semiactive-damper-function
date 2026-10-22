@@ -11,6 +11,9 @@ function P = setup_params(vehicle)
 %     l0                       spring preload length ms*g/ks [m]
 %     Rt0                      tire preload (ms+mu)*g/kt [m]
 %     F_static                 static tire load (ms+mu)*g [N]
+%     c_sky, c_gnd             skyhook / groundhook gains [N*s/m]      (D25)
+%     alpha                    hybrid blend factor [-]                 (D25)
+%     eps_vrel                 relative-velocity guard [m/s]           (D25)
 
 if nargin < 1
     P = get_vehicle();
@@ -27,6 +30,12 @@ P.g = 9.81;
 P.l0 = P.ms*P.g/P.ks;              % spring preload length
 P.Rt0 = (P.ms+P.mu)*P.g/P.kt;      % tire preload
 P.F_static = (P.ms+P.mu)*P.g;      % static tire load
+
+% Control-law parameters (D25)
+P.c_sky = P.c_max;                 % skyhook gain [N*s/m]
+P.c_gnd = P.c_max;                 % groundhook gain [N*s/m]
+P.alpha = 0.5;                     % hybrid blend: 1 = skyhook, 0 = groundhook [-]
+P.eps_vrel = 1e-3;                 % |v_rel| guard against division by ~0 [m/s]
 %
 if nargout == 0
     assignin('base', 'P', P);

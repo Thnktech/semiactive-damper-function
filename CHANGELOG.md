@@ -25,6 +25,8 @@ Version plan: each completed milestone is tagged as a minor release
 - `tests/matlab/TestHarness.m`: references, outputs, solver, passive closed
   loop vs M2 baseline, mode by parameter, controller I/O logged every ms,
   fault pulse not smoothed (7 tests).
+- Decision D25: control-law parameters c_sky, c_gnd, alpha, eps with
+  literature check; added to `setup_params.m`.
 
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N
