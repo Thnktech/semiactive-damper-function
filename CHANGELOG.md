@@ -18,6 +18,13 @@ Version plan: each completed milestone is tagged as a minor release
 - `tests/matlab/TestController.m`: interface, types, discrete 1 ms solver,
   REQ-F-03 initial output, D19 delay, passive current, no plant parameters,
   no logging blocks (9 tests).
+- MiL harness `model/harness/harness.slx` (built by the author): plant and
+  controller as Model blocks, road and fault from workspace (`road_in`,
+  `fault_in`, held after the last value), `mode_sel` parameter, 9 logged
+  outputs (3 KPI signals + 6 controller I/O signals).
+- `tests/matlab/TestHarness.m`: references, outputs, solver, passive closed
+  loop vs M2 baseline, mode by parameter, controller I/O logged every ms,
+  fault pulse not smoothed (7 tests).
 
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N
