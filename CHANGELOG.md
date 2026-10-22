@@ -37,6 +37,9 @@ Version plan: each completed milestone is tagged as a minor release
   (half-sine bump, SC-BUMP); `tests/matlab/TestRoads.m` (band power vs
   target PSD, class scaling, seeds, distance-based profile, no repetition,
   bump geometry; 12 tests).
+- KPI function `src/matlab/kpi.m` (RMS body acceleration and dynamic tire
+  load over t ≥ 2 s, normalized tire load, max suspension travel in mm) and
+  `tests/matlab/TestKPI.m` (known-answer and error cases; 8 tests).
 
 ### Changed
 - REQ.md SC-BUMP shape wording: half-cosine → half-sine (logged in REQ.md).

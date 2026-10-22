@@ -27,9 +27,6 @@ end
 
 n0 = 0.1;                            % reference spatial frequency [cycles/m]
 
-
-% 2) Spatial frequencies
-
 % 2) Spatial frequencies: one random frequency inside each of N bins
 N  = 1000;
 dn = (2.83 - 0.011)/N;                       % bin width = Spacing delta(n)
@@ -41,7 +38,6 @@ Gd = Gd0 * (n/n0).^(-2);
 A = sqrt(2*Gd*dn);                   % Amplitude of wave i
 
 % 4) Random phases (repeatable)
-  
 phi = 2*pi*rand(N, 1);
 
 % 5) Distance
