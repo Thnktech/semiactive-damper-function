@@ -9,6 +9,11 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Changed
+- `run_baseline.m`: explanatory comments (no logic change); baseline re-run,
+  KPI CSV identical (reproducible), plots re-rendered.
+- `.gitignore`: local-only milestone reports (`docs/milestones/`).
+
 ## [0.3.0] - 2026-10-22
 
 M2: plant, passive baseline, roads, KPIs.

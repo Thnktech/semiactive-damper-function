@@ -23,27 +23,27 @@ end
 % 3) Random-road scenarios
 classes = {'A', 'B', 'C', 'D'};
 speeds  = [50 80];
-seed = 1;  Tsim = 30;
+seed = 1;  
+Tsim = 30;
 rows = {};
 for c_idx = 1:numel(classes)
     c = classes{c_idx}; % Extracts 'A', 'B', etc.
     for v = speeds
-        [t, zr] = road_iso8608(c, v, Tsim, seed);
-        Y = simulate_plant(P, t, zr, P.I_passive);
-        K = kpi(Y.t, Y.zs_ddot, Y.F_tire_dyn, Y.susp_travel, P.F_static);
+        [t, zr] = road_iso8608(c, v, Tsim, seed);               % Create Road based on Class and Velocity
+        Y = simulate_plant(P, t, zr, P.I_passive);              % Simulate plant with This Road and Velocity
+        K = kpi(Y.t, Y.zs_ddot, Y.F_tire_dyn, Y.susp_travel, P.F_static); % Extracts KPI from simulated plant
         rows(end+1, :) = {sprintf('%s%d', c, v), P.name, c, v, seed, K.rms_zs_ddot, K.rms_F_tire_dyn, K.rms_F_tire_rel, K.max_travel_mm}; %#ok<AGROW>
-        % FIX 1: keep Y, t, zr for class C at 80 km/h (needed for plot 2)
-        if strcmp(c, 'C') && v == 80
+ 
+        if strcmp(c, 'C') && v == 80  % keep Y, t, zr for class C at 80 km/h (needed for plot 2)
             Yc = Y;  zc = zr;
         end
     end
 end
 
 % 4) Bump scenario
-[tb, zb] = road_bump(0.05, 0.5, 18, 6, 2.5);
-Yb = simulate_plant(P, tb, zb, P.I_passive);
-% FIX 2: two separate statements - first compute the KPIs, then add the row
-Kb = kpi(Yb.t, Yb.zs_ddot, Yb.F_tire_dyn, Yb.susp_travel, P.F_static);
+[tb, zb] = road_bump(0.05, 0.5, 18, 6, 2.5);                    % Create Road based on Class and Velocity
+Yb = simulate_plant(P, tb, zb, P.I_passive);                    % Simulate plant with This Road and Velocity  
+Kb = kpi(Yb.t, Yb.zs_ddot, Yb.F_tire_dyn, Yb.susp_travel, P.F_static);% Extracts KPI from simulated plant
 rows(end+1, :) = {'BUMP', P.name, '-', 18, NaN, Kb.rms_zs_ddot, Kb.rms_F_tire_dyn, Kb.rms_F_tire_rel, Kb.max_travel_mm};
 
 % 5) Table -> CSV
@@ -52,8 +52,8 @@ writetable(T, fullfile(outDir, sprintf('kpi_baseline_%s.csv', P.name)));
 
 % 6) Plots (invisible figures, so it also works in batch mode)
 %    Plot 1: rms_zs_ddot per road class, one line per speed
-% FIX 3: '...' continues a line in MATLAB - real plotting code instead
-f = figure('Visible', 'off');
+
+f = figure('Visible', 'off');  
 hold on
 for v = speeds
     r = T.speed_kmh == v & ~strcmp(T.scenario, 'BUMP');
