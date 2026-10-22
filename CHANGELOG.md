@@ -31,6 +31,15 @@ Version plan: each completed milestone is tagged as a minor release
 - `tests/matlab/TestPlant.m`: interface, solver, rest, poles vs analytic
   quarter car for all public vehicles, road-step signs, current effect,
   tire lift-off (10 tests).
+- Road generators `src/matlab/road_iso8608.m` (ISO 8608-based random road,
+  classes A–D, harmonic superposition with fixed seed and frequencies
+  randomized inside each bin, 1 s fade-in) and `src/matlab/road_bump.m`
+  (half-sine bump, SC-BUMP); `tests/matlab/TestRoads.m` (band power vs
+  target PSD, class scaling, seeds, distance-based profile, no repetition,
+  bump geometry; 12 tests).
+
+### Changed
+- REQ.md SC-BUMP shape wording: half-cosine → half-sine (logged in REQ.md).
 
 ## [0.2.0] - 2026-10-20
 

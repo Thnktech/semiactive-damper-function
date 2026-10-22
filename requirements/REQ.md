@@ -36,7 +36,7 @@ The damper map becomes c(I) = c<sub>min</sub> + (c<sub>max</sub> − c<sub>min</
 | ID | Definition | Rationale |
 |---|---|---|
 | SC-C80 | ISO 8608-based random road, class C, 80 km/h, fixed seed, 30 s simulated; KPIs over t ≥ 2 s | 80 km/h is the IRI reference speed [L6]. Transient: with body-mode damping ratio ζ ≈ 0.3, the decay time constant 1/(ζω<sub>n</sub>) ≈ 0.44 s, so 2 s ≈ 4.5 time constants (< 2 % of the initial transient left). 30 s ≈ 36 body-mode periods for a stable RMS. Derived, not from literature |
-| SC-BUMP | Single half-cosine bump, 50 mm high, 0.5 m long, 18 km/h *(PA)*; KPIs over the whole run | Matches a semi-active quarter-car bump case in the literature (0.05 m, 0.5 m, 18 km/h) [L4]; similar published cases: 0.0275 m × 1.4 m at 10 km/h, 0.075 m × 0.5 m at 17.5 km/h [L4] |
+| SC-BUMP | Single half-sine bump, 50 mm high, 0.5 m long, 18 km/h *(PA)*; KPIs over the whole run | Matches a semi-active quarter-car bump case in the literature (0.05 m, 0.5 m, 18 km/h) [L4]; similar published cases: 0.0275 m × 1.4 m at 10 km/h, 0.075 m × 0.5 m at 17.5 km/h [L4] |
 | SC-FAULT | SC-C80 with `fault_flag` stepping 0 → 1 at t = 10 s, in every mode; variants: single-sample pulse, and `fault_flag` toggling 0/1 every 100 ms after t = 10 s | Exercises reaction, latching and toggling robustness |
 | SC-ALL | All scenarios run in M2–M4 (roads A–D, both speeds, bump, fault), all modes | – |
 
@@ -124,3 +124,7 @@ rationale, verification method and numeric acceptance criterion; every
 threshold labelled *(PA)* or derived. REQ-F-03 reworded for registered
 outputs (D19): "before the first step" → "at the first step (k = 0)",
 `fault_active`(0) = 0 added.
+
+Change 2026-10-22 (after baseline): SC-BUMP shape "half-cosine" → "half-sine"
+(z = h·sin(πs/L)), matching the literature case [L4] and the implementation
+`src/matlab/road_bump.m`. Height, length and speed unchanged.
