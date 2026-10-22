@@ -83,6 +83,20 @@ classdef TestHarness < matlab.unittest.TestCase
             end
         end
 
+        function closed_loop_with_fault_matches_reference(tc)
+            % SC-FAULT style: fault at t = 5 s in every mode; latch, reaction and rate limit
+            % in the real loop must equal the independent reference
+            P = setup_params();
+            [t, zr] = road_iso8608('C', 80, 8, 1);
+            fault = double(t >= 5);
+            for m = [0 1 2 3]
+                Y = tc.simulate(P, t, zr, fault, m);
+                R = reference_closed_loop(P, t, zr, m, fault);
+                tc.verifyEqual(Y.i_cmd, R.i_cmd, 'AbsTol', 1e-9, sprintf('mode %d: i_cmd vs reference', m));
+                tc.verifyEqual(Y.fault_active, R.fault_active, sprintf('mode %d: fault_active vs reference', m));
+            end
+        end
+
         function no_algebraic_loop(tc)
             % D19 delays + D26 setting: the plant-controller loop must not be algebraic
             P = setup_params();

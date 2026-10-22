@@ -25,7 +25,7 @@ baseline are logged at the end of this file with date and reason.
 | I<sub>default</sub> | 0.95 A *(PA)* | Default current (initialization and fault) | Mid-range damping; a "medium" fail-safe setting exists in production valve designs [L2]. Note: this is the controller's commanded default, not the valve's unpowered (0 A) fail-safe state, which is a hardware property |
 | ΔI<sub>max</sub> | 0.13 A per ms *(PA)* | Maximum change of `i_cmd` per sample | Full range (1.3 A) in ≥ 10 ms; avoids force steps faster than the assumed actuator lag (τ = 10 ms, guide M6). No literature value found |
 | T<sub>s</sub> | 1 ms | Controller sample time | D8 |
-| t<sub>react</sub> | 10 ms *(PA)* | Maximum fault reaction time of `i_cmd` | Worst-case transition \|I<sub>max</sub> − I<sub>default</sub>\| = 0.65 A takes 5 samples at ΔI<sub>max</sub>, plus 1 sample detection; 10 ms leaves margin and stays below the valve's own full adjustment of ≈ 15–35 ms [L10] |
+| t<sub>react</sub> | 10 ms *(PA)* | Maximum fault reaction time of `i_cmd` | Worst-case transition \|I<sub>max</sub> − I<sub>default</sub>\| = 0.65 A takes 5 samples at ΔI<sub>max</sub> (the output delay is the first of them; measured 5 ms in M3); 10 ms leaves margin and stays below the valve's own full adjustment of ≈ 15–35 ms [L10] |
 | tol<sub>I</sub> | 1e-3 A *(PA)* | Settling band around I<sub>default</sub> for t<sub>react</sub> | 0.1 % of the current range; far below any effect on damping force |
 | atol / rtol | 1e-9 / 1e-9 *(PA)* | Back-to-back tolerance, generated code vs MiL | Same double-precision operations on both sides; round-off per operation ≈ 1e-16, so 1e-9 leaves a 10⁶ margin while still exposing any logic or sample-alignment error. Derived; no literature value found |
 
@@ -128,3 +128,7 @@ outputs (D19): "before the first step" → "at the first step (k = 0)",
 Change 2026-10-22 (after baseline): SC-BUMP shape "half-cosine" → "half-sine"
 (z = h·sin(πs/L)), matching the literature case [L4] and the implementation
 `src/matlab/road_bump.m`. Height, length and speed unchanged.
+
+Change 2026-10-22 (after baseline): t<sub>react</sub> rationale corrected from
+"5 samples plus 1 sample detection" to "5 samples, the output delay being the
+first"; measured fault reaction in M3: 5 ms. Threshold (10 ms) unchanged.

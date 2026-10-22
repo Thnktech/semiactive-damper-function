@@ -41,6 +41,17 @@ Version plan: each completed milestone is tagged as a minor release
   α = 0 → groundhook, blend, inactive part = 0), slot-naming test, closed
   loop vs reference in all four modes.
 - `setup_params.m`: `P.dI_max` = 0.13 A per step (REQ-F-04 rate limit).
+- `Safety_and_limits` (built by the author): current saturation, rate limit
+  (feedback of the previous `i_cmd`), fault latch (feedback of the previous
+  `fault_active`), fault target I_default; `fault_active` is double.
+- `tests/matlab/TestSafety.m`: REQ-F-01, REQ-F-04, REQ-S-01 (measured 5 ms),
+  REQ-S-02, fault at step 0 (9 tests, tagged with requirement IDs).
+- Reference closed loop extended with saturation, rate limit and fault latch;
+  `TestHarness` closed loop with mid-run fault; `TestController` checks both
+  outputs are double.
+
+### Fixed
+- REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.
 
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N

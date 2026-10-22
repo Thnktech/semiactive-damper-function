@@ -1,15 +1,19 @@
-function R = reference_closed_loop(P, t, zr, mode)
+function R = reference_closed_loop(P, t, zr, mode, fault)
 %REFERENCE_CLOSED_LOOP Independent plain-MATLAB closed loop: oracle for the MiL harness.
-%   R = REFERENCE_CLOSED_LOOP(P, t, zr, mode) re-implements plant + controller
-%   with the textbook timing and returns R.zs_dot, R.zu_dot, R.i_cmd (columns).
+%   R = REFERENCE_CLOSED_LOOP(P, t, zr, mode)
+%   R = REFERENCE_CLOSED_LOOP(P, t, zr, mode, fault)   fault: fault_flag per sample
+%   re-implements plant + controller with the textbook timing and returns
+%   R.zs_dot, R.zu_dot, R.i_cmd, R.fault_active (columns).
 %
-%   Timing (D8, D19): at each tick t_k the controller samples zs_dot, zu_dot
-%   and stores law(inputs(k)) in its delay state; its output i_cmd(k) is the
-%   previous delay state. The plant integrates from t_k to t_k+1 with RK4
+%   Timing (D8, D19): at each tick t_k the controller samples its inputs and
+%   stores the next values in its delay states; its outputs at t_k are the
+%   previous delay states. The plant integrates from t_k to t_k+1 with RK4
 %   (ode4) and i_cmd(k) held constant. Road z_r linearly interpolated.
 %   Plant: equilibrium coordinates, tire lift-off (D23), damper map, lag.
-%   Controller: law slots of D24 (no fault, no rate limit yet).
+%   Controller: law slots (D24), Damping_to_current, Safety_and_limits
+%   (saturation, rate limit, fault latch; D17, D18).
 
+if nargin < 5, fault = zeros(size(t)); end
 h = t(2) - t(1);
 N = numel(t);
 zrf = @(tt) interp1(t, zr, tt, 'linear');
@@ -19,12 +23,19 @@ f = @(tt, x, i) [ (i - x(1))/P.tau; x(3); ...
     ( P.ks*(x(2) - x(4)) - cmap(x(1))*(x(5) - x(3)) + max(0, P.F_static + P.kt*(zrf(tt) - x(4))) - P.F_static)/P.mu];
 
 x = [P.I_default; 0; 0; 0; 0];        % [I_lag; zs; zs_dot; zu; zu_dot]
-d = P.I_default;                      % controller delay state (D19)
-R.zs_dot = zeros(N, 1); R.zu_dot = R.zs_dot; R.i_cmd = R.zs_dot;
+di = P.I_default; df = 0;             % controller delay states (D19)
+R.zs_dot = zeros(N, 1); R.zu_dot = R.zs_dot; R.i_cmd = R.zs_dot; R.fault_active = R.zs_dot;
 for k = 1:N
-    i = d;
-    R.zs_dot(k) = x(3); R.zu_dot(k) = x(5); R.i_cmd(k) = i;
-    d = law_current(P, x(3), x(5), mode);
+    i = di; fa = df;                                   % outputs at t_k
+    R.zs_dot(k) = x(3); R.zu_dot(k) = x(5); R.i_cmd(k) = i; R.fault_active(k) = fa;
+    latched = fa ~= 0 || fault(k) > 0.5;               % fault latch (REQ-S-02)
+    if latched
+        target = P.I_default;                          % fault reaction (D17)
+    else
+        target = min(max(law_current(P, x(3), x(5), mode), P.I_min), P.I_max);
+    end
+    di = i + min(max(target - i, -P.dI_max), P.dI_max);   % rate limit (REQ-F-04)
+    df = double(latched);
     if k == N, break; end
     tk = t(k);
     k1 = f(tk, x, i); k2 = f(tk + h/2, x + h/2*k1, i);

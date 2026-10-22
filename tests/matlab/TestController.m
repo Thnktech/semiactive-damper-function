@@ -65,6 +65,21 @@ classdef TestController < matlab.unittest.TestCase
             tc.verifyNotEqual(Y.i_cmd(2), Y.i_cmd(1), 'Output must change after one sample');
         end
 
+        function outputs_are_double(tc)
+            % signals.md: all root I/O double (a boolean fault_active would change the C struct in M5)
+            P = setup_params();
+            t = (0:1e-3:0.01)';
+            in = Simulink.SimulationInput(tc.Model);
+            in = in.setVariable('P', P);
+            in = in.setExternalInput([t zeros(numel(t), 4)]);
+            in = in.setModelParameter('StopTime', '0.01', 'SaveOutput', 'on', ...
+                'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
+            out = sim(in);
+            for k = 1:numel(tc.Outputs)
+                tc.verifyClass(out.yout{k}.Values.Data, 'double', [tc.Outputs{k} ' must be double']);
+            end
+        end
+
         function passive_mode_settles_at_I_passive(tc)
             % mode 0: c_passive -> Damping_to_current -> I_passive (inverse damper map)
             P = setup_params();
