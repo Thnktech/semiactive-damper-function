@@ -9,7 +9,19 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Added
+- Controller skeleton `model/controller/controller.slx` (built by the author):
+  `Control_law` (placeholder passive) → `Damping_to_current` (clip, inverse
+  damper map) → `Safety_and_limits` (placeholder) → registered outputs.
+- Decision D24: one controller with extensible law slots; laws output
+  requested damping `c_req`.
+- `tests/matlab/TestController.m`: interface, types, discrete 1 ms solver,
+  REQ-F-03 initial output, D19 delay, passive current, no plant parameters,
+  no logging blocks (9 tests).
+
 ### Changed
+- `interface/signals.md`: mode table maps modes to law slots; slots 3…N
+  reserved for additional strategies; how to add one.
 - `run_baseline.m`: explanatory comments (no logic change); baseline re-run,
   KPI CSV identical (reproducible), plots re-rendered.
 - `.gitignore`: local-only milestone reports (`docs/milestones/`).

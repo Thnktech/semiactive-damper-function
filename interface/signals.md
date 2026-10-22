@@ -42,15 +42,26 @@ checked against M2 simulations.
 
 ## Mode semantics
 
-| `mode` | Behavior |
-|---|---|
-| 0 | Passive: constant current I<sub>passive</sub> = inverse damper map of c<sub>passive</sub> (value set in M2) |
-| 1 | Skyhook: hybrid law with α = 1 |
-| 2 | Hybrid skyhook–groundhook with fixed α (value set in M3) |
-| other | Treated as 0 (passive) (D20) |
+Each mode selects one **control-law slot** inside `Control_law` (D24). Every
+law outputs a requested damping `c_req` [N·s/m]; the shared block
+`Damping_to_current` clips it to [c<sub>min</sub>, c<sub>max</sub>] (semi-active
+feasibility) and converts it with the inverse damper map to `i_req`.
+
+| `mode` | Law slot | Behavior |
+|---|---|---|
+| 0 | `Law_0_Passive` | c<sub>req</sub> = c<sub>passive</sub> → I<sub>passive</sub> (D22) |
+| 1 | `Law_1_Skyhook` | Hybrid law with α = 1 |
+| 2 | `Law_2_Hybrid` | Hybrid skyhook–groundhook with fixed α (value set in M3) |
+| 3 … N | `Law_<n>_<Name>` | Reserved for additional strategies (D24) |
+| other | – | Treated as 0 (passive) (D20) |
 
 Mode changes take effect at the next step and pass through the rate limiter.
 Fault mode overrides every mode.
+
+**Adding a strategy (D24):** copy a law subsystem, keep its ports (inputs
+`zs_dot`, `zu_dot`; output `c_req`), add its index to the Multiport Switch,
+add a row to this table. A law may use only the controller inputs and its own
+discrete states; a new input signal is an interface change to this file.
 
 ## Input handling
 
