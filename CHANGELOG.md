@@ -63,6 +63,8 @@ Version plan: each completed milestone is tagged as a minor release
   trade-off and time plots), `src/matlab/law_names.m` (strategy names read
   from the controller's Law_<n>_<Name> slots); results in `results/studies/`
   (git-ignored); `tests/matlab/TestStudy.m` (6 tests).
+- `results/comparison/comparison_sedan_ref.md`: summary table and the
+  author's interpretation (incl. REQ-P-02 failing for skyhook).
 
 ### Fixed
 - REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.
