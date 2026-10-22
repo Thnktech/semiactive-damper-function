@@ -57,6 +57,12 @@ Version plan: each completed milestone is tagged as a minor release
 - `tests/matlab/TestComparison.m` (completeness, passive = M2 baseline,
   deltas, file names, no hard-coded paths); mode-schedule test in
   `TestHarness`; reference closed loop accepts a mode per sample.
+- Flexible study runner: `src/matlab/my_study.m` (edit roads, strategies,
+  vehicle, duration, time plots), `src/matlab/run_study.m` (runs every
+  combination, passive always added, CSV, Markdown summary, delta bars,
+  trade-off and time plots), `src/matlab/law_names.m` (strategy names read
+  from the controller's Law_<n>_<Name> slots); results in `results/studies/`
+  (git-ignored); `tests/matlab/TestStudy.m` (6 tests).
 
 ### Fixed
 - REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.
