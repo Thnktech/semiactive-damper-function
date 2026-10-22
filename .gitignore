@@ -41,3 +41,5 @@ docs/requirements_primer.pdf
 docs/milestones/
 # Exploratory studies from my_study.m / run_study (local; official results live in results/comparison)
 results/studies/
+# Personal research material (PhD presentation, roadmap backlog), kept local only
+docs/ResearchInfo/
