@@ -27,6 +27,15 @@ Version plan: each completed milestone is tagged as a minor release
   fault pulse not smoothed (7 tests).
 - Decision D25: control-law parameters c_sky, c_gnd, alpha, eps with
   literature check; added to `setup_params.m`.
+- `Law_1_Skyhook` (built by the author): semi-active skyhook with eps guard
+  and safe division; Multiport Switch on `mode` (indices [0 1], default →
+  passive) with an integer check; `tests/matlab/TestControlLaws.m` (9 tests,
+  hand-computed points, REQ-F-05, mode routing).
+- `tests/matlab/reference_closed_loop.m`: independent plain-MATLAB closed
+  loop (RK4 plant, discrete delayed controller) used as oracle by
+  `TestHarness` (closed loop vs reference, no algebraic loop).
+- Decision D26: minimize artificial algebraic loops in the controller model
+  (fixes up to 1.3 A deviations); explicit integer check for `mode`.
 
 ### Changed
 - `interface/signals.md`: mode table maps modes to law slots; slots 3…N

@@ -45,6 +45,11 @@ classdef TestController < matlab.unittest.TestCase
             tc.verifyEqual(get_param(tc.Model, 'ModelReferenceNumInstancesAllowed'), 'Single');
         end
 
+        function minimize_artificial_algebraic_loops_D26(tc)
+            % D26: per-port analysis, so the output delays (D19) break the loop in the harness
+            tc.verifyEqual(get_param(tc.Model, 'ModelReferenceMinAlgLoopOccurrences'), 'on');
+        end
+
         function REQ_F_03_initial_output(tc)
             % REQ-F-03, D19: step 0 returns exactly I_default and 0
             P = setup_params();

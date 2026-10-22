@@ -70,6 +70,29 @@ classdef TestHarness < matlab.unittest.TestCase
             tc.verifyEqual(Y.fault_active(1), 0);
         end
 
+        function closed_loop_matches_independent_reference(tc)
+            % Harness timing must equal the textbook timing (D8, D19) re-implemented in
+            % plain MATLAB. Catches artificial-algebraic-loop handling (D26).
+            P = setup_params();
+            [t, zr] = road_iso8608('C', 80, 10, 1);
+            for m = [0 1]
+                Y = tc.simulate(P, t, zr, 0*t, m);
+                R = reference_closed_loop(P, t, zr, m);
+                tc.verifyEqual(Y.zs_dot, R.zs_dot, 'AbsTol', 1e-9, sprintf('mode %d: zs_dot vs reference', m));
+                tc.verifyEqual(Y.i_cmd, R.i_cmd, 'AbsTol', 1e-9, sprintf('mode %d: i_cmd vs reference', m));
+            end
+        end
+
+        function no_algebraic_loop(tc)
+            % D19 delays + D26 setting: the plant-controller loop must not be algebraic
+            P = setup_params();
+            t = (0:1e-3:0.1)';
+            lastwarn('');
+            tc.simulate(P, t, 0*t, 0*t, 1);
+            [~, id] = lastwarn();
+            tc.verifyNotEqual(id, 'Simulink:Engine:WarnAlgLoopsFound', 'Harness contains an algebraic loop');
+        end
+
         function fault_flag_not_smoothed(tc)
             % A one-sample fault pulse must arrive as exactly one sample of 1.0 (no interpolation)
             P = setup_params();
