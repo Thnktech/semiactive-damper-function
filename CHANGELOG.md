@@ -15,6 +15,9 @@ Version plan: each completed milestone is tagged as a minor release
 - MiL reference log metadata regenerated: `git_commit` now points to the
   rewritten v0.4.0 commit; logged data byte-identical.
 
+### Fixed
+- v0.4.0 notes: TestSafety has 8 tests (not 9).
+
 ## [0.4.0] - 2026-10-22
 
 M3: controller and MiL harness.
@@ -55,7 +58,7 @@ M3: controller and MiL harness.
   (feedback of the previous `i_cmd`), fault latch (feedback of the previous
   `fault_active`), fault target I_default; `fault_active` is double.
 - `tests/matlab/TestSafety.m`: REQ-F-01, REQ-F-04, REQ-S-01 (measured 5 ms),
-  REQ-S-02, fault at step 0 (9 tests, tagged with requirement IDs).
+  REQ-S-02, fault at step 0 (8 tests, tagged with requirement IDs).
 - Reference closed loop extended with saturation, rate limit and fault latch;
   `TestHarness` closed loop with mid-run fault; `TestController` checks both
   outputs are double.

@@ -32,3 +32,4 @@ One line per session: what was done, what is next, what blocks progress.
 | 2026-10-22 | MiL reference logs SC-C80 / SC-BUMP / SC-FAULT produced from committed 09811f7 (clean tree); TestMilLogs: controller replay bit-exact, full coverage; REQ-V-02 pytest 8/8 (in CI) | M3: checklist review, v0.4.0, M3 report | – |
 | 2026-10-22 | M3 checklist reviewed (all 7 items met); **M3 done, `v0.4.0` tagged** | M4: requirement-based verification (test structure, traceability) | – |
 | 2026-10-22 | History rewritten (commit-message trailers removed, all tags moved); MiL log metadata regenerated at 1deaae8 (data byte-identical: deterministic) | M3 report (local); M4 plan | – |
+| 2026-10-22 | M3 report (local PDF) incl. one-controller concept, problems and fixes, scripts and checks; M0-M2 reports regenerated (commit lists from git, no attribution columns) | M4 plan | – |
