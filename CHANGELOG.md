@@ -9,6 +9,13 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Added
+- M4 start: requirement tags on every functional and safety test
+  (REQ-F-01…05, REQ-S-01/02; 17 tests), REQ-F-05 input sweep incl.
+  v_rel in [-2ε, 2ε] in every mode, REQ-F-02 on logged time steps.
+- `tests/matlab/record_evidence.m`: tests record measured values for the
+  traceability report (active only when run by the report script).
+
 ### Changed
 - Commit history rewritten: attribution trailers removed from all commit
   messages (all commit IDs and tags changed).

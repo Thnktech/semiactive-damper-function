@@ -38,13 +38,6 @@ classdef TestControlLaws < matlab.unittest.TestCase
             tc.verifyEqual(tc.settled(P, 0.2, 0.3, 1), P.I_min, 'AbsTol', 1e-12);
         end
 
-        function REQ_F_05_vrel_zero_is_finite_and_soft(tc)
-            % v_rel = 0 exactly: no division by zero, finite output, c_min
-            P = setup_params();
-            Y = tc.runController(P, 0.1, 0.1, 1);
-            tc.verifyTrue(all(isfinite(Y.i_cmd)), 'i_cmd must stay finite (REQ-F-05)');
-            tc.verifyEqual(Y.i_cmd(end), P.I_min, 'AbsTol', 1e-12);
-        end
 
         function vrel_below_eps_is_soft(tc)
             % |v_rel| = 0.0005 < eps: guard selects c_min
@@ -80,13 +73,6 @@ classdef TestControlLaws < matlab.unittest.TestCase
             tc.verifyEqual(tc.settled(P, 0.3, 0.2, 2), P.I_min, 'AbsTol', 1e-12);
         end
 
-        function groundhook_vrel_zero_is_finite_and_soft(tc)
-            % REQ-F-05 for the groundhook slot
-            P = setup_params();
-            Y = tc.runController(P, -0.1, -0.1, 2);
-            tc.verifyTrue(all(isfinite(Y.i_cmd)), 'i_cmd must stay finite (REQ-F-05)');
-            tc.verifyEqual(Y.i_cmd(end), P.I_min, 'AbsTol', 1e-12);
-        end
 
         function groundhook_differs_from_skyhook(tc)
             % Same inputs, different laws: proves mode 2 is not routed to skyhook
@@ -130,13 +116,6 @@ classdef TestControlLaws < matlab.unittest.TestCase
             tc.verifyEqual(tc.settled(P, 0.2, 0.1, 3), current(P, c), 'AbsTol', 1e-12);
         end
 
-        function hybrid_vrel_zero_is_finite_and_soft(tc)
-            % REQ-F-05 for the hybrid slot
-            P = setup_params();
-            Y = tc.runController(P, 0.1, 0.1, 3);
-            tc.verifyTrue(all(isfinite(Y.i_cmd)), 'i_cmd must stay finite (REQ-F-05)');
-            tc.verifyEqual(Y.i_cmd(end), P.I_min, 'AbsTol', 1e-12);
-        end
 
         % ---------- mode routing (Multiport Switch, D20, D24) ----------
         function law_slot_names_match_indices(tc)
@@ -185,7 +164,63 @@ classdef TestControlLaws < matlab.unittest.TestCase
         end
     end
 
+    methods (Test, TestTags = {'REQ-F-05'})
+        function REQ_F_05_skyhook_vrel_zero(tc)
+            % v_rel = 0 exactly: no division by zero, finite output, c_min
+            P = setup_params();
+            Y = tc.runController(P, 0.1, 0.1, 1);
+            tc.verifyTrue(all(isfinite(Y.i_cmd)), 'i_cmd must stay finite (REQ-F-05)');
+            tc.verifyEqual(Y.i_cmd(end), P.I_min, 'AbsTol', 1e-12);
+        end
+        function REQ_F_05_groundhook_vrel_zero(tc)
+            % REQ-F-05 for the groundhook slot
+            P = setup_params();
+            Y = tc.runController(P, -0.1, -0.1, 2);
+            tc.verifyTrue(all(isfinite(Y.i_cmd)), 'i_cmd must stay finite (REQ-F-05)');
+            tc.verifyEqual(Y.i_cmd(end), P.I_min, 'AbsTol', 1e-12);
+        end
+        function REQ_F_05_hybrid_vrel_zero(tc)
+            % REQ-F-05 for the hybrid slot
+            P = setup_params();
+            Y = tc.runController(P, 0.1, 0.1, 3);
+            tc.verifyTrue(all(isfinite(Y.i_cmd)), 'i_cmd must stay finite (REQ-F-05)');
+            tc.verifyEqual(Y.i_cmd(end), P.I_min, 'AbsTol', 1e-12);
+        end
+        function REQ_F_05_finite_output_sweep(tc)
+            % REQ.md: input sweep incl. v_rel in [-2*eps, 2*eps] and exactly 0, every mode
+            P = setup_params();
+            e = P.eps_vrel;
+            dv = [-2*e, -e, -e/2, -1e-12, 0, 1e-12, e/2, e, 2*e];
+            zs = [-0.3 -1e-6 0 1e-6 0.3];
+            [ZS, DV] = ndgrid(zs, dv);
+            n = numel(ZS);
+            bad = {};
+            for m = [0 1 2 3]
+                u = [ZS(:), ZS(:) - DV(:), zeros(n, 1), m*ones(n, 1)];   % one sample per grid point
+                Y = tc.runSequence(P, u);
+                if ~all(isfinite(Y.i_cmd)) || ~all(isfinite(Y.fault_active))
+                    bad{end+1} = sprintf('mode %d', m); %#ok<AGROW>
+                end
+            end
+            tc.verifyEmpty(bad, ['Non-finite output in: ' strjoin(bad, ', ')]);
+            record_evidence('REQ-F-05', 'TestControlLaws/REQ_F_05_finite_output_sweep', ...
+                'grid points x modes with non-finite output', numel(bad), 'count');
+        end
+    end
+
     methods
+        function Y = runSequence(tc, P, u)
+            t = (0:size(u, 1) - 1)'*1e-3;
+            in = Simulink.SimulationInput(tc.Model);
+            in = in.setVariable('P', P);
+            in = in.setExternalInput([t u]);
+            in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
+                'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
+            out = sim(in);
+            Y.i_cmd = out.yout{1}.Values.Data(:);
+            Y.fault_active = out.yout{2}.Values.Data(:);
+        end
+
         function i = settled(tc, P, zs_dot, zu_dot, mode)
             Y = tc.runController(P, zs_dot, zu_dot, mode);
             i = Y.i_cmd(end);

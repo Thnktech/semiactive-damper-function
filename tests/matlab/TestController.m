@@ -33,13 +33,6 @@ classdef TestController < matlab.unittest.TestCase
             end
         end
 
-        function REQ_F_02_discrete_1ms(tc)
-            % REQ-F-02, D8: fixed-step discrete solver, 1 ms
-            tc.verifyEqual(get_param(tc.Model, 'SolverType'), 'Fixed-step');
-            tc.verifyEqual(get_param(tc.Model, 'Solver'), 'FixedStepDiscrete', ...
-                'Controller must use the discrete solver (no continuous states)');
-            tc.verifyEqual(str2double(get_param(tc.Model, 'FixedStep')), 1e-3);
-        end
 
         function single_instance_for_codegen(tc)
             tc.verifyEqual(get_param(tc.Model, 'ModelReferenceNumInstancesAllowed'), 'Single');
@@ -50,13 +43,6 @@ classdef TestController < matlab.unittest.TestCase
             tc.verifyEqual(get_param(tc.Model, 'ModelReferenceMinAlgLoopOccurrences'), 'on');
         end
 
-        function REQ_F_03_initial_output(tc)
-            % REQ-F-03, D19: step 0 returns exactly I_default and 0
-            P = setup_params();
-            Y = tc.simulate(P, 0.01, zeros(11, 4));
-            tc.verifyEqual(Y.i_cmd(1), P.I_default, 'i_cmd(0) must equal I_default exactly');
-            tc.verifyEqual(Y.fault_active(1), 0, 'fault_active(0) must be 0');
-        end
 
         function outputs_are_registered_D19(tc)
             % D19: the computed value appears one step later; step 0 is the delay's initial value
@@ -109,6 +95,29 @@ classdef TestController < matlab.unittest.TestCase
                 b = find_system(tc.Model, 'LookUnderMasks', 'all', 'BlockType', bt{1});
                 tc.verifyEmpty(b, sprintf('Remove %s block(s) from the controller: %s', bt{1}, strjoin(b, ', ')));
             end
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-F-03'})
+        function REQ_F_03_initial_output(tc)
+            % REQ-F-03, D19: step 0 returns exactly I_default and 0
+            P = setup_params();
+            Y = tc.simulate(P, 0.01, zeros(11, 4));
+            tc.verifyEqual(Y.i_cmd(1), P.I_default, 'i_cmd(0) must equal I_default exactly');
+            tc.verifyEqual(Y.fault_active(1), 0, 'fault_active(0) must be 0');
+            record_evidence('REQ-F-03', 'TestController/REQ_F_03_initial_output', 'i_cmd(0)', Y.i_cmd(1), 'A');
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-F-02'})
+        function REQ_F_02_discrete_1ms(tc)
+            % REQ-F-02, D8: fixed-step discrete solver, 1 ms
+            tc.verifyEqual(get_param(tc.Model, 'SolverType'), 'Fixed-step');
+            tc.verifyEqual(get_param(tc.Model, 'Solver'), 'FixedStepDiscrete', ...
+                'Controller must use the discrete solver (no continuous states)');
+            Ts = str2double(get_param(tc.Model, 'FixedStep'));
+            tc.verifyEqual(Ts, 1e-3, sprintf('Fixed step %.4g s, required 0.001 s', Ts));
+            record_evidence('REQ-F-02', 'TestController/REQ_F_02_discrete_1ms', 'configured fixed step', 1e3*Ts, 'ms');
         end
     end
 

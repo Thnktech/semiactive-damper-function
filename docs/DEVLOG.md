@@ -33,3 +33,4 @@ One line per session: what was done, what is next, what blocks progress.
 | 2026-10-22 | M3 checklist reviewed (all 7 items met); **M3 done, `v0.4.0` tagged** | M4: requirement-based verification (test structure, traceability) | – |
 | 2026-10-22 | History rewritten (commit-message trailers removed, all tags moved); MiL log metadata regenerated at 1deaae8 (data byte-identical: deterministic) | M3 report (local); M4 plan | – |
 | 2026-10-22 | M3 report (local PDF) incl. one-controller concept, problems and fixes, scripts and checks; M0-M2 reports regenerated (commit lists from git, no attribution columns) | M4 plan | – |
+| 2026-10-22 | M4 started: decisions (REQ-P-02 KnownFail, generated traceability.md, keep classes + TestPerformance/TestPlausibility, author writes run_tests.m); tags on all REQ-F/REQ-S tests, REQ-F-05 sweep, record_evidence helper; full suite 114 passed | M4: TestPerformance, TestPlausibility (me); run_tests.m (author, guided) | – |

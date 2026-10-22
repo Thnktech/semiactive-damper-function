@@ -26,6 +26,8 @@ classdef TestSafety < matlab.unittest.TestCase
             Y = tc.runController(P, [zs zu fault mode]);
             tc.verifyGreaterThanOrEqual(min(Y.i_cmd), P.I_min - tc.Tol, sprintf('min i_cmd = %.6f A', min(Y.i_cmd)));
             tc.verifyLessThanOrEqual(max(Y.i_cmd), P.I_max + tc.Tol, sprintf('max i_cmd = %.6f A', max(Y.i_cmd)));
+            record_evidence('REQ-F-01', 'TestSafety/REQ_F_01_current_within_limits', 'min i_cmd', min(Y.i_cmd), 'A');
+            record_evidence('REQ-F-01', 'TestSafety/REQ_F_01_current_within_limits', 'max i_cmd', max(Y.i_cmd), 'A');
         end
     end
 
@@ -39,6 +41,7 @@ classdef TestSafety < matlab.unittest.TestCase
             Y = tc.runController(P, [zs zu zeros(n, 1) ones(n, 1)]);
             d = max(abs(diff(Y.i_cmd)));
             tc.verifyLessThanOrEqual(d, P.dI_max + tc.Tol, sprintf('max |delta i_cmd| = %.6f A per step', d));
+            record_evidence('REQ-F-04', 'TestSafety/REQ_F_04_rate_never_exceeded', 'max |delta i_cmd| per step', d, 'A');
         end
 
         function REQ_F_04_rate_limit_is_active(tc)
@@ -66,6 +69,7 @@ classdef TestSafety < matlab.unittest.TestCase
             tc.verifyLessThanOrEqual(t_react, 0.010, sprintf('Fault reaction %.1f ms > 10 ms', 1e3*t_react));
             % 0.65 A at 0.13 A per step = 5 steps; the output delay is the first of them
             tc.verifyEqual(t_react, 0.005, 'AbsTol', 1e-9, sprintf('Expected 5 ms (5 rate-limited steps), got %.1f ms', 1e3*t_react));
+            record_evidence('REQ-S-01', 'TestSafety/REQ_S_01_fault_reaction_time', 'fault reaction time', 1e3*t_react, 'ms');
         end
 
         function REQ_S_01_fault_overrides_every_mode(tc)
@@ -88,6 +92,7 @@ classdef TestSafety < matlab.unittest.TestCase
             tc.verifyEqual(Y.fault_active(end), 1);
             tc.verifyEqual(Y.i_cmd(150:end), P.I_default*ones(n - 149, 1), 'AbsTol', 1e-3, ...
                 'i_cmd must stay at I_default after the pulse');
+            record_evidence('REQ-S-02', 'TestSafety/REQ_S_02_single_pulse_latches', '1 -> 0 transitions after a pulse', nnz(diff(Y.fault_active) < 0), 'count');
         end
 
         function REQ_S_02_toggling_flag_cannot_clear(tc)
@@ -97,6 +102,7 @@ classdef TestSafety < matlab.unittest.TestCase
             Y = tc.runController(P, u);
             tc.verifyEqual(nnz(diff(Y.fault_active) > 0), 1, 'Exactly one 0 -> 1 transition');
             tc.verifyEqual(nnz(diff(Y.fault_active) < 0), 0, 'No 1 -> 0 transition while toggling');
+            record_evidence('REQ-S-02', 'TestSafety/REQ_S_02_toggling_flag_cannot_clear', '1 -> 0 transitions while toggling', nnz(diff(Y.fault_active) < 0), 'count');
         end
     end
 

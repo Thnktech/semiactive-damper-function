@@ -29,15 +29,6 @@ classdef TestMilLogs < matlab.unittest.TestCase
             tc.verifyEqual(out.yout{2}.Values.Data(:), L.fault_active, sprintf('%s: fault_active replay', scenario));
         end
 
-        function log_follows_rules(tc, scenario)
-            % mil_to_sil.md 2.3-2.6: one row per 1 ms from t = 0, step 0 = initial outputs
-            L = tc.readLog(scenario);
-            P = setup_params();
-            tc.verifyEqual(L.t(1), 0);
-            tc.verifyEqual(diff(L.t), 1e-3*ones(height(L) - 1, 1), 'AbsTol', 1e-9);
-            tc.verifyEqual(L.i_cmd(1), P.I_default);
-            tc.verifyEqual(L.fault_active(1), 0);
-        end
 
         function logs_cover_all_functions(tc)
             % mil_to_sil.md section 4: the replay only proves what the logs contain
@@ -55,6 +46,22 @@ classdef TestMilLogs < matlab.unittest.TestCase
             F = tc.readLog('SC-FAULT');
             tc.verifyEqual(nnz(diff(F.fault_active) > 0), 1, 'fault latch: exactly one 0 -> 1');
             tc.verifyTrue(nnz(diff(F.fault_flag) ~= 0) > 4, 'fault flag toggling not exercised');
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-F-02'})
+        function REQ_F_02_log_follows_rules(tc, scenario)
+            % mil_to_sil.md 2.3-2.6: one row per 1 ms from t = 0, step 0 = initial outputs
+            L = tc.readLog(scenario);
+            P = setup_params();
+            tc.verifyEqual(L.t(1), 0);
+            dt = diff(L.t);
+            tc.verifyEqual(dt, 1e-3*ones(height(L) - 1, 1), 'AbsTol', 1e-12, ...
+                sprintf('%s: logged steps %.15g..%.15g s, required 0.001 +- 1e-12 s', scenario, min(dt), max(dt)));
+            record_evidence('REQ-F-02', ['TestMilLogs/REQ_F_02_log_follows_rules(' scenario ')'], ...
+                'max |logged step - 1 ms|', 1e3*max(abs(dt - 1e-3)), 'ms');
+            tc.verifyEqual(L.i_cmd(1), P.I_default);
+            tc.verifyEqual(L.fault_active(1), 0);
         end
     end
 
