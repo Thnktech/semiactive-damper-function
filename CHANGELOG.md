@@ -24,6 +24,13 @@ Version plan: each completed milestone is tagged as a minor release
   `results/vehicles/vehicle_overview.csv` (public vehicles only).
 - Decision D22: damping values from body-mode damping ratio (0.1 / 0.3 / 0.8).
 - `.gitignore` entries for personal learning PDFs in `docs/` (kept local only).
+- Plant model `model/plant/plant.slx`, built by hand: quarter car with gravity
+  preloads, tire lift-off, damper map and actuator lag; decision D23.
+- `src/matlab/setup_params.m`: shared parameter struct `P` (vehicle + current
+  range, actuator lag, preloads, static tire load).
+- `tests/matlab/TestPlant.m`: interface, solver, rest, poles vs analytic
+  quarter car for all public vehicles, road-step signs, current effect,
+  tire lift-off (10 tests).
 
 ## [0.2.0] - 2026-10-20
 
