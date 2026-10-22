@@ -71,6 +71,8 @@ Version plan: each completed milestone is tagged as a minor release
 - `tests/matlab/TestMilLogs.m` (bit-exact controller replay of every log,
   log rules, coverage) and `tests/python/test_mil_metadata.py` (REQ-V-02,
   runs in CI).
+- MiL reference logs `tests/data/mil_SC-C80`, `mil_SC-BUMP`, `mil_SC-FAULT`
+  (CSV + JSON), produced from commit 09811f7.
 
 ### Fixed
 - REQ.md: t_react rationale (5 samples, not 5 + 1); threshold unchanged.

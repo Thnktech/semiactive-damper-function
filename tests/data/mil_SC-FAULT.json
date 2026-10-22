@@ -1,0 +1,35 @@
+{
+  "scenario": "SC-FAULT",
+  "description": "Class C, 80 km/h, hybrid; one-sample fault pulse at 4 s, toggling from 6 s; mode change to skyhook at 7 s (must be ignored)",
+  "vehicle": "sedan_ref",
+  "road": {
+    "type": "iso8608",
+    "class": "C",
+    "speed_kmh": 80,
+    "seed": 1,
+    "duration_s": 10
+  },
+  "mode_schedule": "3 [0,7) 1 [7,10]",
+  "fault": "pulse at 4.000 s (1 sample); toggling 1/0 every 100 ms from 6 s",
+  "git_commit": "09811f7a12582d74a24a38c8112899dc5a218e6b",
+  "git_dirty": false,
+  "model": "controller",
+  "harness": "harness",
+  "plant": "plant",
+  "sample_time_s": 0.001,
+  "rows": 10001,
+  "columns": [
+    "t",
+    "zs_dot",
+    "zu_dot",
+    "fault_flag",
+    "mode",
+    "i_cmd",
+    "fault_active"
+  ],
+  "number_format": "%.17g",
+  "matlab_release": "2026a",
+  "simulink_version": "26.1",
+  "generated": "2026-10-22T20:52:24Z",
+  "rules": "docs/mil_to_sil.md; REQ-V-01, REQ-V-02; D7, D19"
+}
