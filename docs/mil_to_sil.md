@@ -10,8 +10,6 @@ outputs" uncertain breaks the comparison.
 
 ## 0. One controller file: model referencing
 
-One-page version: [model_reference_setup.pdf](model_reference_setup.pdf).
-
 A **Model block** in the harness holds only a *reference by name* to
 `controller.slx`. When the harness runs, Simulink loads and runs that file.
 Code generation builds the same file. Never copy the controller blocks into

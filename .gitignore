@@ -31,3 +31,10 @@ docs/Project1_Implementation_Guide.pdf
 src/matlab/vehicles/private/
 results/**/*erod*
 tests/data/*erod*
+# Personal learning guides (kept local only)
+docs/plant_build_guide.pdf
+docs/model_reference_setup.pdf
+docs/ci_selftest_cheatsheet.pdf
+docs/verification_ladder.pdf
+docs/requirements_cheatsheet.pdf
+docs/requirements_primer.pdf

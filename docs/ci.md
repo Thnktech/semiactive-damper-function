@@ -46,8 +46,6 @@ at the CI setup.
 
 ## Where CI sits in the verification ladder
 
-One-page version: [verification_ladder.pdf](verification_ladder.pdf).
-
 In this project CI runs an **open-loop replay** (D7): logged MiL controller
 inputs go through the generated C code, and the outputs are compared with the
 logged MiL outputs. No plant runs in CI.
@@ -103,8 +101,6 @@ failure the end of the `pytest` log names the test and the reason.
 `gh run watch`, `gh run view --log-failed`.
 
 ## CI self-test: prove a red run is possible
-
-Printable version: [ci_selftest_cheatsheet.pdf](ci_selftest_cheatsheet.pdf).
 
 When: once after setting up CI, and after any major change to `ci.yml`.
 Pass criterion: the run on `ci-try` is red at **Run pytest**. If it is green,

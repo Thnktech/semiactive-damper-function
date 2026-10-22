@@ -11,8 +11,7 @@ Version plan: each completed milestone is tagged as a minor release
 
 ### Added
 - Model-referencing setup, controller I/O tables and harness wiring in
-  `docs/mil_to_sil.md` (section 0) and one-page
-  `docs/model_reference_setup.pdf`.
+  `docs/mil_to_sil.md` (section 0).
 - Decision D21: private vehicle data (eROD) kept local only; `.gitignore`
   rules for `src/matlab/vehicles/private/` and eROD-derived results.
 - MATLAB Project `semiactive-damper-function.prj` (+ `resources/project/`)
@@ -24,8 +23,7 @@ Version plan: each completed milestone is tagged as a minor release
   frequency function, `tests/matlab/TestVehicles.m`, and
   `results/vehicles/vehicle_overview.csv` (public vehicles only).
 - Decision D22: damping values from body-mode damping ratio (0.1 / 0.3 / 0.8).
-- `docs/plant_build_guide.pdf`: step-by-step guide for building the quarter-car
-  plant by hand in Simulink (ports, equations, block settings, sanity checks).
+- `.gitignore` entries for personal learning PDFs in `docs/` (kept local only).
 
 ## [0.2.0] - 2026-10-20
 
@@ -43,16 +41,12 @@ M1: requirements and signal interface.
   "run and check CI yourself" section in `docs/ci.md`.
 - CI self-test procedure (deliberate red run on a throwaway branch) in
   `docs/ci.md`.
-- One-page PDF of the CI self-test cheatsheet
-  (`docs/ci_selftest_cheatsheet.pdf`).
 - Draft requirements `requirements/REQ.md`: REQ-F-01…05, REQ-P-01…04 with
   literature check of every threshold.
-- Requirements primer (`docs/requirements_primer.md` + PDF) and one-page
-  `docs/requirements_cheatsheet.pdf`.
+- Requirements primer (`docs/requirements_primer.md`).
 - Safety and verification requirements REQ-S-01/02, REQ-V-01/02 and fault
   scenario SC-FAULT; decisions D17 (fault transition) and D18 (fault reset).
-- Verification ladder (MiL → SiL → PIL → HiL) in `docs/ci.md` and one-page
-  `docs/verification_ladder.pdf`.
+- Verification ladder (MiL → SiL → PIL → HiL) in `docs/ci.md`.
 
 ### Changed
 - CI self-test rewritten as a cheatsheet (where / do / signal / why); the
