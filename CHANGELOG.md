@@ -15,6 +15,15 @@ Version plan: each completed milestone is tagged as a minor release
   v_rel in [-2ε, 2ε] in every mode, REQ-F-02 on logged time steps.
 - `tests/matlab/record_evidence.m`: tests record measured values for the
   traceability report (active only when run by the report script).
+- `tests/matlab/TestPerformance.m`: REQ-P-01 (18.9 % comfort gain), REQ-P-02
+  (+31.0 % tire load, tagged KnownFail), REQ-P-03 (66.3 mm on the bump),
+  REQ-P-04 (all public vehicles, smallest gain 16.0 %); measured values
+  recorded as evidence.
+- `tests/matlab/TestPlausibility.m`: flat road → no motion in every mode,
+  damper only dissipates (power ≥ 0, damping within [c_min, c_max]),
+  regression of C80 KPIs against the committed comparison.
+- `.gitignore`: local research material (`docs/ResearchInfo/`) and raw test
+  output (`results/test/`).
 
 ### Changed
 - Commit history rewritten: attribution trailers removed from all commit

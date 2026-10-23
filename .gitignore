@@ -43,3 +43,5 @@ docs/milestones/
 results/studies/
 # Personal research material (PhD presentation, roadmap backlog), kept local only
 docs/ResearchInfo/
+# Raw test output written by run_tests (JUnit XML, evidence); the report results/traceability.md is committed
+results/test/
