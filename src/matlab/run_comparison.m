@@ -12,7 +12,7 @@ else
     P = setup_params(vehicle); 
 end
 
-root = matlab.project.rootProject().RootFolder;
+root = project_root();
 outDir = fullfile(root, 'results', 'comparison');
 if ~isfolder(outDir)
     mkdir(outDir);

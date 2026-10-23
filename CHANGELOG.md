@@ -31,6 +31,13 @@ Version plan: each completed milestone is tagged as a minor release
 - `run_tests.m`: builds the generated code and writes the back-to-back record
   before pytest.
 
+### Fixed
+- Scripts failed with "Insufficient number of outputs" when the MATLAB
+  project was not open: new `src/matlab/project_root.m` opens it if needed;
+  used by generate_controller_code, run_tests, run_comparison, run_baseline,
+  run_study, log_mil_reference, write_vehicle_overview.
+- `back_to_back.py` writes the record with LF line endings.
+
 ## [0.5.0] - 2026-10-23
 
 M4: requirement-based verification and traceability.

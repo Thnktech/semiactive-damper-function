@@ -99,7 +99,7 @@ end
 if ischar(cfg.roads), cfg.roads = {cfg.roads}; end
 if ischar(cfg.timePlotRoads), cfg.timePlotRoads = {cfg.timePlotRoads}; end
 if isempty(cfg.outDir)
-    cfg.outDir = fullfile(matlab.project.rootProject().RootFolder, 'results', 'studies', cfg.name);
+    cfg.outDir = fullfile(project_root(), 'results', 'studies', cfg.name);
 end
 end
 

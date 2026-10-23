@@ -16,7 +16,7 @@ if nargin < 1
     mode = 'all';
 end
 dev    = strcmp(mode, 'dev');
-root   = matlab.project.rootProject().RootFolder;
+root   = project_root();
 outDir = fullfile(root, 'results', 'test');
 
 % Commit of the code under test, read before the tests run. '-dirty' means

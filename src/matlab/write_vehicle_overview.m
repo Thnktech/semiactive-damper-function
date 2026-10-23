@@ -15,7 +15,7 @@ T = cell2table(vertcat(rows{:}), 'VariableNames', {'vehicle', 'label', 'ms_kg', 
     'ks_N_per_m', 'kt_N_per_m', 'c_min_Ns_per_m', 'c_passive_Ns_per_m', 'c_max_Ns_per_m', ...
     'zeta_passive', 'f_body_Hz', 'f_wheel_Hz'});
 
-root = matlab.project.rootProject().RootFolder;
+root = project_root();
 outDir = fullfile(root, 'results', 'vehicles');
 if ~isfolder(outDir), mkdir(outDir); end
 writetable(T, fullfile(outDir, 'vehicle_overview.csv'));

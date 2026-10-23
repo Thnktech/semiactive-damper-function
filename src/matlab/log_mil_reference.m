@@ -15,7 +15,7 @@ if ischar(scenarios), scenarios = {scenarios}; end
 opt = struct('AllowDirty', false);
 for k = 1:2:numel(varargin), opt.(varargin{k}) = varargin{k+1}; end
 
-root = matlab.project.rootProject().RootFolder;
+root = project_root();
 cfg = project_config();
 P = setup_params(cfg.vehicle);
 if ~strcmp(P.label, 'published')

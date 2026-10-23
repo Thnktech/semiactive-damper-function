@@ -32,7 +32,7 @@ for k = 1:2:numel(varargin)
 end
 
 mdl    = 'controller';
-root   = matlab.project.rootProject().RootFolder;
+root   = project_root();
 outDir = fullfile(root, 'src', 'generated', 'controller');
 
 % --- 1. Preconditions: reference vehicle, committed code ---

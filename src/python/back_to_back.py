@@ -118,7 +118,7 @@ def main():
         "logs": results,
     }
     RECORD.parent.mkdir(exist_ok=True)
-    RECORD.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    RECORD.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8", newline="\n")   # LF as in git
     print(f"-> {RECORD.relative_to(ROOT).as_posix()}: {'PASS' if record['pass'] else 'FAIL'}")
     sys.exit(0 if record["pass"] else 1)
 

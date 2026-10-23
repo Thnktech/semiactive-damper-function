@@ -14,7 +14,7 @@ else
 end
 
 % 2) Output folder (repo root from the open project)
-root = matlab.project.rootProject().RootFolder;
+root = project_root();
 outDir = fullfile(root, 'results', 'baseline');
 if ~isfolder(outDir)
     mkdir(outDir);
