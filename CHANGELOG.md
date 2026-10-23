@@ -24,8 +24,13 @@ Version plan: each completed milestone is tagged as a minor release
   regression of C80 KPIs against the committed comparison.
 - `.gitignore`: local research material (`docs/ResearchInfo/`) and raw test
   output (`results/test/`).
+- `src/matlab/run_tests.m`: runs all MATLAB tests (KnownFail included) and
+  pytest, exports JUnit XML, links tests to requirements by tag / name and
+  writes `results/traceability.md` (verdict, measured values, commit);
+  `run_tests('dev')` runs without KnownFail. REQ.md points to the report.
 
 ### Changed
+- REQ-F-02 log evidence recorded in s (same unit as the acceptance).
 - Commit history rewritten: attribution trailers removed from all commit
   messages (all commit IDs and tags changed).
 - MiL reference log metadata regenerated: `git_commit` now points to the

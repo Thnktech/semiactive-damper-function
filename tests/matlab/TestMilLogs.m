@@ -59,7 +59,7 @@ classdef TestMilLogs < matlab.unittest.TestCase
             tc.verifyEqual(dt, 1e-3*ones(height(L) - 1, 1), 'AbsTol', 1e-12, ...
                 sprintf('%s: logged steps %.15g..%.15g s, required 0.001 +- 1e-12 s', scenario, min(dt), max(dt)));
             record_evidence('REQ-F-02', ['TestMilLogs/REQ_F_02_log_follows_rules(' scenario ')'], ...
-                'max |logged step - 1 ms|', 1e3*max(abs(dt - 1e-3)), 'ms');
+                'max |logged step - 1 ms|', max(abs(dt - 1e-3)), 's');
             tc.verifyEqual(L.i_cmd(1), P.I_default);
             tc.verifyEqual(L.fault_active(1), 0);
         end
