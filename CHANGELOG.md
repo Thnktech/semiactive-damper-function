@@ -9,7 +9,13 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-23
+
+M4: requirement-based verification and traceability.
+
 ### Added
+- `results/traceability.md` generated at 07cbfd7: 11 Pass, 1 Fail (known,
+  REQ-P-02), 1 Unverified (REQ-V-01, closed in M5).
 - M4 start: requirement tags on every functional and safety test
   (REQ-F-01…05, REQ-S-01/02; 17 tests), REQ-F-05 input sweep incl.
   v_rel in [-2ε, 2ε] in every mode, REQ-F-02 on logged time steps.
@@ -215,7 +221,8 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.1.0...v0.2.0
