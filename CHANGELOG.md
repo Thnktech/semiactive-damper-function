@@ -21,6 +21,9 @@ Version plan: each completed milestone is tagged as a minor release
   record matches model, parameters and logs (CI).
 - Decisions D27 (code-generation settings) and D28 (back-to-back evidence and
   CI); `docs/mil_to_sil.md` rules 5.5/5.6 and M5 workflow.
+- `results/back_to_back.json` (code generated at 19f30d4): generated code
+  bit-identical to MiL on SC-C80, SC-BUMP, SC-FAULT; traceability now 12 Pass,
+  1 Fail (known, REQ-P-02), 0 Unverified.
 
 ### Changed
 - D10 revised: generated code is git-ignored (MathWorks academic license

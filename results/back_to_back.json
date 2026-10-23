@@ -1,0 +1,62 @@
+{
+  "requirement": "REQ-V-01",
+  "method": "generated-code back-to-back (GRT), open-loop replay of MiL logs (D7); run locally (D10 rev.)",
+  "pass": true,
+  "tolerance": {
+    "atol": 1e-09,
+    "rtol": 1e-09
+  },
+  "recorded": "2026-10-23T22:54:08Z",
+  "git_commit": "19f30d432b7b7a09e4160d564887166f624e20a8",
+  "code_generated_from": "19f30d432b7b7a09e4160d564887166f624e20a8",
+  "matlab_release": "2026a",
+  "simulink_coder_version": "26.1",
+  "compiler": "gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 14.2.0",
+  "compiler_flags": [
+    "-O2",
+    "-ffp-contract=off"
+  ],
+  "sources": [
+    {
+      "path": "model/controller/controller.slx",
+      "sha256": "7aa632ca71a5180b4bea9fe56f6f0aafb6fbb088f839a8f1a851482a0f57753e"
+    },
+    {
+      "path": "src/matlab/setup_params.m",
+      "sha256": "cd037c580e6935a9de5bc4b85c4c5fa953e99c63b2a9b31753189b3f89859aee"
+    },
+    {
+      "path": "src/matlab/vehicles/sedan_ref.m",
+      "sha256": "9507161298d759a983ca9116486ec44f29d0c3b5bcf89d12935166a65835bea0"
+    }
+  ],
+  "logs": [
+    {
+      "log": "tests/data/mil_SC-BUMP.csv",
+      "sha256": "b6271e3a96486eefe14c70d6da149ffb2590384af4289ded4dbf5adbd44362b0",
+      "rows": 6001,
+      "max_abs_dev_i_cmd": 0.0,
+      "samples_outside_tolerance": 0,
+      "fault_active_identical": true,
+      "pass": true
+    },
+    {
+      "log": "tests/data/mil_SC-C80.csv",
+      "sha256": "c4a260b2d860b14f3d1c2499df2d137d19d1ca506eaecec22a1cffd4f81d459b",
+      "rows": 10001,
+      "max_abs_dev_i_cmd": 0.0,
+      "samples_outside_tolerance": 0,
+      "fault_active_identical": true,
+      "pass": true
+    },
+    {
+      "log": "tests/data/mil_SC-FAULT.csv",
+      "sha256": "2eab2d9372f6892c3bbaeda87b479a19d37c7ae35b43d4131bca7c145ffba9dd",
+      "rows": 10001,
+      "max_abs_dev_i_cmd": 0.0,
+      "samples_outside_tolerance": 0,
+      "fault_active_identical": true,
+      "pass": true
+    }
+  ]
+}
