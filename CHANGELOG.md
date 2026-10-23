@@ -37,6 +37,10 @@ Version plan: each completed milestone is tagged as a minor release
   used by generate_controller_code, run_tests, run_comparison, run_baseline,
   run_study, log_mil_reference, write_vehicle_overview.
 - `back_to_back.py` writes the record with LF line endings.
+- `build_controller.py`: gcc exited with status 1 and no message when an
+  older 32-bit MinGW (Simcenter Amesim) came first on PATH; the compiler's own
+  bin folder is now put first for the gcc calls, and gcc's messages are shown
+  on failure.
 
 ## [0.5.0] - 2026-10-23
 

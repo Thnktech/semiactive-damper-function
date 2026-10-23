@@ -61,10 +61,23 @@ def sources():
     return [f for f in files if not has_main.search(f.read_text(encoding="utf-8", errors="replace"))]
 
 
+def compiler_env(gcc):
+    """Environment for the gcc calls: the compiler's own bin folder FIRST on
+    PATH. gcc starts helper programs (cc1, as, ld) that load DLLs from the
+    PATH. If another, older MinGW comes earlier on the PATH (on this PC:
+    Simcenter Amesim's 32-bit mingw32\\bin), Windows loads its DLLs, cc1
+    cannot start and gcc exits with status 1 WITHOUT any message.
+    Only these subprocesses get the changed PATH; the system is untouched."""
+    env = dict(os.environ)
+    env["PATH"] = str(Path(gcc).parent) + os.pathsep + env.get("PATH", "")
+    return env
+
+
 def main():
     gcc = find_gcc()
+    env = compiler_env(gcc)
     # Bitness check: '-dumpmachine' names the target, e.g. x86_64-w64-mingw32
-    target = subprocess.run([gcc, "-dumpmachine"], capture_output=True, text=True).stdout.strip()
+    target = subprocess.run([gcc, "-dumpmachine"], capture_output=True, text=True, env=env).stdout.strip()
     py64 = struct.calcsize("P") == 8
     if py64 and not re.match(r"(x86_64|amd64|aarch64)", target):
         sys.exit(f"{gcc} builds for '{target}' (32 bit), but Python is 64 bit: use a 64-bit gcc")
@@ -78,7 +91,12 @@ def main():
         cmd[2:2] = ["-fPIC"]
         cmd.append("-lm")
     print(f"{Path(gcc).name} ({target}) on {platform.system()}: {', '.join(f.name for f in files)}")
-    subprocess.run(cmd, check=True)
+    r = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    if r.returncode != 0:
+        # Show gcc's own messages; an empty message means a helper program could not start
+        msg = (r.stdout + r.stderr).strip() or ("gcc printed nothing: one of its helper programs could not "
+                                                "start (DLL conflict on PATH?)")
+        sys.exit(f"gcc failed (exit {r.returncode}):\n{msg}")
     print(f"-> {LIB.relative_to(ROOT)}")
 
 
