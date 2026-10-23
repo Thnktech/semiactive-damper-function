@@ -68,6 +68,20 @@ else
 end
 % The command starts with cd, not with a quote: Windows cmd would otherwise
 % strip the first and last quote of the line and break the paths.
+% Generated code (M5, local only): build it, so the back-to-back tests
+% (REQ-V-01) run against a library built from the current sources, then
+% replay the MiL logs and write results/back_to_back.json, the record that
+% CI checks. A failing or refused record is not an error here: the pytest
+% tests below report it, and the verdict shows it.
+if isfolder(fullfile(root, 'src', 'generated', 'controller'))
+    [st, out] = system(sprintf('%s "%s" && %s src/python/build_controller.py', cdCmd, root, python));
+    fprintf('%s\n', out);
+    if st ~= 0
+        error('run_tests:build', 'Building the generated controller code failed (output below)\n%s', out);
+    end
+    [~, out] = system(sprintf('%s "%s" && %s src/python/back_to_back.py', cdCmd, root, python));
+    fprintf('%s\n', out);
+end
 [~, out] = system(sprintf('%s "%s" && %s -m pytest -q tests/python --junitxml="%s"', ...
     cdCmd, root, python, pyXml));
 fprintf('%s\n', out);

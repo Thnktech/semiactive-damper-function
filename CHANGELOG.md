@@ -9,6 +9,25 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Added
+- M5 tools: `src/matlab/generate_controller_code.m` (GRT code generation with
+  settings applied in memory only, `packNGo`, provenance with SHA-256 of model
+  and parameter files; restores the workspace `P`), `src/python/build_controller.py`
+  (gcc `-O2 -ffp-contract=off`, finds MATLAB's MinGW-w64, rejects 32-bit gcc),
+  `src/python/controller_lib.py` (ctypes wrapper), `src/python/back_to_back.py`
+  (replay of all MiL logs → `results/back_to_back.json`), `conftest.py`.
+- `tests/python/test_back_to_back.py`: REQ-V-01 replay per log, header/wrapper
+  interface, re-initialization, code up to date, exact log parsing, committed
+  record matches model, parameters and logs (CI).
+- Decisions D27 (code-generation settings) and D28 (back-to-back evidence and
+  CI); `docs/mil_to_sil.md` rules 5.5/5.6 and M5 workflow.
+
+### Changed
+- D10 revised: generated code is git-ignored (MathWorks academic license
+  banner); README licensing note, `src/generated/README.md`.
+- `run_tests.m`: builds the generated code and writes the back-to-back record
+  before pytest.
+
 ## [0.5.0] - 2026-10-23
 
 M4: requirement-based verification and traceability.

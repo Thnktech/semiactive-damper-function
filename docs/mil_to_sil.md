@@ -148,13 +148,28 @@ include:
 
 | # | Rule | Why |
 |---|---|---|
-| 5.1 | Generate code from the **same commit** that produced the MiL logs | `git_commit` in the JSON must match the code's provenance README |
+| 5.1 | Generate code from the **same model content** that produced the MiL logs: `controller.slx`, `setup_params.m` and the vehicle file unchanged since the logs' `git_commit` | `back_to_back.py` checks this with `git diff` and refuses to record otherwise (rev. M5: the same content, not necessarily the same commit) |
 | 5.2 | After any change to the controller or its parameters: regenerate code **and** re-log MiL | Logs and code must come from the same model |
-| 5.3 | Inspect `controller.h`: entry points and `controller_U` / `controller_Y` field order | The Python `ctypes` structs must match exactly |
+| 5.3 | Inspect `controller.h`: entry points and `controller_U` / `controller_Y` field order | The Python `ctypes` structs must match exactly (checked by a test) |
 | 5.4 | Build with `-ffp-contract=off` | Prevents fused multiply-add from changing results vs MATLAB |
+| 5.5 | Read the logs with **exact** number parsing (`pandas.read_csv(..., float_precision="round_trip")`) | pandas' default parser is not correctly rounded: it changed ≈ 1 in 3 values by one bit (D28) |
+| 5.6 | Generated code stays local (git-ignored); commit `results/back_to_back.json` | Academic license banner in the code (D10 rev.); CI checks the record's hashes |
 
 ## 6. If the back-to-back fails
 
-Check in this order: (1) sample offset (compare row k with replay k±1),
-(2) CSV precision (`%.17g`), (3) struct field order, (4) FMA flag,
-(5) initial states. Loosen the tolerance only with a documented cause.
+Check in this order: (1) sample offset (compare row k with replay k±1; the
+test message says so), (2) CSV precision (`%.17g`) **and exact parsing (5.5)**,
+(3) struct field order, (4) FMA flag, (5) initial states. Loosen the
+tolerance only with a documented cause.
+
+## 7. M5 workflow (generated-code back-to-back, GRT)
+
+| # | Where | Do | Result |
+|---|---|---|---|
+| 1 | MATLAB | Commit everything, then `generate_controller_code()` | `src/generated/controller/` (local) with `provenance.json` |
+| 2 | MATLAB | `run_tests()` | builds `build/controller.dll` (`.so` on Linux), replays the logs, writes `results/back_to_back.json`, runs all tests, writes `results/traceability.md` |
+| 3 | git | Commit `results/back_to_back.json` and `results/traceability.md` | CI checks that the record matches model, parameters and logs |
+
+Result in M5: generated code **bit-identical** to MiL on SC-C80, SC-BUMP and
+SC-FAULT (maximum deviation 0 A; tolerance 1e-9 kept as the requirement).
+Wording: "generated-code back-to-back (GRT)", never "Simulink SIL mode".

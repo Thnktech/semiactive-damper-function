@@ -45,3 +45,5 @@ results/studies/
 docs/ResearchInfo/
 # Raw test output written by run_tests (JUnit XML, evidence); the report results/traceability.md is committed
 results/test/
+# Generated controller C code: kept local, the files carry the MathWorks academic license banner (D10 rev.)
+src/generated/controller/
