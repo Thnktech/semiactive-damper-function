@@ -31,6 +31,7 @@ Version plan: each completed milestone is tagged as a minor release
 
 ### Changed
 - REQ-F-02 log evidence recorded in s (same unit as the acceptance).
+- `my_study.m`: example study name set to `Test`.
 - Commit history rewritten: attribution trailers removed from all commit
   messages (all commit IDs and tags changed).
 - MiL reference log metadata regenerated: `git_commit` now points to the

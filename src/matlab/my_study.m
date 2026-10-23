@@ -4,7 +4,7 @@
 %   Passive is always added as the reference.
 
 % ===================== EDIT HERE =====================
-cfg.name    = 'Sky_2p9e5';             % output folder name
+cfg.name    = 'Test';             % output folder name
 cfg.vehicle = 'sedan_ref';            % 'sedan_ref', 'small_car', 'suv', 'light_van' (or private 'erod_front', 'erod_rear')
 cfg.modes   = [1 3];                  % 1 skyhook, 2 groundhook, 3 hybrid, 4... your own Law_<n>_ slots
 cfg.roads   = {'C50', 'C80', 'D80', 'BUMP'};   % class A-D + speed (any), 'BUMP' (18 km/h), 'BUMP30', ...
