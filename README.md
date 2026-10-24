@@ -189,7 +189,8 @@ reason shown by `pytest -rs`.
 
 ### With MATLAB
 
-Requirements: MATLAB R2026a with Simulink and Simulink Coder; the Add-On
+Requirements: MATLAB R2026a with Simulink, Simulink Control Design (plant
+linearization test) and Simulink Coder (code generation); the Add-On
 *MATLAB Support for MinGW-w64 C/C++ Compiler*; the Python environment above.
 
 | Step | Command (MATLAB) | Result |

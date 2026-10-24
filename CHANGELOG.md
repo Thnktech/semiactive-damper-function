@@ -26,6 +26,9 @@ Version plan: each completed milestone is tagged as a minor release
 - CI job `matlab` (M6): MATLAB R2026a with Simulink and Simulink Control Design
   via matlab-actions (free for public repositories), runs all MATLAB tests
   except KnownFail on every push.
+- CI `matlab` job writes the test counts to the run summary page; README lists
+  Simulink Control Design (needed by the plant linearization test, found by the
+  fresh-clone test).
 
 ### Fixed
 - Fresh-clone test (M6): README now names Python 3.11 and the Windows `py -3.11`

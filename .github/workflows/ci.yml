@@ -46,5 +46,8 @@ jobs:
             suite = testsuite('tests/matlab').selectIf(~matlab.unittest.selectors.HasTag('KnownFail'));
             results = run(testrunner('textoutput'), suite);
             disp(table(results));
-            fprintf('passed %d, failed %d, incomplete %d\n', nnz([results.Passed]), nnz([results.Failed]), nnz([results.Incomplete]));
+            counts = sprintf('passed %d, failed %d, incomplete %d (of %d)', nnz([results.Passed]), nnz([results.Failed]), nnz([results.Incomplete]), numel(results));
+            disp(counts);
+            % Also on the run's summary page, readable without opening the log
+            fid = fopen(getenv('GITHUB_STEP_SUMMARY'), 'a'); fprintf(fid, '### MATLAB tests\n\n%s\n', counts); fclose(fid);
             assert(~any([results.Failed]), 'MATLAB tests failed');
