@@ -9,6 +9,10 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-24
+
+M5: generated-code back-to-back (GRT).
+
 ### Added
 - M5 tools: `src/matlab/generate_controller_code.m` (GRT code generation with
   settings applied in memory only, `packNGo`, provenance with SHA-256 of model
@@ -21,9 +25,9 @@ Version plan: each completed milestone is tagged as a minor release
   record matches model, parameters and logs (CI).
 - Decisions D27 (code-generation settings) and D28 (back-to-back evidence and
   CI); `docs/mil_to_sil.md` rules 5.5/5.6 and M5 workflow.
-- `results/back_to_back.json` (code generated at 19f30d4): generated code
-  bit-identical to MiL on SC-C80, SC-BUMP, SC-FAULT; traceability now 12 Pass,
-  1 Fail (known, REQ-P-02), 0 Unverified.
+- `results/back_to_back.json` (code generated at 757b71b, recorded at
+  10d0d7f): generated code bit-identical to MiL on SC-C80, SC-BUMP, SC-FAULT;
+  traceability 12 Pass, 1 Fail (known, REQ-P-02), 0 Unverified.
 
 ### Changed
 - D10 revised: generated code is git-ignored (MathWorks academic license
@@ -254,7 +258,8 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.2.0...v0.3.0
