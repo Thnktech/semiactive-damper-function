@@ -1,12 +1,19 @@
+# CI (M0): runs on every push and pull request, and by hand from the Actions tab
+# (workflow_dispatch). No MATLAB here: only the Python tests. The generated-code
+# back-to-back runs locally (academic license, D10 rev.); CI checks its committed
+# record, results/back_to_back.json (D28), and the local-only tests skip themselves.
 name: ci
 on: [push, pull_request, workflow_dispatch]
 jobs:
   test:
+    # A fresh Linux machine on every run: proves nothing depends on the author's PC.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      # Same Python version as the local .venv.
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+      # The packages listed in requirements.txt (numpy, pandas, pytest).
       - run: pip install -r requirements.txt
       - run: pytest -q tests/python

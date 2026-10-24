@@ -15,6 +15,8 @@ Version plan: each completed milestone is tagged as a minor release
   `src/matlab/vehicles/`; comments only, no code line changed.
 - Comments added to the MATLAB tests (`tests/matlab/`): what each test
   protects against and which requirement or decision it belongs to.
+- Comments added to the Python tests and the CI workflow (`ci.yml`: what runs
+  in CI and why the back-to-back itself runs locally).
 
 ### Fixed
 - DEVLOG: M5 back-to-back test count is 10 (not 12).
