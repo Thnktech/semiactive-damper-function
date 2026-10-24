@@ -18,8 +18,13 @@ if nargin < 5, fault = zeros(size(t)); end
 if isscalar(mode), mode = mode*ones(size(t)); end
 h = t(2) - t(1);
 N = numel(t);
+% Written in plain MATLAB from the equations, sharing no Simulink settings with
+% the harness: if both agree, the harness timing is right (it found the
+% artificial algebraic loop, D26).
 zrf = @(tt) interp1(t, zr, tt, 'linear');
 cmap = @(I) P.c_min + (P.c_max - P.c_min)*(min(max(I, P.I_min), P.I_max) - P.I_min)/(P.I_max - P.I_min);
+% Plant state derivatives: actuator lag, body, wheel; max(0, ...) is the tire
+% lift-off (a tire cannot pull, D23).
 f = @(tt, x, i) [ (i - x(1))/P.tau; x(3); ...
     (-P.ks*(x(2) - x(4)) + cmap(x(1))*(x(5) - x(3)))/P.ms; x(5); ...
     ( P.ks*(x(2) - x(4)) - cmap(x(1))*(x(5) - x(3)) + max(0, P.F_static + P.kt*(zrf(tt) - x(4))) - P.F_static)/P.mu];
@@ -46,6 +51,7 @@ for k = 1:N
 end
 end
 
+% The four law slots and Damping_to_current, re-written from the equations.
 function I = law_current(P, zs, zu, mode)
 v = zs - zu;
 switch mode

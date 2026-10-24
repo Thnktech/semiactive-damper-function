@@ -8,6 +8,8 @@ classdef TestComparison < matlab.unittest.TestCase
     end
 
     methods (Test)
+        % The committed CSV must be complete: 9 scenarios x 4 modes, one row each, and
+        % mode names that match the mode numbers.
         function every_scenario_in_every_mode(tc)
             T = tc.readComparison();
             tc.verifyEqual(height(T), numel(tc.Scenarios)*numel(tc.Modes));
@@ -35,6 +37,8 @@ classdef TestComparison < matlab.unittest.TestCase
             end
         end
 
+        % The % columns are what the reports quote: recompute them from the absolute
+        % KPIs, and passive vs itself must be exactly 0.
         function deltas_recomputed_independently(tc)
             T = tc.readComparison();
             for r = 1:height(T)
@@ -56,7 +60,9 @@ classdef TestComparison < matlab.unittest.TestCase
         end
 
         function no_hard_coded_paths_in_sources(tc)
-            % Scripts must work in any clone: use matlab.project.rootProject, never C:\...
+            % Scripts must work in any clone: use project_root(), never an absolute path.
+            % Note: the check also hits text such as 'failed:' followed by a newline
+            % escape (letter, colon, backslash); reword such messages.
             f = dir(fullfile(tc.root(), 'src', 'matlab', '**', '*.m'));
             for k = 1:numel(f)
                 if contains(f(k).folder, [filesep 'private']), continue; end
@@ -71,6 +77,7 @@ classdef TestComparison < matlab.unittest.TestCase
             r = matlab.project.rootProject().RootFolder;
         end
 
+        % Read the committed file instead of re-running 36 simulations (~2 min).
         function T = readComparison(tc)
             f = fullfile(tc.root(), 'results', 'comparison', 'kpi_comparison_sedan_ref.csv');
             tc.assumeTrue(isfile(f), 'Run run_comparison() first');

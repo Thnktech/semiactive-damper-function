@@ -34,6 +34,8 @@ classdef TestController < matlab.unittest.TestCase
         end
 
 
+        % 'One instance' model referencing: required for the simple C interface with
+        % global input/output structs used in M5 (D27).
         function single_instance_for_codegen(tc)
             tc.verifyEqual(get_param(tc.Model, 'ModelReferenceNumInstancesAllowed'), 'Single');
         end
@@ -122,6 +124,8 @@ classdef TestController < matlab.unittest.TestCase
     end
 
     methods
+        % Helper: drive the controller alone, one input row per 1 ms step, exactly as
+        % the generated C code is driven in M5.
         function Y = simulate(tc, P, T, u)
             t = (0:1e-3:T)';
             in = Simulink.SimulationInput(tc.Model);
@@ -137,6 +141,7 @@ classdef TestController < matlab.unittest.TestCase
     end
 end
 
+% Port names sorted by port number (find_system returns blocks in any order).
 function names = portNames(mdl, type)
 b = find_system(mdl, 'SearchDepth', 1, 'BlockType', type);
 nums = cellfun(@(x) str2double(get_param(x, 'Port')), b);

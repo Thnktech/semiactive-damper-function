@@ -22,6 +22,8 @@ classdef TestHarness < matlab.unittest.TestCase
             tc.verifyEqual(names, {'controller', 'plant'});
         end
 
+        % simulate_harness and the MiL logger read the outputs by port number: the
+        % order is part of the interface.
         function outputs_named_and_ordered(tc)
             out = find_system(tc.Model, 'SearchDepth', 1, 'BlockType', 'Outport');
             nums = cellfun(@(b) str2double(get_param(b, 'Port')), out);
@@ -132,6 +134,7 @@ classdef TestHarness < matlab.unittest.TestCase
     end
 
     methods
+        % Helper: one closed-loop run with road, fault and mode schedule (as simulate_harness).
         function Y = simulate(tc, P, t, zr, fault, mode_sel)
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);

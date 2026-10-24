@@ -13,6 +13,8 @@ Version plan: each completed milestone is tagged as a minor release
 - Comments explaining why the code exists (requirements, decisions, past
   problems) added to the MATLAB sources in `src/matlab/` and
   `src/matlab/vehicles/`; comments only, no code line changed.
+- Comments added to the MATLAB tests (`tests/matlab/`): what each test
+  protects against and which requirement or decision it belongs to.
 
 ### Fixed
 - DEVLOG: M5 back-to-back test count is 10 (not 12).

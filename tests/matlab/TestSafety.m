@@ -4,6 +4,7 @@ classdef TestSafety < matlab.unittest.TestCase
 
     properties (Constant)
         Model = 'controller'
+        % Room for round-off only, as in the REQ-F-04 acceptance (+1e-12 A).
         Tol = 1e-12
     end
 
@@ -18,6 +19,8 @@ classdef TestSafety < matlab.unittest.TestCase
         function REQ_F_01_current_within_limits(tc)
             % Extreme velocities, random mode switching (incl. invalid modes), faults
             P = setup_params();
+            % Fixed seed: the random input sequence is the same in every run, so a
+            % failure can be reproduced.
             rng(11);
             n = 3001;
             zs = 10*(2*rand(n, 1) - 1);  zu = 10*(2*rand(n, 1) - 1);
@@ -72,6 +75,8 @@ classdef TestSafety < matlab.unittest.TestCase
             record_evidence('REQ-S-01', 'TestSafety/REQ_S_01_fault_reaction_time', 'fault reaction time', 1e3*t_react, 'ms');
         end
 
+        % Under a fault every mode, also an invalid one (7), must end at I_default: the
+        % fault path must act after the law selection, not inside one law.
         function REQ_S_01_fault_overrides_every_mode(tc)
             P = setup_params();
             for m = [0 1 2 3 7]
@@ -83,6 +88,8 @@ classdef TestSafety < matlab.unittest.TestCase
     end
 
     methods (Test, TestTags = {'REQ-S-02'})
+        % One sample of fault_flag is enough: the fault latches for the rest of the run
+        % (no reset input, D18) and i_cmd stays at I_default.
         function REQ_S_02_single_pulse_latches(tc)
             P = setup_params();
             n = 300; u = repmat([0.2 0.1 0 1], n, 1); u(101, 3) = 1;   % one-sample pulse
@@ -95,6 +102,7 @@ classdef TestSafety < matlab.unittest.TestCase
             record_evidence('REQ-S-02', 'TestSafety/REQ_S_02_single_pulse_latches', '1 -> 0 transitions after a pulse', nnz(diff(Y.fault_active) < 0), 'count');
         end
 
+        % A flickering flag (on/off every 100 ms) must never clear the latch.
         function REQ_S_02_toggling_flag_cannot_clear(tc)
             P = setup_params();
             n = 1001; u = repmat([0.2 0.1 0 1], n, 1);
@@ -117,6 +125,7 @@ classdef TestSafety < matlab.unittest.TestCase
     end
 
     methods
+        % Helper: controller alone, one input row per 1 ms sample.
         function Y = runController(tc, P, u)
             t = (0:size(u, 1) - 1)'*1e-3;
             in = Simulink.SimulationInput(tc.Model);

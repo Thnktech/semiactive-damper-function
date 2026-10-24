@@ -142,6 +142,7 @@ classdef TestControlLaws < matlab.unittest.TestCase
             tc.verifyEqual(tc.settled(P, 0.2, 0.1, 4), P.I_passive, 'AbsTol', 1e-12);
         end
 
+        % mode 0 = Law_0_Passive: constant c_passive, whatever the velocities.
         function mode_0_is_passive(tc)
             P = setup_params();
             tc.verifyEqual(tc.settled(P, 0.2, 0.1, 0), P.I_passive, 'AbsTol', 1e-12);
@@ -209,6 +210,8 @@ classdef TestControlLaws < matlab.unittest.TestCase
     end
 
     methods
+        % Helper: one input row per 1 ms sample, so every row can be a different input
+        % (used by the REQ-F-05 sweep: one grid point per sample).
         function Y = runSequence(tc, P, u)
             t = (0:size(u, 1) - 1)'*1e-3;
             in = Simulink.SimulationInput(tc.Model);
@@ -221,6 +224,8 @@ classdef TestControlLaws < matlab.unittest.TestCase
             Y.fault_active = out.yout{2}.Values.Data(:);
         end
 
+        % Helper: the current after 50 ms of constant inputs. The rate limit needs at
+        % most 10 steps for the full range, so the value has settled by then.
         function i = settled(tc, P, zs_dot, zu_dot, mode)
             Y = tc.runController(P, zs_dot, zu_dot, mode);
             i = Y.i_cmd(end);
@@ -240,6 +245,8 @@ classdef TestControlLaws < matlab.unittest.TestCase
     end
 end
 
+% The expected value is computed by hand from the equations, independent of
+% the model: a test that reused the model's own blocks could not find their errors.
 function I = current(P, c)
 %CURRENT Hand calculation: clip c to [c_min, c_max], then inverse damper map.
 c = min(max(c, P.c_min), P.c_max);

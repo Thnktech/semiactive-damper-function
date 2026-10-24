@@ -16,6 +16,8 @@ classdef TestMilLogs < matlab.unittest.TestCase
     end
 
     methods (Test)
+        % The controller alone, fed the logged inputs, must give the logged outputs
+        % exactly: proves each log is a valid answer key for the C code (M5).
         function replay_reproduces_log_exactly(tc, scenario)
             L = tc.readLog(scenario);
             P = setup_params();
@@ -66,6 +68,8 @@ classdef TestMilLogs < matlab.unittest.TestCase
     end
 
     methods
+        % readtable parses the 17-digit numbers exactly (pandas needs
+        % float_precision='round_trip' for the same, D28).
         function L = readLog(tc, scenario)
             f = fullfile(matlab.project.rootProject().RootFolder, 'tests', 'data', ['mil_' scenario '.csv']);
             tc.assumeTrue(isfile(f), sprintf('%s missing: run log_mil_reference', f));

@@ -13,6 +13,8 @@ classdef TestRoads < matlab.unittest.TestCase
     end
 
     methods (Test)
+        % The road must have the ISO 8608 PSD of its class: power in four bands
+        % within 10 %. Long run (120 s) so the estimate is stable.
         function psd_matches_target_in_bands(tc, roadClass)
             V = 80/3.6;
             [t, zr] = road_iso8608(roadClass, 80, 120, 1);
@@ -32,18 +34,22 @@ classdef TestRoads < matlab.unittest.TestCase
             function r = road(c), [~, r.zr] = road_iso8608(c, 80, 20, 1); end
         end
 
+        % Repeatability: every strategy and every rerun must see the same road.
         function same_seed_same_road(tc)
             [~, z1] = road_iso8608('C', 80, 10, 7);
             [~, z2] = road_iso8608('C', 80, 10, 7);
             tc.verifyEqual(z1, z2);
         end
 
+        % The seed must really matter (it was once set after the random numbers).
         function different_seed_different_road(tc)
             [~, z1] = road_iso8608('C', 80, 10, 7);
             [~, z2] = road_iso8608('C', 80, 10, 8);
             tc.verifyGreaterThan(max(abs(z1 - z2)), 1e-3);
         end
 
+        % A road is a property of the place, not of the time: driving half as fast
+        % must show the same profile, twice as slowly.
         function road_depends_on_distance_not_time(tc)
             % The same seed gives the same profile in distance: z80(t) = z40(2t) once faded in
             [t80, z80] = road_iso8608('C', 80, 10, 3);
@@ -74,15 +80,19 @@ classdef TestRoads < matlab.unittest.TestCase
                 period, mean(r)));
         end
 
+        % Fade-in: the car must not start on a sudden road step.
         function smooth_start(tc)
             [~, zr] = road_iso8608('C', 80, 5, 1);
             tc.verifyEqual(zr(1), 0, 'Road must start at 0 (fade-in)');
         end
 
+        % Only classes A-D exist in this generator.
         function invalid_class_errors(tc)
             tc.verifyError(@() road_iso8608('E', 80, 1, 1), ?MException);
         end
 
+        % SC-BUMP geometry: height, start, duration L/V, flat before and after, peak
+        % in the middle; checked to within one 1 ms sample.
         function bump_shape(tc)
             h = 0.05; L = 0.5; v = 18; t0 = 1;
             [t, zr] = road_bump(h, L, v, 3, t0);

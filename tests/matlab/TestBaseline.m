@@ -7,6 +7,8 @@ classdef TestBaseline < matlab.unittest.TestCase
     end
 
     methods (Test)
+        % I_passive must map back to exactly c_passive through the damper map, for
+        % every vehicle: otherwise 'passive' would not be the D22 damping.
         function passive_current_reproduces_c_passive(tc)
             for v = list_vehicles()
                 P = setup_params(v{1});
@@ -17,6 +19,7 @@ classdef TestBaseline < matlab.unittest.TestCase
             end
         end
 
+        % One output sample per 1 ms input step: KPIs and logs assume this alignment (D8).
         function simulate_plant_returns_one_sample_per_step(tc)
             P = setup_params();
             [t, zr] = road_iso8608('C', 80, 3, 1);
@@ -40,6 +43,8 @@ classdef TestBaseline < matlab.unittest.TestCase
             tc.verifyEqual(K{2}.rms_zs_ddot/K{1}.rms_zs_ddot, 2, 'RelTol', 0.02);
         end
 
+        % The committed CSV is the reference of every later 'x % vs passive': all 9
+        % scenarios, the reference vehicle, no NaN.
         function committed_baseline_is_complete(tc)
             T = tc.readBaseline();
             tc.verifyEqual(sort(T.scenario)', sort(tc.Scenarios));
@@ -47,6 +52,8 @@ classdef TestBaseline < matlab.unittest.TestCase
             tc.verifyTrue(all(isfinite([T.rms_zs_ddot; T.rms_F_tire_dyn; T.max_travel_mm])));
         end
 
+        % Physics check of the committed numbers: a rougher road and faster driving
+        % must both increase the RMS body acceleration.
         function committed_baseline_is_ordered(tc)
             T = tc.readBaseline();
             for v = [50 80]
@@ -59,6 +66,8 @@ classdef TestBaseline < matlab.unittest.TestCase
             end
         end
 
+        % Vehicle name in every file name: private results can then be git-ignored by
+        % pattern (*erod*, D21), and results of different cars never overwrite each other.
         function result_files_carry_vehicle_name(tc)
             d = dir(fullfile(tc.baselineDir(), '*.*'));
             d = d(~[d.isdir]);
@@ -75,6 +84,8 @@ classdef TestBaseline < matlab.unittest.TestCase
             p = fullfile(matlab.project.rootProject().RootFolder, 'results', 'baseline');
         end
 
+        % Read the committed file instead of re-running 9 scenarios (~85 s); 'assume'
+        % skips the test (instead of failing) in a clone where it was never generated.
         function T = readBaseline(tc)
             f = fullfile(tc.baselineDir(), 'kpi_baseline_sedan_ref.csv');
             tc.assumeTrue(isfile(f), 'Run run_baseline() first');
