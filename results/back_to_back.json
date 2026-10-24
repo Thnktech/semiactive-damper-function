@@ -6,9 +6,9 @@
     "atol": 1e-09,
     "rtol": 1e-09
   },
-  "recorded": "2026-10-23T22:54:08Z",
-  "git_commit": "19f30d432b7b7a09e4160d564887166f624e20a8",
-  "code_generated_from": "19f30d432b7b7a09e4160d564887166f624e20a8",
+  "recorded": "2026-10-24T00:02:01Z",
+  "git_commit": "10d0d7fe5a654211ee5c125df9e6af7face182f1",
+  "code_generated_from": "757b71bc5fcd99b7c769d853928d20ef0dac7075",
   "matlab_release": "2026a",
   "simulink_coder_version": "26.1",
   "compiler": "gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 14.2.0",
