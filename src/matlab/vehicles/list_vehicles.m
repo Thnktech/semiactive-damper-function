@@ -3,6 +3,8 @@ function [pub, priv] = list_vehicles()
 %   [pub, priv] = LIST_VEHICLES() returns cell arrays of vehicle names.
 %   priv lists only private vehicles whose files exist in this clone (D21).
 
+% Fixed list (not a folder scan): helper files in this folder (damping_rule,
+% scaled_variant, ...) are not vehicles. Private ones count only if present (D21).
 pub = {'sedan_ref', 'small_car', 'suv', 'light_van'};
 privDir = fullfile(fileparts(mfilename('fullpath')), 'private');
 candidates = {'erod_front', 'erod_rear'};

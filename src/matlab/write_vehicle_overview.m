@@ -7,6 +7,8 @@ rows = cell(numel(pub), 1);
 for k = 1:numel(pub)
     V = get_vehicle(pub{k});
     [fb, fw] = natural_frequencies(V);
+    % Critical damping of the body mode: zeta = c/c_crit shows how firm the
+    % passive setting is (D22 target 0.3), comparable across vehicles.
     c_crit = 2*sqrt(V.ks*V.ms);
     rows{k} = {V.name, V.label, V.ms, V.mu, V.ks, V.kt, V.c_min, V.c_passive, V.c_max, ...
         V.c_passive/c_crit, fb, fw};
@@ -15,6 +17,7 @@ T = cell2table(vertcat(rows{:}), 'VariableNames', {'vehicle', 'label', 'ms_kg', 
     'ks_N_per_m', 'kt_N_per_m', 'c_min_Ns_per_m', 'c_passive_Ns_per_m', 'c_max_Ns_per_m', ...
     'zeta_passive', 'f_body_Hz', 'f_wheel_Hz'});
 
+% Committed CSV: reviewers can check vehicle data and frequencies without MATLAB.
 root = project_root();
 outDir = fullfile(root, 'results', 'vehicles');
 if ~isfolder(outDir), mkdir(outDir); end

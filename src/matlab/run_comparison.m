@@ -19,8 +19,11 @@ if ~isfolder(outDir)
 end
 
 % 2) Scenarios: build ONE list, so every mode gets exactly the same roads
+% Mode numbers are the controller's law slots (interface/signals.md mode table).
 modes     = [0 1 2 3];
 modeNames = {'passive', 'skyhook', 'groundhook', 'hybrid'};
+% Same roads, seed and duration as run_baseline: the passive rows must equal
+% the M2 baseline (checked by TestComparison), which proves nothing else changed.
 classes = {'A', 'B', 'C', 'D'};  speeds = [50 80];  seed = 1;  Tsim = 30;
 scen = struct('name', {}, 'cls', {}, 'v', {}, 't', {}, 'zr', {});
 
@@ -38,6 +41,7 @@ end
 scen(end+1) = struct('name', 'BUMP', 'cls', '-', 'v', 18, 't', tb, 'zr', zb);
 
 % 3) Run every scenario in every mode
+% Keep the C80 runs of all four modes for the time plot (Plot 2).
 Yc80 = cell(1, 4);
 rows = {};
 for s = 1:numel(scen)
@@ -72,6 +76,8 @@ writetable(T, fullfile(outDir, sprintf('kpi_comparison_%s.csv', P.name)));
 
 % 7) Plots
 cols = lines(4);                                   % one color per mode
+% The trade-off plot answers the main M3 question at a glance: left = more
+% comfort, down = better grip; skyhook lands upper left (comfort bought with grip).
 % Plot 1: trade-off, controllers vs passive, all scenarios
 f = figure('Visible', 'off'); hold on
 for m = 1:3

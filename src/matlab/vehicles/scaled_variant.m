@@ -16,6 +16,9 @@ V.mu = mass_ratio*ms;
 V.f_body_target  = f_body;
 V.f_wheel_target = f_wheel;
 
+% Targets as squared angular frequencies, their sum S and product P (see help).
+% The smaller root is the realistic one: the larger gives a stiff suspension
+% with a soft tire, i.e. body and wheel modes swapped.
 l1 = (2*pi*f_body)^2;
 l2 = (2*pi*f_wheel)^2;
 S = l1 + l2;

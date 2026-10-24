@@ -3,6 +3,7 @@ function [f_body, f_wheel] = natural_frequencies(V)
 %   [f_body, f_wheel] = NATURAL_FREQUENCIES(V) with K = [ks -ks; -ks ks+kt],
 %   M = diag([ms mu]).
 
+% Used to check vehicle data (overview CSV) and the plant poles (TestPlant).
 K = [V.ks, -V.ks; -V.ks, V.ks + V.kt];
 M = diag([V.ms, V.mu]);
 f = sort(sqrt(eig(M\K)))/(2*pi);

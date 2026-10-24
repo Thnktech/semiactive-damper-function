@@ -13,6 +13,7 @@ function V = damping_rule(V)
 zeta = struct('min', 0.1, 'passive', 0.3, 'max', 0.8);
 c_crit = 2*sqrt(V.ks*V.ms);   % N*s/m, critical damping of the body mode
 
+% Only NaN fields are filled: vehicles with supplied damping (eROD) keep theirs.
 if isnan(V.c_min),     V.c_min     = zeta.min*c_crit;     end
 if isnan(V.c_passive), V.c_passive = zeta.passive*c_crit; end
 if isnan(V.c_max),     V.c_max     = zeta.max*c_crit;     end

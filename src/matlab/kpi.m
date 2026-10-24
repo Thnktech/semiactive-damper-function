@@ -19,6 +19,8 @@ if numel(zs_ddot) ~= n || numel(F_tire_dyn) ~= n || numel(susp_travel) ~= n
         error('kpi:size', 'Size not equal'); 
 end
 
+% Skip the start-up transient: SC-C80 uses t >= 2 s (about 4.5 decay time
+% constants of the body mode, REQ.md scenario rationale).
 w = t >= t_skip; 
 if ~any(w)
     error('kpi:window', 'No samples to analyse'); 
@@ -27,8 +29,12 @@ end
 % 3) RMS KPIs over the window w
 K.rms_zs_ddot    = sqrt(mean(zs_ddot(w).^2));
 K.rms_F_tire_dyn = sqrt(mean(F_tire_dyn(w).^2));
+% Relative to the static load: values near 1 mean the wheel is close to
+% lifting off, comparable between vehicles of different mass.
 K.rms_F_tire_rel = K.rms_F_tire_dyn / F_static;
 
 % 4) Travel over the whole run, in mm
+%    Over the whole run, not only t >= t_skip: the bump peak (SC-BUMP) and the
+%    available travel (REQ-P-03, 100 mm) concern the largest value ever reached.
 K.max_travel_mm = 1000*max(abs(susp_travel));
 end

@@ -18,6 +18,8 @@ for k = 1:2:numel(varargin), opt.(varargin{k}) = varargin{k+1}; end
 root = project_root();
 cfg = project_config();
 P = setup_params(cfg.vehicle);
+% Logs are committed and public: only the published reference vehicle, never
+% private eROD data (D21); the back-to-back also needs one fixed vehicle (D12).
 if ~strcmp(P.label, 'published')
     error('log_mil:vehicle', 'Reference logs use the published reference vehicle only, not "%s" (D21).', P.name);
 end
@@ -37,11 +39,15 @@ for s = 1:numel(scenarios)
     cols = {'t', 'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'i_cmd', 'fault_active'};
 
     csvFile = fullfile(outDir, sprintf('mil_%s.csv', sc.id));
+    % 17 significant digits: every double is written so that reading it back gives
+    % the identical number, the precondition for an exact back-to-back (REQ-V-01).
     fid = fopen(csvFile, 'w');
     fprintf(fid, '%s\n', strjoin(cols, ','));
     fprintf(fid, [strjoin(repmat({'%.17g'}, 1, numel(cols)), ',') '\n'], D');
     fclose(fid);
 
+    % Metadata = provenance (REQ-V-02): which commit, model, vehicle, road, release
+    % produced this log, so a back-to-back result can be traced to a model version.
     meta = struct( ...
         'scenario', sc.id, 'description', sc.description, ...
         'vehicle', P.name, 'road', sc.road, 'mode_schedule', sc.modeText, 'fault', sc.faultText, ...
@@ -68,6 +74,9 @@ switch id
     case 'SC-C80'
         [t, zr] = road_iso8608('C', 80, 10, 1);
         m = ones(size(t));
+        % Mode schedule visits every law slot, the invalid modes 7 and 1.5 (must act
+        % as passive, D20/D26) and several mode changes: the replay only proves what
+        % the log contains (mil_to_sil.md section 4).
         m(t >= 2) = 2; m(t >= 4) = 3; m(t >= 6) = 7; m(t >= 7) = 0; m(t >= 8) = 1.5; m(t >= 9) = 1;
         sc.description = 'Class C, 80 km/h; every law slot, invalid modes 7 and 1.5, mode changes';
         sc.road = struct('type', 'iso8608', 'class', 'C', 'speed_kmh', 80, 'seed', 1, 'duration_s', 10);
@@ -83,6 +92,9 @@ switch id
     case 'SC-FAULT'
         [t, zr] = road_iso8608('C', 80, 10, 1);
         m = 3*ones(size(t)); m(t >= 7) = 1;
+        % Integer sample index: exact comparisons (k == 4000) instead of float times.
+        % A one-sample pulse must still latch (REQ-S-02); toggling must never unlatch;
+        % the mode change at 7 s must be ignored while the fault is latched.
         k = round(t*1000);
         f = double(k == 4000 | (k >= 6000 & mod(floor((k - 6000)/100), 2) == 0));
         sc.description = 'Class C, 80 km/h, hybrid; one-sample fault pulse at 4 s, toggling from 6 s; mode change to skyhook at 7 s (must be ignored)';
@@ -95,6 +107,8 @@ end
 sc.t = t; sc.zr = zr; sc.mode = m; sc.fault = f;
 end
 
+% Commit hash and 'uncommitted changes?' flag: a log is only meaningful if it
+% names the exact model version that produced it.
 function [commit, dirty] = git_state(root)
 [s1, commit] = system(sprintf('git -C "%s" rev-parse HEAD', root));
 [s2, st] = system(sprintf('git -C "%s" status --porcelain', root));

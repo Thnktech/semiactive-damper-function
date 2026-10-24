@@ -26,8 +26,13 @@ function S = run_study(cfg)
 
 cfg = defaults(cfg);
 P = setup_params(cfg.vehicle);
+% Law names come from the model, so a new Law_<n>_ slot can be studied at once.
 names = law_names();
+% Passive (mode 0) is always run: every change in % is relative to passive on
+% the same road.
 modes = unique([0, cfg.modes(:)']);                    % passive always included, sorted
+% Fail before the first simulation if a mode has no slot: the Multiport Switch
+% would silently run passive for it (D20) and the study would mislabel results.
 for m = modes
     if ~isKey(names, m)
         error('run_study:mode', 'Mode %d has no Law_%d_<Name> slot in controller.slx.', m, m);
@@ -44,6 +49,7 @@ end
 % ---- runs ----
 nRun = numel(roads)*numel(modes);
 rows = cell(nRun, 10);
+% Time signals are kept for the optional time plots and returned in S.signals.
 sig = struct('road', {}, 'mode', {}, 'name', {}, 'Y', {}, 'zr', {});
 fprintf('run_study "%s": %d roads x %d modes = %d runs (%s)\n', cfg.name, numel(roads), numel(modes), nRun, P.name);
 k = 0;
@@ -87,6 +93,8 @@ S.T = T; S.signals = sig; S.outDir = cfg.outDir; S.cfg = cfg;
 end
 
 % =====================================================================
+% Fill missing cfg fields with defaults, so my_study.m only needs the fields
+% the user cares about. timePlotRoads may stay empty on purpose (= no time plot).
 function cfg = defaults(cfg)
 if nargin < 1 || isempty(cfg), cfg = struct(); end
 d = struct('name', 'study', 'vehicle', getfield(project_config(), 'vehicle'), 'modes', [1 2 3], ...
@@ -103,6 +111,9 @@ if isempty(cfg.outDir)
 end
 end
 
+% Road code -> road: 'C80' = ISO class C at 80 km/h with cfg.T and cfg.seed;
+% 'BUMP' = SC-BUMP at 18 km/h, 'BUMP30' = the same bump at 30 km/h. Unknown codes
+% stop with a message listing valid examples.
 function road = make_road(code, cfg)
 code = upper(strtrim(code));
 tokR = regexp(code, '^([A-D])(\d+)$', 'tokens', 'once');
@@ -121,6 +132,7 @@ else
 end
 end
 
+% Markdown table of the study: readable on GitHub/VS Code without MATLAB.
 function write_summary(T, cfg, P, file)
 fid = fopen(file, 'w'); c = onCleanup(@() fclose(fid));
 fprintf(fid, '# Study: %s\n\nVehicle `%s` · random roads %g s, seed %d · KPIs: RMS over t >= 2 s, travel over the whole run.\n', ...
@@ -134,6 +146,8 @@ for i = 1:height(T)
 end
 end
 
+% Bar charts of the change vs passive, one panel per KPI: shows per road which
+% strategy helps or hurts (passive itself is the zero line).
 function plot_deltas(T, modes, names, cfg, tag)
 ctrl = modes(modes ~= 0);
 if isempty(ctrl), return; end
@@ -156,6 +170,8 @@ title(tl, sprintf('%s: change vs passive (negative = better), %s', strrep(cfg.na
 exportgraphics(f, fullfile(cfg.outDir, sprintf('delta_bars_%s.png', tag))); close(f);
 end
 
+% Comfort vs road-holding scatter, one point per road and strategy: the
+% classic semi-active trade-off; lower left = better in both.
 function plot_tradeoff(T, modes, names, cfg, tag)
 ctrl = modes(modes ~= 0);
 if isempty(ctrl), return; end
@@ -172,6 +188,8 @@ title(sprintf('%s: comfort vs road holding (lower-left = better in both)', strre
 exportgraphics(f, fullfile(cfg.outDir, sprintf('tradeoff_%s.png', tag))); close(f);
 end
 
+% Road, body acceleration and current over time for one road, all strategies:
+% shows HOW a strategy behaves (e.g. skyhook switching), not only the KPI.
 function plot_time(sig, road, modes, cfg, tag)
 road = upper(road);
 s = sig(strcmp({sig.road}, road));

@@ -18,6 +18,8 @@ name = char(name);
 
 if ismember(name, pub)
     V = feval(name);
+% Private names are known here even when their files are absent, so a clean
+% clone gets a clear 'not available (D21)' error instead of 'unknown vehicle'.
 elseif ismember(name, {'erod_front', 'erod_rear'})
     if ~ismember(name, priv)
         error('vehicles:privateMissing', ...
@@ -30,6 +32,8 @@ else
         name, strjoin([pub, priv], ', '));
 end
 
+% Validate every vehicle on load: a typo or missing value in a vehicle file
+% would otherwise give NaN or nonsense results much later, far from the cause.
 validate_vehicle(V);
 end
 

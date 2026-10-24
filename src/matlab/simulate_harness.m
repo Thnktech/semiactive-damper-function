@@ -18,8 +18,12 @@ end
 % 2) Simulation input: model, parameters, workspace variables, stop time, logging
 in = Simulink.SimulationInput('harness');
 in = in.setVariable('P', P);
+% The harness reads road, fault and mode with From Workspace blocks, each as
+% [time value]. setVariable gives them to this run only.
 in = in.setVariable('road_in', [t(:) zr(:)]);
 in = in.setVariable('fault_in', [t(:) fault(:)]);
+% mode may change during a run (mode-schedule tests, MiL logs); a single
+% number is expanded to one value per sample.
 if isscalar(mode)
     mode = mode*ones(size(t)); 
 end      % constant mode -> vector

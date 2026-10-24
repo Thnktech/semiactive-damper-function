@@ -7,5 +7,7 @@ function cfg = project_config()
 %   this file. Changing cfg.vehicle changes the reference vehicle and is a
 %   design decision (see docs/DECISIONS.md, D13 notes).
 
+% The reference vehicle: all requirement verdicts, the MiL logs and the
+% generated code use it (D12, D14). One place, so no script hard-codes a vehicle.
 cfg.vehicle = 'sedan_ref';
 end

@@ -14,5 +14,7 @@ cfg.timePlotRoads = {'C80', 'BUMP'};  % roads that also get a time-signal plot (
 cfg.timeWindow    = [10 13];          % time window of those plots [s] (bump: whole run)
 % =====================================================
 
+% All the work is in run_study; this script only holds your choices, so a
+% study is repeated or varied by editing the block above.
 S = run_study(cfg);
 disp(S.T(:, {'road', 'mode_name', 'rms_zs_ddot', 'd_comfort_pct', 'd_tire_pct', 'd_travel_pct'}))
