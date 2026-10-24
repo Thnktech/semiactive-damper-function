@@ -9,6 +9,9 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Fixed
+- DEVLOG: M5 back-to-back test count is 10 (not 12).
+
 ## [0.6.0] - 2026-10-24
 
 M5: generated-code back-to-back (GRT).
