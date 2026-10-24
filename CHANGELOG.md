@@ -23,6 +23,9 @@ Version plan: each completed milestone is tagged as a minor release
 - `src/python/readme_results.py`: writes the README results tables from the
   committed result files; `tests/python/test_readme_results.py` fails in CI if
   a README number differs from them.
+- CI job `matlab` (M6): MATLAB R2026a with Simulink and Simulink Control Design
+  via matlab-actions (free for public repositories), runs all MATLAB tests
+  except KnownFail on every push.
 
 ### Fixed
 - Fresh-clone test (M6): README now names Python 3.11 and the Windows `py -3.11`

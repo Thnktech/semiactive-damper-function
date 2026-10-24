@@ -1,7 +1,10 @@
-# CI (M0): runs on every push and pull request, and by hand from the Actions tab
-# (workflow_dispatch). No MATLAB here: only the Python tests. The generated-code
-# back-to-back runs locally (academic license, D10 rev.); CI checks its committed
-# record, results/back_to_back.json (D28), and the local-only tests skip themselves.
+# CI: runs on every push and pull request, and by hand from the Actions tab
+# (workflow_dispatch). Two independent jobs:
+#   test    (M0) Python tests, no MATLAB. The generated-code back-to-back runs
+#                locally (academic license, D10 rev.); this job checks its
+#                committed record, results/back_to_back.json (D28), and the
+#                local-only tests skip themselves.
+#   matlab  (M6) the MATLAB/Simulink model tests (tests/matlab).
 name: ci
 on: [push, pull_request, workflow_dispatch]
 jobs:
@@ -14,6 +17,34 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      # The packages listed in requirements.txt (numpy, pandas, pytest).
+      # The pinned packages listed in requirements.txt (numpy, pandas, pytest).
       - run: pip install -r requirements.txt
       - run: pytest -q tests/python
+
+  matlab:
+    # MathWorks licenses MATLAB and Simulink products for public repositories in
+    # GitHub Actions at no cost, except code-generation products ("transformation
+    # products"). These tests need no Coder: Simulink runs the models, Simulink
+    # Control Design provides linearize (TestPlant). The release must match the
+    # models (saved in R2026a).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: matlab-actions/setup-matlab@v2
+        with:
+          release: R2026a
+          products: Simulink Simulink_Control_Design
+          # Keep the MATLAB installation between runs: much faster after the first.
+          cache: true
+      # Same selection as run_tests('dev'): every MATLAB test except the accepted
+      # KnownFail (REQ-P-02). Tests that cannot apply on a clean machine (private
+      # vehicle data, D21) end as 'incomplete' and are allowed; a failure is not.
+      - uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            openProject(pwd);
+            suite = testsuite('tests/matlab').selectIf(~matlab.unittest.selectors.HasTag('KnownFail'));
+            results = run(testrunner('textoutput'), suite);
+            disp(table(results));
+            fprintf('passed %d, failed %d, incomplete %d\n', nnz([results.Passed]), nnz([results.Failed]), nnz([results.Incomplete]));
+            assert(~any([results.Failed]), 'MATLAB tests failed');
