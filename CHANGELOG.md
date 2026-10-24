@@ -17,6 +17,8 @@ Version plan: each completed milestone is tagged as a minor release
   protects against and which requirement or decision it belongs to.
 - Comments added to the Python tests and the CI workflow (`ci.yml`: what runs
   in CI and why the back-to-back itself runs locally).
+- Traceability report and back-to-back record re-run after the comment pass
+  (b86baac): unchanged, 12 Pass, 1 Fail (known), 0 Unverified; bit-identical.
 
 ### Fixed
 - DEVLOG: M5 back-to-back test count is 10 (not 12).
