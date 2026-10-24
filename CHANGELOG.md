@@ -9,6 +9,12 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Added
+- M6: `src/matlab/run_lag_sensitivity.m` (actuator lag 5/10/20 ms, SC-C80, all
+  modes; three lines left for the author to complete) and
+  `tests/matlab/TestSensitivity.m` (complete, tau = 10 ms equals the M3
+  comparison, passive independent of lag, deltas recomputed).
+
 ### Changed
 - Comments explaining why the code exists (requirements, decisions, past
   problems) added to the MATLAB sources in `src/matlab/` and
