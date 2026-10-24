@@ -24,6 +24,14 @@ Version plan: each completed milestone is tagged as a minor release
   committed result files; `tests/python/test_readme_results.py` fails in CI if
   a README number differs from them.
 
+### Fixed
+- Fresh-clone test (M6): README now names Python 3.11 and the Windows `py -3.11`
+  launcher (a plain `python` started another installation, Python 2.7).
+- Exact CSV parsing independent of the pandas version (`read_csv_exact`: cells
+  as text, then a correctly rounded conversion); `float_precision='round_trip'`
+  is deprecated since pandas 3.1. D28 revised; `requirements.txt` pins the
+  tested versions (numpy 2.4.6, pandas 3.1.0, pytest 9.1.1).
+
 ### Changed
 - Comments explaining why the code exists (requirements, decisions, past
   problems) added to the MATLAB sources in `src/matlab/` and

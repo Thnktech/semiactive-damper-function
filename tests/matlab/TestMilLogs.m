@@ -68,8 +68,8 @@ classdef TestMilLogs < matlab.unittest.TestCase
     end
 
     methods
-        % readtable parses the 17-digit numbers exactly (pandas needs
-        % float_precision='round_trip' for the same, D28).
+        % readtable parses the 17-digit numbers exactly (the Python side
+        % needs read_csv_exact in back_to_back.py for the same, D28).
         function L = readLog(tc, scenario)
             f = fullfile(matlab.project.rootProject().RootFolder, 'tests', 'data', ['mil_' scenario '.csv']);
             tc.assumeTrue(isfile(f), sprintf('%s missing: run log_mil_reference', f));

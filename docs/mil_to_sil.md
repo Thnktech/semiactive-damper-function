@@ -152,7 +152,7 @@ include:
 | 5.2 | After any change to the controller or its parameters: regenerate code **and** re-log MiL | Logs and code must come from the same model |
 | 5.3 | Inspect `controller.h`: entry points and `controller_U` / `controller_Y` field order | The Python `ctypes` structs must match exactly (checked by a test) |
 | 5.4 | Build with `-ffp-contract=off` | Prevents fused multiply-add from changing results vs MATLAB |
-| 5.5 | Read the logs with **exact** number parsing (`pandas.read_csv(..., float_precision="round_trip")`) | pandas' default parser is not correctly rounded: it changed ≈ 1 in 3 values by one bit (D28) |
+| 5.5 | Read the logs with **exact** number parsing (`read_csv_exact` in `src/python/back_to_back.py`: cells as text, then a correctly rounded conversion) | pandas' default parser before 3.1 was not correctly rounded: it changed ≈ 1 in 3 values by one bit (D28 rev.) |
 | 5.6 | Generated code stays local (git-ignored); commit `results/back_to_back.json` | Academic license banner in the code (D10 rev.); CI checks the record's hashes |
 
 ## 6. If the back-to-back fails

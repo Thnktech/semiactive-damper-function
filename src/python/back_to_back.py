@@ -37,13 +37,29 @@ def logs():
     return sorted(DATA.glob("mil_*.csv"))
 
 
+def read_csv_exact(csv):
+    """CSV with every number parsed EXACTLY, in any pandas version.
+
+    The files are written with 17 significant digits so that every double
+    reads back identically. pandas' default parser before 3.1 was fast but not
+    correctly rounded: it turned e.g. '0.42999999999999994' into the
+    neighbouring double 0.4299999999999999 (about 1 in 3 values of the MiL
+    logs, D28). The old fix, float_precision='round_trip', is deprecated since
+    pandas 3.1. So: read every cell as text, then convert each numeric column
+    with a correctly rounded text-to-double conversion. Text columns (names)
+    stay text."""
+    df = pd.read_csv(csv, dtype=str)
+    for col in df.columns:
+        try:
+            df[col] = df[col].astype(float)
+        except ValueError:
+            pass                      # a text column, e.g. scenario or mode_name
+    return df
+
+
 def read_log(csv):
-    """MiL log with every number parsed EXACTLY. pandas' default CSV parser
-    is fast but not correctly rounded: it turns e.g. '0.42999999999999994'
-    into the neighbouring double 0.4299999999999999 (about 1 in 3 values of
-    these logs). The logs are written with 17 digits so that they round-trip;
-    float_precision='round_trip' keeps that promise."""
-    return pd.read_csv(csv, float_precision="round_trip")
+    """MiL log (all columns numeric), parsed exactly: see read_csv_exact."""
+    return read_csv_exact(csv)
 
 
 def sha256(path):

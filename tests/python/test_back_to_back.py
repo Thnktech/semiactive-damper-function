@@ -146,8 +146,8 @@ def test_REQ_V_01_code_up_to_date():
 def test_REQ_V_01_logs_parsed_exactly(csv):
     """Guard for read_log: every number must equal Python's float() of the
     text in the file (float() is correctly rounded). With pandas' default
-    parser this fails for thousands of values, and the back-to-back would
-    compare the code against slightly wrong reference values."""
+    parser before version 3.1 this failed for thousands of values, and the
+    back-to-back compared the code against slightly wrong reference values."""
     df = read_log(csv)
     lines = csv.read_text(encoding="utf-8").splitlines()[1:]
     exact = np.array([[float(v) for v in line.split(",")] for line in lines])

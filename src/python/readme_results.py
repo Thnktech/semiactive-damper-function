@@ -27,9 +27,11 @@ import re
 import sys
 from pathlib import Path
 
-import pandas as pd
-
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))     # run as a script: make 'src.python' importable
+from src.python.back_to_back import read_csv_exact  # noqa: E402  (exact number parsing, D28)
+
 README = ROOT / "README.md"
 COMPARISON = ROOT / "results" / "comparison" / "kpi_comparison_sedan_ref.csv"
 LAG = ROOT / "results" / "sensitivity" / "lag_sensitivity_sedan_ref.csv"
@@ -54,7 +56,7 @@ def source(path):
 def comparison():
     """Passive vs the three controllers on SC-C80 and SC-BUMP (absolute KPI and
     change vs passive on the same road; negative = better)."""
-    df = pd.read_csv(COMPARISON, float_precision="round_trip")
+    df = read_csv_exact(COMPARISON)
     out = []
     for scen, title in (("C80", "Random road, class C, 80 km/h (SC-C80)"),
                         ("BUMP", "Bump 50 mm × 0.5 m at 18 km/h (SC-BUMP)")):
@@ -109,7 +111,7 @@ def verification():
 
 def lag():
     """Change vs passive at 5 / 10 / 20 ms actuator lag (SC-C80)."""
-    df = pd.read_csv(LAG, float_precision="round_trip")
+    df = read_csv_exact(LAG)
     out = ["| Actuator lag τ | Skyhook Δ comfort | Skyhook Δ road holding | Groundhook Δ comfort "
            "| Groundhook Δ road holding | Hybrid Δ comfort | Hybrid Δ road holding |",
            "|---|---|---|---|---|---|---|"]
