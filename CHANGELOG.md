@@ -9,6 +9,11 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-25
+
+M6: documentation, sensitivity, release. Project complete as planned
+(M0–M6); the demo GIF follows in a patch release.
+
 ### Added
 - M6: `src/matlab/run_lag_sensitivity.m` (actuator lag 5/10/20 ms, SC-C80, all
   modes; three lines left for the author to complete) and
@@ -30,14 +35,6 @@ Version plan: each completed milestone is tagged as a minor release
   Simulink Control Design (needed by the plant linearization test, found by the
   fresh-clone test).
 
-### Fixed
-- Fresh-clone test (M6): README now names Python 3.11 and the Windows `py -3.11`
-  launcher (a plain `python` started another installation, Python 2.7).
-- Exact CSV parsing independent of the pandas version (`read_csv_exact`: cells
-  as text, then a correctly rounded conversion); `float_precision='round_trip'`
-  is deprecated since pandas 3.1. D28 revised; `requirements.txt` pins the
-  tested versions (numpy 2.4.6, pandas 3.1.0, pytest 9.1.1).
-
 ### Changed
 - Comments explaining why the code exists (requirements, decisions, past
   problems) added to the MATLAB sources in `src/matlab/` and
@@ -48,8 +45,16 @@ Version plan: each completed milestone is tagged as a minor release
   in CI and why the back-to-back itself runs locally).
 - Traceability report and back-to-back record re-run after the comment pass
   (b86baac): unchanged, 12 Pass, 1 Fail (known), 0 Unverified; bit-identical.
+- README and CI documentation (`docs/ci.md`, `.github/workflows/README.md`):
+  two CI jobs, what each verifies; diagram label updated.
 
 ### Fixed
+- Fresh-clone test (M6): README now names Python 3.11 and the Windows `py -3.11`
+  launcher (a plain `python` started another installation, Python 2.7).
+- Exact CSV parsing independent of the pandas version (`read_csv_exact`: cells
+  as text, then a correctly rounded conversion); `float_precision='round_trip'`
+  is deprecated since pandas 3.1. D28 revised; `requirements.txt` pins the
+  tested versions (numpy 2.4.6, pandas 3.1.0, pytest 9.1.1).
 - DEVLOG: M5 back-to-back test count is 10 (not 12).
 
 ## [0.6.0] - 2026-10-24
@@ -301,7 +306,8 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.6.0...v1.0.0
 [0.6.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.3.0...v0.4.0

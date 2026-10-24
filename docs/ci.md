@@ -16,20 +16,22 @@ local files, local settings or a local MATLAB installation.
 
 ## Why this project uses CI
 
-CI is the only part of the verification chain that runs **without MATLAB**:
+CI runs two jobs on every push (the README table *What is verified where*
+has the details):
 
-| Stage | What CI checks | Requirement |
+| Job | What CI checks | Requirement |
 |---|---|---|
-| M0 (now) | Python environment installs and the smoke test passes | – |
-| M5 | Generated C code (Simulink Coder, GRT) builds with gcc, and replaying logged MiL controller inputs reproduces the MiL outputs | REQ-V-01 |
+| `test` (M0, no MATLAB) | Python tests: smoke test, MiL log provenance, exact log parsing, the committed back-to-back record matches model, parameters and logs, README results match the committed files | REQ-V-01 (record), REQ-V-02 |
+| `matlab` (M6) | All MATLAB/Simulink tests except the accepted KnownFail (126), with MATLAB R2026a, Simulink and Simulink Control Design | REQ-F, REQ-P, REQ-S |
 
-Running this on every push means the claim "the generated code matches the
-model" is re-checked automatically after every change, not only on the
-developer's machine.
+MathWorks licenses MATLAB and Simulink products for public repositories in
+GitHub Actions at no cost, except code-generation products. So the generated
+C code is built and replayed locally (it also carries the academic license
+banner, D10 rev.), and CI checks the committed result of that replay (D28).
 
-What CI does **not** do: run Simulink, run the MiL tests, or prove real-time
-behavior. MATLAB-based tests run locally (see the README, *CI vs local
-verification*).
+What CI does **not** do: generate or compile the controller code, write the
+traceability report (`run_tests()` does that locally), or prove real-time
+behavior.
 
 ## Smoke test
 
