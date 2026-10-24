@@ -12,6 +12,10 @@ Version plan: each completed milestone is tagged as a minor release
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
 
+### Removed
+- Demo GIF plan dropped (README placeholder removed); v1.0.0 is complete
+  without it.
+
 ## [1.0.0] - 2026-10-25
 
 M6: documentation, sensitivity, release. Project complete as planned

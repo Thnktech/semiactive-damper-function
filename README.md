@@ -6,10 +6,6 @@ Requirements-driven development of a semi-active suspension damper controller,
 from written requirements through Simulink model-in-the-loop (MiL) verification
 to generated C code that is checked sample by sample against the model.
 
-<!-- Demo GIF (M6 task 5): uncomment when docs/demo.gif exists
-![demo](docs/demo.gif)
--->
-
 ## Problem
 
 A passive damper fixes one compromise between ride comfort and road holding.
