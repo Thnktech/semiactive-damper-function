@@ -14,6 +14,15 @@ Version plan: each completed milestone is tagged as a minor release
   modes; three lines left for the author to complete) and
   `tests/matlab/TestSensitivity.m` (complete, tau = 10 ms equals the M3
   comparison, passive independent of lag, deltas recomputed).
+- `results/sensitivity/lag_sensitivity_sedan_ref.csv/.png` (run by the author,
+  4877261): skyhook comfort gain −22.1 / −18.9 / −15.1 % at 5 / 10 / 20 ms,
+  tire-load penalty +36.4 / +31.0 / +26.3 %; tau = 10 ms equals the M3 comparison.
+- README rewritten for v1.0 (guide order): problem, Mermaid architecture
+  diagram, measured results / assumptions / interpretation, traceability
+  summary, run instructions, verified-where table, limitations, next steps.
+- `src/python/readme_results.py`: writes the README results tables from the
+  committed result files; `tests/python/test_readme_results.py` fails in CI if
+  a README number differs from them.
 
 ### Changed
 - Comments explaining why the code exists (requirements, decisions, past

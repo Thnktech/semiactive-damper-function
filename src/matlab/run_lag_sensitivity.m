@@ -49,16 +49,16 @@ for tau = taus
     % gain 1/P.tau), so the controller itself is the same in every run.
     P = P0;
 
-    % Without it every run uses the default 10 ms and all three lags look the same.
+    % Set the actuator lag of this run. Without it every run uses the default
+    % 10 ms and all three lags look the same.
     P.tau = tau;
 
     for m = modes
         k = k + 1;
         fprintf('  tau = %2.0f ms, %-10s (%2d/%d)\n', 1e3*tau, modeNames{m+1}, k, size(rows, 1));
 
-        % The first runs the closedloop (plant + controller) in mode m;
+        % The first line runs the closed loop (plant + controller) in mode m;
         % the second computes the KPIs from it, exactly as in run_comparison.
-        % 
         Y = simulate_harness(P, t, zr, m);
         K = kpi(Y.t, Y.zs_ddot, Y.F_tire_dyn, Y.susp_travel, P.F_static);
 
