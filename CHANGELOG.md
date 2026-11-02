@@ -39,6 +39,9 @@ Version plan: each completed milestone is tagged as a minor release
   back to passive in 60 % of samples).
 - v2/M7: README: v2 section, LQR interpretation, assumptions, toolboxes,
   limitations and next steps; poster kept local (`.gitignore`).
+- `docs/` tidied: personal material (milestone reports, guides, research
+  notes, teaching material, poster) in one git-ignored `docs/local/`;
+  `docs/README.md` index; devlog for the v2 sessions.
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).

@@ -26,28 +26,16 @@ build/
 Thumbs.db
 # Personal planning documents (kept local only)
 IMPLEMENTATION_GUIDE.md
-docs/Project1_Implementation_Guide.pdf
 # Private vehicle data and anything derived from it (kept local only, D21)
 src/matlab/vehicles/private/
 results/**/*erod*
 tests/data/*erod*
-# Personal learning guides (kept local only)
-docs/plant_build_guide.pdf
-docs/model_reference_setup.pdf
-docs/ci_selftest_cheatsheet.pdf
-docs/verification_ladder.pdf
-docs/requirements_cheatsheet.pdf
-docs/requirements_primer.pdf
-docs/milestones/
 # Exploratory studies from my_study.m / run_study (local; official results live in results/comparison)
 results/studies/
-# Personal research material (PhD presentation, roadmap backlog), kept local only
-docs/ResearchInfo/
 # Raw test output written by run_tests (JUnit XML, evidence); the report results/traceability.md is committed
 results/test/
 # Generated controller C code: kept local, the files carry the MathWorks academic license banner (D10 rev.)
 src/generated/controller/
-# Teaching report, slides and their build scripts: local only
-docs/teaching/
-# Personal poster (kept local only)
-docs/Semi-Active Damper Engineering Workflow Poster.png
+# Personal material, kept local only: milestone reports, learning guides,
+# research notes, teaching report and slides, poster (see docs/README.md)
+docs/local/
