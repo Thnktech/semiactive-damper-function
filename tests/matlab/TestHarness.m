@@ -32,6 +32,22 @@ classdef TestHarness < matlab.unittest.TestCase
             tc.verifyEqual(get_param(out(o), 'Name')', tc.Outputs);
         end
 
+        % A logging output can carry the wrong signal while its name is right
+        % (found in M7: 'zs' was wired to the fault flag). The logs are the
+        % answer key for the generated code, so check the logged v2 inputs
+        % against physics and the road input they must equal.
+        function v2_logged_inputs_are_the_right_signals(tc)
+            P = setup_params();
+            [t, zr] = road_bump(0.05, 0.5, 18, 3, 0.5);
+            Y = simulate_harness(P, t, zr, 1);
+            tc.verifyEqual(Y.zs - Y.zu, Y.susp_travel, 'AbsTol', 1e-12, 'logged zs - zu ~= susp_travel');
+            tc.verifyGreaterThan(max(abs(Y.zs)), 1e-3, 'logged zs stays ~0 on a 50 mm bump');
+            tc.verifyEqual(Y.zr, zr, 'AbsTol', 1e-12, 'logged zr ~= road input');
+            p = Y.F_d.*(Y.zs_dot - Y.zu_dot);
+            tc.verifyGreaterThanOrEqual(min(p), -1e-9, 'logged F_d does not resist the motion (sign or wrong signal)');
+            tc.verifyGreaterThan(max(abs(Y.F_d)), 100, 'logged F_d stays ~0 on a 50 mm bump');
+        end
+
         function solver_ode4_1ms(tc)
             % D8: whole harness fixed-step ode4, 1 ms
             tc.verifyEqual(get_param(tc.Model, 'SolverType'), 'Fixed-step');

@@ -22,6 +22,12 @@ Version plan: each completed milestone is tagged as a minor release
   (LQR slot vs hand calculation, REQ-F-06), `TestPlant/v2_outputs_consistent`,
   `pad_controller_inputs` for v1 tests, zero-road and REQ-P-03 over all law
   slots; `run_tests` and CI stop when a test file fails to load.
+- v2/M7: harness output `zs` (port 10) wired to the plant (was the fault
+  flag); `TestHarness/v2_logged_inputs_are_the_right_signals` checks the
+  logged v2 inputs against physics and the road input.
+- v2/M7: MiL reference logs with all 8 controller inputs (SC-C80 now also
+  runs the LQR, 9–10 s); generated code, back-to-back record and
+  traceability regenerated for interface v2.
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
