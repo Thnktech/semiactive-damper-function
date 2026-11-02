@@ -30,6 +30,9 @@ Version plan: each completed milestone is tagged as a minor release
 - v2/M7: harness `zs` fix actually saved (commit 44db563 contained only
   redrawn lines; its logs in 398644f still had the wrong zs).
 - v2/M7: MiL reference logs rewritten from commit c29d4ca (correct zs).
+- v2/M7: back-to-back record and traceability for interface v2: generated
+  code bit-identical to all three logs (REQ-V-01 Pass, LQR included);
+  14 Pass, 1 known Fail (REQ-P-02), 2 Unverified (REQ-P-05/06, MPC in M8).
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).

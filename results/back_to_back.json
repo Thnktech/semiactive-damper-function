@@ -6,9 +6,9 @@
     "atol": 1e-09,
     "rtol": 1e-09
   },
-  "recorded": "2026-10-24T18:05:35Z",
-  "git_commit": "b86baac801abea75549107d54aa1d553647dd6cb",
-  "code_generated_from": "757b71bc5fcd99b7c769d853928d20ef0dac7075",
+  "recorded": "2026-11-02T21:45:33Z",
+  "git_commit": "de2cd297fd797102649bc7eb072d6d828e2d430d",
+  "code_generated_from": "de2cd297fd797102649bc7eb072d6d828e2d430d",
   "matlab_release": "2026a",
   "simulink_coder_version": "26.1",
   "compiler": "gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 14.2.0",
@@ -19,11 +19,11 @@
   "sources": [
     {
       "path": "model/controller/controller.slx",
-      "sha256": "7aa632ca71a5180b4bea9fe56f6f0aafb6fbb088f839a8f1a851482a0f57753e"
+      "sha256": "1e559fb6fbe1480fa4180cfdba559e02511cd565e17d3f1b1121b06c6f8729f2"
     },
     {
       "path": "src/matlab/setup_params.m",
-      "sha256": "cd037c580e6935a9de5bc4b85c4c5fa953e99c63b2a9b31753189b3f89859aee"
+      "sha256": "15c07ed72e41bc009f5167097e5d9eafc2d1397d4229515f2d76a244073cc259"
     },
     {
       "path": "src/matlab/vehicles/sedan_ref.m",
@@ -33,7 +33,7 @@
   "logs": [
     {
       "log": "tests/data/mil_SC-BUMP.csv",
-      "sha256": "b6271e3a96486eefe14c70d6da149ffb2590384af4289ded4dbf5adbd44362b0",
+      "sha256": "24c7a13492c2f8fe14219fe015c5f3d20bb600157a62582209d1b153d1eccde0",
       "rows": 6001,
       "max_abs_dev_i_cmd": 0.0,
       "samples_outside_tolerance": 0,
@@ -42,7 +42,7 @@
     },
     {
       "log": "tests/data/mil_SC-C80.csv",
-      "sha256": "c4a260b2d860b14f3d1c2499df2d137d19d1ca506eaecec22a1cffd4f81d459b",
+      "sha256": "89295ad5b936bf0f29a7ece69ceb5ae1263a2117a17414cb38d6ae0b8d7edfb9",
       "rows": 10001,
       "max_abs_dev_i_cmd": 0.0,
       "samples_outside_tolerance": 0,
@@ -51,7 +51,7 @@
     },
     {
       "log": "tests/data/mil_SC-FAULT.csv",
-      "sha256": "2eab2d9372f6892c3bbaeda87b479a19d37c7ae35b43d4131bca7c145ffba9dd",
+      "sha256": "69f70b94b5d5952b8adff1f515a69e054e8fa9feefa07aad7d64c2b885950a1c",
       "rows": 10001,
       "max_abs_dev_i_cmd": 0.0,
       "samples_outside_tolerance": 0,
