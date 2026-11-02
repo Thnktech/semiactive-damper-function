@@ -37,6 +37,8 @@ Version plan: each completed milestone is tagged as a minor release
   law slots; comparison results and README tables include the LQR
   (SC-C80: comfort +4.2 %, tire load −2.2 % vs passive; its request falls
   back to passive in 60 % of samples).
+- v2/M7: README: v2 section, LQR interpretation, assumptions, toolboxes,
+  limitations and next steps; poster kept local (`.gitignore`).
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).

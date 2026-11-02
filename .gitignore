@@ -49,3 +49,5 @@ results/test/
 src/generated/controller/
 # Teaching report, slides and their build scripts: local only
 docs/teaching/
+# Personal poster (kept local only)
+docs/Semi-Active Damper Engineering Workflow Poster.png

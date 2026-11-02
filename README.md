@@ -17,9 +17,9 @@ safely, and in code that behaves exactly like the model it was designed in.
 
 ```mermaid
 flowchart LR
-    REQ["Requirements<br/>13 REQs, signal interface"]
+    REQ["Requirements<br/>17 REQs, signal interface"]
     subgraph MIL["Model-in-the-loop (MATLAB / Simulink)"]
-        CTRL["controller.slx<br/>4 law slots + safety"]
+        CTRL["controller.slx<br/>5 law slots + safety"]
         PLANT["plant.slx<br/>quarter car"]
         HAR["harness.slx<br/>closed loop"]
         CTRL --> HAR
@@ -48,11 +48,18 @@ plant and passive baseline (M2), the controller with four strategies in one
 model (M3), requirement-based tests with a generated traceability report (M4),
 and generated C code verified back-to-back against the MiL logs (M5).
 
+**Version 2 (in progress)** extends the same workflow to model-based control:
+a full-state controller interface (body, wheel and road positions plus the
+damper force), a linear prediction model with the damper lag, and an LQR law
+slot that runs through the same safety logic, tests, code generation and
+back-to-back (M7). A classic model predictive controller (MPC) that knows the
+damper's limits follows in M8.
+
 ## Results
 
 ### Measured
 
-Passive versus the three control strategies, reference vehicle (mid-size sedan),
+Passive versus every control strategy, reference vehicle (mid-size sedan),
 change versus passive on the same road; **negative = better**.
 
 <!-- BEGIN generated:comparison (src/python/readme_results.py; do not edit by hand) -->
@@ -114,15 +121,18 @@ first-order lag τ (nominal 10 ms). Change versus passive at the same lag, SC-C8
   m<sub>s</sub> = 230 kg (D14); three further vehicles are scaled variants (D16).
 - **Roads:** ISO 8608-based random profiles (classes A–D) and a half-sine bump,
   generated with a fixed seed so every strategy sees the same road.
-- **Sensors and faults:** ideal body and wheel velocities (no estimator, D5);
-  fault detection is an external flag, only the reaction is verified (D6).
+- **Sensors and faults:** ideal measurements, no estimator (D5): velocities for
+  the v1 laws; for the model-based laws also body, wheel and road position and
+  the damper force (D30). Fault detection is an external flag, only the
+  reaction is verified (D6).
 - **Actuator:** linear damper map 0.3–1.6 A ↔ c<sub>min</sub>–c<sub>max</sub>,
   first-order lag 10 ms (varied in the sensitivity study).
 - **Thresholds:** every requirement threshold is a *proposed project assumption*
   with its rationale and literature check in
   [requirements/REQ.md](requirements/REQ.md) (D11).
 - **Control-law parameters:** c<sub>sky</sub> = c<sub>gnd</sub> = c<sub>max</sub>,
-  α = 0.5 (D25); not tuned.
+  α = 0.5 (D25); not tuned. LQR: weights 1 / 1 / 0.1 on scaled body
+  acceleration, tire load and travel, the same goal the MPC will use (D34).
 
 ### Interpretation
 
@@ -139,6 +149,13 @@ and firm: the slower the valve, the smaller both its comfort gain and its
 road-holding penalty. Within the studied range skyhook still meets the comfort
 requirement. Groundhook's comfort loss also shrinks with a slower valve; the
 hybrid law changes least.
+
+The LQR (v2) stays close to passive. It is designed as if the damper could
+push and pull; on SC-C80 its requested force cannot be produced in about
+60 % of the samples, so the safety rule falls back to passive damping there
+(D32), and a further 21 % is clipped. This is the known weakness of
+"design unconstrained, clip afterwards" and the reason for the next step: an
+MPC that has the damper's limits inside its optimization.
 
 ## Traceability
 
@@ -192,7 +209,8 @@ reason shown by `pytest -rs`.
 ### With MATLAB
 
 Requirements: MATLAB R2026a with Simulink, Simulink Control Design (plant
-linearization test) and Simulink Coder (code generation); the Add-On
+linearization test), Control System Toolbox and Model Predictive Control
+Toolbox (v2 laws) and Simulink Coder (code generation); the Add-On
 *MATLAB Support for MinGW-w64 C/C++ Compiler*; the Python environment above.
 
 | Step | Command (MATLAB) | Result |
@@ -219,7 +237,8 @@ as *Unverified*.
 | README results equal the committed result files | ✓ | – | ✓ |
 
 CI runs both jobs on every push. The `matlab` job uses MATLAB R2026a with
-Simulink and Simulink Control Design, which MathWorks licenses at no cost for
+Simulink, Simulink Control Design, Control System Toolbox and Model Predictive
+Control Toolbox, which MathWorks licenses at no cost for
 public repositories; code generation (Simulink Coder) is not part of that, so
 the generated-code back-to-back runs locally.
 
@@ -232,9 +251,11 @@ generated, built and replayed locally, and only the result is committed
 
 This project does **not** demonstrate:
 
-- **State estimation:** the controller gets ideal velocities; a real system
-  needs an estimator from accelerometers.
-- **Advanced control:** only skyhook, groundhook and their blend; no MPC.
+- **State estimation:** the controller gets ideal measurements (velocities,
+  and in v2 positions, road height and damper force); a real system needs an
+  estimator from accelerometers.
+- **Model-based control:** so far an LQR with clipping and passive fallback;
+  the MPC with the damper's limits in the optimization follows in M8.
 - **Real time and hardware:** no real-time execution, no PiL/HiL, no target
   hardware; the back-to-back replays logged inputs open loop.
 - **Vehicle validation:** a linear quarter car with tire lift-off, not a
@@ -245,10 +266,10 @@ This project does **not** demonstrate:
 
 ## Next steps
 
-The plan after v1.0, each as a new version: **v2** a full-state controller
-interface for the quarter car with classical model predictive control (MPC) as
-the main goal, followed by further strategies; **v3** a half car; **v4** a full
-vehicle, each adapting the whole workflow of this project.
+**v2 (in progress):** full-state interface and LQR done (M7); next the classic
+receding-horizon MPC (M8), then further MPC formulations and strategies.
+Afterwards **v3** a half car and **v4** a full vehicle, each adapting the whole
+workflow of this project. v1.0.0 stays available on the `release/1.x` branch.
 
 ## Repository
 
@@ -264,7 +285,7 @@ vehicle, each adapting the whole workflow of this project.
 | [docs/](docs/) | decisions, MiL-to-SiL rules, CI notes, development log |
 
 Toolchain: MATLAB R2026a · Simulink · Simulink Coder (GRT, no Embedded Coder) ·
-Python 3.11 · gcc. History of every change: [CHANGELOG.md](CHANGELOG.md).
+Control System and Model Predictive Control Toolboxes · Python 3.11 · gcc. History of every change: [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
