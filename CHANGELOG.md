@@ -29,6 +29,7 @@ Version plan: each completed milestone is tagged as a minor release
   runs the LQR, 9–10 s), written from commit 44db563.
 - v2/M7: harness `zs` fix actually saved (commit 44db563 contained only
   redrawn lines; its logs in 398644f still had the wrong zs).
+- v2/M7: MiL reference logs rewritten from commit c29d4ca (correct zs).
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
