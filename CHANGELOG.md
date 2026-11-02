@@ -6,8 +6,17 @@ versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Version plan: each completed milestone is tagged as a minor release
 (M0 → `v0.1.0`, M1 → `v0.2.0`, … M5 → `v0.6.0`); M6 completes the project as `v1.0.0`.
+Version 2 (model-based control): M7 → `v2.0.0` (interface change = major),
+M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 
 ## [Unreleased]
+
+## [2.0.0] - 2026-11-02
+
+M7: full-state controller interface (inputs 5–8), prediction model, LQR
+law slot, classic MPC design functions; logs, generated code and
+back-to-back for the 8-input controller (bit-identical). v1.0.0 stays on
+`release/1.x`.
 
 ### Added
 - v2/M7: prediction model `qc_prediction_model.m` (quarter car, relative
@@ -45,6 +54,7 @@ Version plan: each completed milestone is tagged as a minor release
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
+- v2/M7: release `v2.0.0`; this changelog section and version plan.
 
 ### Removed
 - Demo GIF plan dropped (README placeholder removed); v1.0.0 is complete
@@ -347,7 +357,8 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.6.0...v1.0.0
 [0.6.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.4.0...v0.5.0
