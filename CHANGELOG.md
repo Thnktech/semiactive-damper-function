@@ -27,6 +27,8 @@ Version plan: each completed milestone is tagged as a minor release
   logged v2 inputs against physics and the road input.
 - v2/M7: MiL reference logs with all 8 controller inputs (SC-C80 now also
   runs the LQR, 9–10 s), written from commit 44db563.
+- v2/M7: harness `zs` fix actually saved (commit 44db563 contained only
+  redrawn lines; its logs in 398644f still had the wrong zs).
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
