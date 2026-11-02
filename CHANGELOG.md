@@ -26,8 +26,7 @@ Version plan: each completed milestone is tagged as a minor release
   flag); `TestHarness/v2_logged_inputs_are_the_right_signals` checks the
   logged v2 inputs against physics and the road input.
 - v2/M7: MiL reference logs with all 8 controller inputs (SC-C80 now also
-  runs the LQR, 9–10 s); generated code, back-to-back record and
-  traceability regenerated for interface v2.
+  runs the LQR, 9–10 s), written from commit 44db563.
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
