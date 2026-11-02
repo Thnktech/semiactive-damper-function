@@ -1,5 +1,5 @@
 function T = run_comparison(vehicle)
-%RUN_COMPARISON Passive, skyhook, groundhook, hybrid on the baseline scenarios (M3).
+%RUN_COMPARISON Every control law of controller.slx on the baseline scenarios (M3, v2).
 %   T = RUN_COMPARISON()          configured vehicle (PROJECT_CONFIG)
 %   T = RUN_COMPARISON(vehicle)   named vehicle
 %   Same roads, seed, duration and bump as RUN_BASELINE; every mode sees identical inputs.
@@ -19,9 +19,11 @@ if ~isfolder(outDir)
 end
 
 % 2) Scenarios: build ONE list, so every mode gets exactly the same roads
-% Mode numbers are the controller's law slots (interface/signals.md mode table).
-modes     = [0 1 2 3];
-modeNames = {'passive', 'skyhook', 'groundhook', 'hybrid'};
+% Mode numbers are the controller's law slots, read from the model, so a new
+% Law_<n>_ slot (v2: LQR, later MPC) is compared without editing this script.
+names = law_names();
+modes = cell2mat(keys(names));
+modeName = @(m) lower(names(m));                  % 'passive', 'skyhook', ..., 'lqr'
 % Same roads, seed and duration as run_baseline: the passive rows must equal
 % the M2 baseline (checked by TestComparison), which proves nothing else changed.
 classes = {'A', 'B', 'C', 'D'};  speeds = [50 80];  seed = 1;  Tsim = 30;
@@ -41,14 +43,14 @@ end
 scen(end+1) = struct('name', 'BUMP', 'cls', '-', 'v', 18, 't', tb, 'zr', zb);
 
 % 3) Run every scenario in every mode
-% Keep the C80 runs of all four modes for the time plot (Plot 2).
-Yc80 = cell(1, 4);
+% Keep the C80 run of every mode for the time plot (Plot 2), indexed m+1.
+Yc80 = cell(1, max(modes) + 1);
 rows = {};
 for s = 1:numel(scen)
     for m = modes
         Y = simulate_harness(P, scen(s).t, scen(s).zr, m);
         K = kpi(Y.t, Y.zs_ddot, Y.F_tire_dyn, Y.susp_travel, P.F_static);
-        rows(end+1, :) = {scen(s).name, P.name, m, modeNames{m+1}, scen(s).cls, scen(s).v, seed, K.rms_zs_ddot, K.rms_F_tire_dyn, K.rms_F_tire_rel, K.max_travel_mm};
+        rows(end+1, :) = {scen(s).name, P.name, m, modeName(m), scen(s).cls, scen(s).v, seed, K.rms_zs_ddot, K.rms_F_tire_dyn, K.rms_F_tire_rel, K.max_travel_mm};
         if strcmp(scen(s).name, 'C80')
             Yc80{m+1} = Y;
         end
@@ -75,14 +77,14 @@ end
 writetable(T, fullfile(outDir, sprintf('kpi_comparison_%s.csv', P.name)));
 
 % 7) Plots
-cols = lines(4);                                   % one color per mode
+cols = lines(max(modes) + 1);                      % one color per mode
 % The trade-off plot answers the main M3 question at a glance: left = more
 % comfort, down = better grip; skyhook lands upper left (comfort bought with grip).
 % Plot 1: trade-off, controllers vs passive, all scenarios
 f = figure('Visible', 'off'); hold on
-for m = 1:3
+for m = modes(modes > 0)
     r = T.mode == m;
-    scatter(T.d_comfort_pct(r), T.d_tire_pct(r), 40, cols(m+1, :), 'filled', 'DisplayName', modeNames{m+1});
+    scatter(T.d_comfort_pct(r), T.d_tire_pct(r), 40, cols(m+1, :), 'filled', 'DisplayName', modeName(m));
 end
 xline(0, 'k-', 'HandleVisibility', 'off'); yline(0, 'k-', 'HandleVisibility', 'off'); hold off
 xlabel('\Delta RMS body acceleration vs passive [%]  (negative = more comfort)');
@@ -94,15 +96,15 @@ exportgraphics(f, fullfile(outDir, sprintf('comparison_tradeoff_%s.png', P.name)
 % Plot 2: C80, 10-13 s, body acceleration (all modes) and current (controllers)
 f = figure('Visible', 'off'); tl = tiledlayout(f, 2, 1);
 nexttile; hold on
-for m = 0:3
+for m = modes
     w = Yc80{m+1}.t >= 10 & Yc80{m+1}.t <= 13;
-    plot(Yc80{m+1}.t(w), Yc80{m+1}.zs_ddot(w), 'Color', cols(m+1, :), 'DisplayName', modeNames{m+1});
+    plot(Yc80{m+1}.t(w), Yc80{m+1}.zs_ddot(w), 'Color', cols(m+1, :), 'DisplayName', modeName(m));
 end
 hold off; ylabel('z_s'''' [m/s^2]'); legend('Location', 'eastoutside'); grid on
 nexttile; hold on
-for m = 1:3
+for m = modes(modes > 0)
     w = Yc80{m+1}.t >= 10 & Yc80{m+1}.t <= 13;
-    plot(Yc80{m+1}.t(w), Yc80{m+1}.i_cmd(w), 'Color', cols(m+1, :), 'DisplayName', modeNames{m+1});
+    plot(Yc80{m+1}.t(w), Yc80{m+1}.i_cmd(w), 'Color', cols(m+1, :), 'DisplayName', modeName(m));
 end
 hold off; ylabel('i_{cmd} [A]'); legend('Location', 'eastoutside'); grid on
 xlabel(tl, 'Time [s]'); title(tl, sprintf('Class C, 80 km/h, %s', strrep(P.name, '_', '\_')));

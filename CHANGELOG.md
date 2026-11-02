@@ -33,6 +33,10 @@ Version plan: each completed milestone is tagged as a minor release
 - v2/M7: back-to-back record and traceability for interface v2: generated
   code bit-identical to all three logs (REQ-V-01 Pass, LQR included);
   14 Pass, 1 known Fail (REQ-P-02), 2 Unverified (REQ-P-05/06, MPC in M8).
+- v2/M7: `run_comparison` and its tests take the modes from the model's
+  law slots; comparison results and README tables include the LQR
+  (SC-C80: comfort +4.2 %, tire load −2.2 % vs passive; its request falls
+  back to passive in 60 % of samples).
 
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).

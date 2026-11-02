@@ -37,7 +37,7 @@ COMPARISON = ROOT / "results" / "comparison" / "kpi_comparison_sedan_ref.csv"
 LAG = ROOT / "results" / "sensitivity" / "lag_sensitivity_sedan_ref.csv"
 TRACE = ROOT / "results" / "traceability.md"
 B2B = ROOT / "results" / "back_to_back.json"
-NAMES = {0: "Passive", 1: "Skyhook", 2: "Groundhook", 3: "Hybrid (α = 0.5)"}
+NAMES = {0: "Passive", 1: "Skyhook", 2: "Groundhook", 3: "Hybrid (α = 0.5)", 4: "LQR (v2)"}
 
 
 # ---------- number formats ----------
@@ -54,7 +54,7 @@ def source(path):
 
 # ---------- the generated blocks ----------
 def comparison():
-    """Passive vs the three controllers on SC-C80 and SC-BUMP (absolute KPI and
+    """Passive vs every controller on SC-C80 and SC-BUMP (absolute KPI and
     change vs passive on the same road; negative = better)."""
     df = read_csv_exact(COMPARISON)
     out = []

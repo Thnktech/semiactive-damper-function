@@ -3,10 +3,6 @@ classdef (TestTags = {'Plausibility'}) TestPlausibility < matlab.unittest.TestCa
     %   Not tied to a single requirement: they catch modelling errors that would
     %   make every requirement verdict meaningless.
 
-    properties (Constant)
-        Modes = [0 1 2 3]
-    end
-
     methods (TestClassSetup)
         function loadModels(tc)
             load_system('harness'); load_system('plant');
@@ -69,7 +65,7 @@ classdef (TestTags = {'Plausibility'}) TestPlausibility < matlab.unittest.TestCa
             C = readtable(f, 'TextType', 'char');
             P = setup_params();
             [t, zr] = road_iso8608('C', 80, 30, 1);
-            for m = tc.Modes
+            for m = cell2mat(keys(law_names()))      % every slot, incl. v2 laws
                 Y = simulate_harness(P, t, zr, m);
                 K = kpi(Y.t, Y.zs_ddot, Y.F_tire_dyn, Y.susp_travel, P.F_static);
                 r = strcmp(C.scenario, 'C80') & C.mode == m;

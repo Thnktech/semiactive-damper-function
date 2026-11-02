@@ -4,21 +4,22 @@ classdef TestComparison < matlab.unittest.TestCase
 
     properties (Constant)
         Scenarios = {'A50', 'A80', 'B50', 'B80', 'C50', 'C80', 'D50', 'D80', 'BUMP'}
-        Modes = {'passive', 'skyhook', 'groundhook', 'hybrid'}
     end
 
     methods (Test)
-        % The committed CSV must be complete: 9 scenarios x 4 modes, one row each, and
-        % mode names that match the mode numbers.
+        % The committed CSV must be complete: 9 scenarios x every law slot of the
+        % model (v2: 5 with the LQR), one row each, and mode names that match the
+        % slot names. A new slot without new results fails here.
         function every_scenario_in_every_mode(tc)
             T = tc.readComparison();
-            tc.verifyEqual(height(T), numel(tc.Scenarios)*numel(tc.Modes));
+            names = law_names(); modes = cell2mat(keys(names));
+            tc.verifyEqual(height(T), numel(tc.Scenarios)*numel(modes));
             for s = tc.Scenarios
-                for m = 0:3
+                for m = modes
                     r = strcmp(T.scenario, s{1}) & T.mode == m;
                     tc.verifyEqual(nnz(r), 1, sprintf('%s, mode %d: exactly one row', s{1}, m));
                     if nnz(r) == 1
-                        tc.verifyEqual(T.mode_name{r}, tc.Modes{m+1});
+                        tc.verifyEqual(T.mode_name{r}, lower(names(m)));
                     end
                 end
             end
