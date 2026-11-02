@@ -6,7 +6,7 @@ classdef TestPlant < matlab.unittest.TestCase
 
     properties (Constant)
         Model = 'plant'
-        Outputs = {'zs_dot', 'zu_dot', 'zs_ddot', 'susp_travel', 'F_tire_dyn'}
+        Outputs = {'zs_dot', 'zu_dot', 'zs_ddot', 'susp_travel', 'F_tire_dyn', 'zs', 'zu', 'F_d'}   % v2: 6-8 (D30)
     end
 
     % linear_dynamics_match_analytic runs once per public vehicle: the plant must
@@ -30,6 +30,23 @@ classdef TestPlant < matlab.unittest.TestCase
             out = find_system(tc.Model, 'SearchDepth', 1, 'BlockType', 'Outport');
             tc.verifyEqual(portNames(in),  {'z_r', 'i_cmd'});
             tc.verifyEqual(portNames(out), tc.Outputs);
+        end
+
+        % v2 outputs zs, zu, F_d (D30) feed the LQR/MPC states: a sign or
+        % offset error there would make the model-based laws push the wrong way.
+        function v2_outputs_consistent(tc)
+            P = setup_params();
+            [t, zr] = road_bump(0.05, 0.5, 18, 3, 0.5);
+            i_cmd = P.I_min + (P.I_max - P.I_min)*(0.5 + 0.5*sin(2*pi*3*t));   % damping varies
+            Y = simulate_plant(P, t, zr, i_cmd);
+            % Positions are deviations from equilibrium: zero before the bump
+            tc.verifyLessThan(max(abs([Y.zs(t < 0.4); Y.zu(t < 0.4)])), 1e-9, 'not at rest before the bump');
+            % Same quantity computed two ways in the plant
+            tc.verifyEqual(Y.zs - Y.zu, Y.susp_travel, 'AbsTol', 1e-12, 'zs - zu ~= susp_travel');
+            % F_d resists extension (signals.md): F_d*v_rel = c*v_rel^2 >= 0
+            p = Y.F_d.*(Y.zs_dot - Y.zu_dot);
+            tc.verifyGreaterThanOrEqual(min(p), -1e-9, sprintf('F_d*v_rel = %.3g < 0: sign of F_d', min(p)));
+            tc.verifyGreaterThan(max(abs(Y.F_d)), 100, 'F_d stays ~0 on a 50 mm bump: not connected?');
         end
 
         % D8: fixed-step ode4 at 1 ms, sample-aligned with the 1 ms controller.

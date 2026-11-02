@@ -64,6 +64,8 @@ Current verdicts, linked tests and measured values: [results/traceability.md](..
 | REQ-F-03 | Initialization | After initialization, the function shall output `i_cmd` = I<sub>default</sub> and `fault_active` = 0 at the first step (k = 0). | Defined output before any sensor data has been processed; outputs are registered (D19) | Test (MiL log row k = 0; generated code: first `step` after `initialize`) | `i_cmd`(0) = I<sub>default</sub> and `fault_active`(0) = 0 exactly | – | Unverified |
 | REQ-F-04 | Rate limit | The function shall limit the change of `i_cmd` between consecutive samples to ΔI<sub>max</sub>. | Protects the valve and avoids force steps faster than the actuator can follow | Test, SC-ALL, plus step inputs | \|`i_cmd`(k) − `i_cmd`(k−1)\| ≤ ΔI<sub>max</sub> + 1e-12 A at every sample | – | Unverified |
 | REQ-F-05 | Finite output | For any finite input, including v<sub>rel</sub> = 0, the function shall produce finite outputs. | The control law divides by v<sub>rel</sub>; the ε guard must prevent NaN/Inf | Test: input sweep including v<sub>rel</sub> ∈ [−2ε, 2ε] and exact 0 | No NaN or Inf in `i_cmd` or `fault_active` | – | Unverified |
+| REQ-F-06 | Semi-active request of model-based laws | In modes 4 (LQR) and 5 (MPC), the function shall request c<sub>req</sub> = F<sub>cmd</sub>/v<sub>rel</sub> when F<sub>cmd</sub>·v<sub>rel</sub> > 0 and \|v<sub>rel</sub>\| ≥ ε, and c<sub>passive</sub> otherwise, including when the MPC solver reports no valid solution. | A semi-active damper can only dissipate; a request it cannot produce must lead to a defined, safe damping (author's decision: passive, D32) | Test: reference function and law slots with dissipative, non-dissipative, v<sub>rel</sub> ≈ 0 and solver-failure cases | Equal to the rule within 1e-12 N·s/m | – | Unverified |
+| REQ-F-07 | MPC respects the semi-active limits | In mode 5, the force requested by the MPC at each MPC step shall lie within [min, max](c<sub>min</sub>·v<sub>rel</sub>, c<sub>max</sub>·v<sub>rel</sub>), v<sub>rel</sub> taken at that step. | The MPC must know the damper's constraint, not only be clipped afterwards (author's decision, D32) | Test: random states and road velocities through the MPC; later the law slot in closed loop | Every QP solved; largest violation ≤ **1e-6 N** *(PA)*: solver round-off, 9 orders below the force range | – | Unverified |
 
 ### Performance (REQ-P)
 
@@ -73,6 +75,8 @@ Current verdicts, linked tests and measured values: [results/traceability.md](..
 | REQ-P-02 | Road holding penalty | In skyhook mode on SC-C80, the function shall not increase RMS dynamic tire load by more than a bounded amount compared with the passive baseline. | Skyhook is reported to worsen road holding [L5, L8]; the trade-off must be bounded | KPI test, SC-C80, reference vehicle | Increase ≤ **10 %** *(PA)*: no published figure found; literature supports only the direction of the effect | – | Unverified |
 | REQ-P-03 | Suspension travel | In every mode on SC-BUMP, the function shall keep the maximum suspension travel within the available travel. | Exceeding the travel means hitting the bump stops | KPI test, SC-BUMP, reference vehicle, all modes | max \|z<sub>s</sub> − z<sub>u</sub>\| ≤ **100 mm** *(PA)*: a 10 cm deflection limit is used in a quarter-car bump study [L4]; another study requires ≥ 125 mm total travel [L9] | – | Unverified |
 | REQ-P-04 | Robustness across vehicles | In skyhook mode on SC-C80, the function shall not degrade ride comfort on any vehicle variant compared with that variant's passive baseline. | Shows the controller is not tuned to the reference vehicle only (D12) | KPI test, SC-C80, all variants (D16) | RMS body acceleration ≤ passive (reduction ≥ **0 %**) *(PA)* on every variant | – | Unverified |
+| REQ-P-05 | MPC ride comfort | In MPC mode on SC-C80, the function shall reduce RMS body acceleration compared with the passive baseline. | The MPC must keep the comfort benefit that motivates semi-active control | KPI test, SC-C80, reference vehicle | Reduction ≥ **10 %** *(PA)*: the same threshold as skyhook (REQ-P-01), so the strategies are compared on equal terms | – | Unverified |
+| REQ-P-06 | MPC road holding penalty | In MPC mode on SC-C80, the function shall not increase RMS dynamic tire load by more than a bounded amount compared with the passive baseline. | Skyhook misses this bound (REQ-P-02, +31 %); a model-based law that weights tire load is expected to meet it | KPI test, SC-C80, reference vehicle | Increase ≤ **10 %** *(PA)*: the same threshold as REQ-P-02 | – | Unverified |
 
 ### Safety (REQ-S)
 
@@ -134,3 +138,10 @@ Change 2026-10-22 (after baseline): SC-BUMP shape "half-cosine" → "half-sine"
 Change 2026-10-22 (after baseline): t<sub>react</sub> rationale corrected from
 "5 samples plus 1 sample detection" to "5 samples, the output delay being the
 first"; measured fault reaction in M3: 5 ms. Threshold (10 ms) unchanged.
+
+Change 2026-11-01 (v2, D29–D36): added REQ-F-06, REQ-F-07 (model-based laws,
+semi-active limit) and REQ-P-05, REQ-P-06 (MPC comfort and road holding on
+SC-C80). Thresholds fixed before any MPC result, equal to the skyhook ones
+(REQ-P-01, REQ-P-02). Requirements stated "for all inputs" or "in every mode"
+(REQ-F-01…05, REQ-P-03, REQ-S-01/02) now include modes 4 and 5 and the
+inputs 5–8 of interface v2.

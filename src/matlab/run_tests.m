@@ -38,6 +38,15 @@ resetEnv = onCleanup(@() setenv('EVIDENCE_FILE', ''));   % also runs on error or
 
 % --- 2. MATLAB tests ---
 suite = testsuite(fullfile(root, 'tests', 'matlab'));
+% A test file whose class has an error (e.g. a method named like a sealed
+% TestCase method) is left out of the suite WITHOUT any failure. Every
+% Test*.m file must contribute tests, else stop here.
+files = dir(fullfile(root, 'tests', 'matlab', 'Test*.m'));
+classes = unique(extractBefore(string({suite.Name}), '/'));
+missing = setdiff(erase(string({files.name}), '.m'), classes);
+if ~isempty(missing)
+    error('run_tests:notLoaded', 'Test files not loaded (class error?): %s', strjoin(missing, ', '));
+end
 if dev
     suite = suite.selectIf(~matlab.unittest.selectors.HasTag('KnownFail'));
 end

@@ -1,0 +1,106 @@
+classdef TestModelBasedLaws < matlab.unittest.TestCase
+    %TESTMODELBASEDLAWS Law slots of the model-based laws in controller.slx (v2).
+    %   The controller is driven alone with all 8 inputs. Each input row is
+    %   held long enough for the rate limiter to settle; the settled current
+    %   is compared with a hand calculation that does not use the model:
+    %     F = -K*x  ->  force_to_damping  ->  clip [c_min, c_max]  ->  damper map.
+
+    properties (Constant)
+        Model = 'controller'
+        Hold = 15        % samples per input row: 10 for the full current range + output delay
+    end
+
+    methods (TestClassSetup)
+        function loadModel(tc)
+            load_system(tc.Model);
+            tc.addTeardown(@() close_system(tc.Model, 0));
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-F-06'})
+        function REQ_F_06_lqr_slot_matches_hand_calculation(tc)
+            % 60 random vehicle states. The set must contain all three cases
+            % of the rule (dissipative, non-dissipative, |v_rel| < eps), else
+            % the comparison would not prove the whole rule.
+            P = setup_params();
+            rng(21);
+            n = 60;
+            X = [0.05 0.5 0.005 1 2000].*(2*rand(n, 5) - 1);      % [zs-zu, zs_dot, zu-zr, zu_dot, F_d]
+            X(1:5, 4) = X(1:5, 2) + 0.4*P.eps_vrel*(2*rand(5, 1) - 1);   % 5 rows with |v_rel| < eps
+            [I_model, I_hand, cases] = tc.compare(P, X);
+            tc.assertTrue(all(ismember({'dissipative', 'non-dissipative', 'tiny v_rel'}, cases)), ...
+                'test states must cover every case of the rule');
+            err = max(abs(I_model - I_hand));
+            tc.verifyLessThanOrEqual(err, 1e-12, sprintf('largest current difference %.3g A', err));
+            record_evidence('REQ-F-06', 'TestModelBasedLaws/REQ_F_06_lqr_slot_matches_hand_calculation', ...
+                'largest current difference, LQR slot vs rule', err, 'A');
+        end
+    end
+
+    methods (Test)
+        function lqr_at_rest_is_passive(tc)
+            % Vehicle at rest: F = -K*0 = 0, so F*v_rel = 0 is not dissipative
+            % and the rule selects passive damping.
+            P = setup_params();
+            [I_model, ~, ~] = tc.compare(P, zeros(1, 5));
+            tc.verifyEqual(I_model, P.I_passive, 'AbsTol', 1e-12);
+        end
+
+        function v1_laws_ignore_new_inputs(tc)
+            % Modes 0-3 must give the same current whatever inputs 5-8 are:
+            % v1 behavior unchanged by interface v2 (D36).
+            P = setup_params();
+            rng(22);
+            for m = 0:3
+                base = [0.3 -0.1 0 m];
+                u0 = repmat([base 0 0 0 0], 50, 1);
+                u1 = repmat([base 0.04 -0.02 0.01 900], 50, 1);
+                tc.verifyEqual(tc.simulateController(P, u1), tc.simulateController(P, u0), sprintf('mode %d', m));
+            end
+        end
+    end
+
+    methods
+        function [I_model, I_hand, cases] = compare(tc, P, X)
+            % Turn states back into controller inputs (zs, zu, zr chosen so the
+            % differences give the state; zu = 0 is one valid choice), run, and
+            % read the settled current at the end of each held row.
+            n = size(X, 1);
+            zs = X(:, 1); zu = zeros(n, 1); zr = -X(:, 3);
+            u = [X(:, 2), X(:, 4), zeros(n, 1), 4*ones(n, 1), zs, zu, zr, X(:, 5)];
+            i_cmd = tc.simulateController(P, repelem(u, tc.Hold, 1));
+            I_model = i_cmd(tc.Hold:tc.Hold:end);
+            I_hand = zeros(n, 1); cases = cell(n, 1);
+            for k = 1:n
+                x = X(k, :)'; v = x(2) - x(4); F = -P.lqr.K*x;
+                c = force_to_damping(F, v, P);
+                I_hand(k) = current(P, c);
+                if abs(v) < P.eps_vrel
+                    cases{k} = 'tiny v_rel';
+                elseif F*v > 0
+                    cases{k} = 'dissipative';
+                else
+                    cases{k} = 'non-dissipative';
+                end
+            end
+        end
+
+        function i_cmd = simulateController(tc, P, u)
+            % Controller alone, one input row per 1 ms sample (as the C code is driven)
+            t = (0:size(u, 1) - 1)'*1e-3;
+            in = Simulink.SimulationInput(tc.Model);
+            in = in.setVariable('P', P);
+            in = in.setExternalInput([t u]);
+            in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
+                'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
+            out = sim(in);
+            i_cmd = out.yout{1}.Values.Data(:);
+        end
+    end
+end
+
+function I = current(P, c)
+%CURRENT Hand calculation: clip c to [c_min, c_max], then inverse damper map.
+c = min(max(c, P.c_min), P.c_max);
+I = P.I_min + (c - P.c_min)/(P.c_max - P.c_min)*(P.I_max - P.I_min);
+end

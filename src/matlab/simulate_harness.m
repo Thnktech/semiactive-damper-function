@@ -5,10 +5,11 @@ function Y = simulate_harness(P, t, zr, mode, fault)
 %     P      parameter struct (SETUP_PARAMS)
 %     t      time [s], column, 1 ms step, starting at 0
 %     zr     road height [m], same size as t
-%     mode   control mode (0 passive, 1 skyhook, 2 groundhook, 3 hybrid)
+%     mode   control mode (0 passive, 1 skyhook, 2 groundhook, 3 hybrid, 4 LQR)
 %     fault  fault_flag per sample (optional, default all 0)
-%   Y.t and the 9 harness outputs (columns):
-%     zs_ddot, susp_travel, F_tire_dyn, zs_dot, zu_dot, fault_flag, mode, i_cmd, fault_active
+%   Y.t and the 13 harness outputs (columns):
+%     zs_ddot, susp_travel, F_tire_dyn, zs_dot, zu_dot, fault_flag, mode, i_cmd, fault_active,
+%     zs, zu, zr, F_d (v2: controller inputs 5-8, D36)
 
 % 1) Default: no fault
 if nargin < 5
@@ -18,6 +19,9 @@ end
 % 2) Simulation input: model, parameters, workspace variables, stop time, logging
 in = Simulink.SimulationInput('harness');
 in = in.setVariable('P', P);
+% The MPC block in Law_5_MPC reads its controller object from mpc_law5,
+% built from this run's P so that both always match (D31).
+in = in.setVariable('mpc_law5', design_mpc(P));
 % The harness reads road, fault and mode with From Workspace blocks, each as
 % [time value]. setVariable gives them to this run only.
 in = in.setVariable('road_in', [t(:) zr(:)]);
@@ -34,7 +38,8 @@ in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', 'Outp
 out = sim(in);
 
 % 4) Outputs in harness port order
-names = {'zs_ddot', 'susp_travel', 'F_tire_dyn', 'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'i_cmd', 'fault_active'};
+names = {'zs_ddot', 'susp_travel', 'F_tire_dyn', 'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'i_cmd', 'fault_active', ...
+         'zs', 'zu', 'zr', 'F_d'};
 Y.t = out.yout{1}.Values.Time;
 for k = 1:numel(names)
     Y.(names{k}) = out.yout{k}.Values.Data(:); 

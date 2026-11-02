@@ -137,9 +137,13 @@ classdef TestControlLaws < matlab.unittest.TestCase
         end
 
         function first_free_slot_falls_back_to_passive(tc)
-            % mode 4 has no law (yet): default port -> passive (D20, D24)
+            % The first mode without a law slot goes to the default port -> passive
+            % (D20, D24). Read from the model, so the test follows new slots
+            % (mode 4 became LQR in v2, D36).
             P = setup_params();
-            tc.verifyEqual(tc.settled(P, 0.2, 0.1, 4), P.I_passive, 'AbsTol', 1e-12);
+            free = max(cell2mat(keys(law_names()))) + 1;
+            tc.verifyEqual(tc.settled(P, 0.2, 0.1, free), P.I_passive, 'AbsTol', 1e-12, ...
+                sprintf('mode %d', free));
         end
 
         % mode 0 = Law_0_Passive: constant c_passive, whatever the velocities.
@@ -216,7 +220,7 @@ classdef TestControlLaws < matlab.unittest.TestCase
             t = (0:size(u, 1) - 1)'*1e-3;
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
-            in = in.setExternalInput([t u]);
+            in = in.setExternalInput([t pad_controller_inputs(u)]);   % inputs 5-8 = 0 (D36)
             in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
             out = sim(in);
@@ -236,7 +240,7 @@ classdef TestControlLaws < matlab.unittest.TestCase
             u = [zs_dot zu_dot 0 mode] .* ones(numel(t), 4);
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
-            in = in.setExternalInput([t u]);
+            in = in.setExternalInput([t pad_controller_inputs(u)]);   % inputs 5-8 = 0 (D36)
             in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
             out = sim(in);

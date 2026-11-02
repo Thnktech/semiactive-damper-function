@@ -17,10 +17,11 @@ classdef (TestTags = {'Plausibility'}) TestPlausibility < matlab.unittest.TestCa
 
     methods (Test)
         function zero_road_zero_motion_every_mode(tc)
-            % Flat road: the car must stay at rest whatever the strategy commands
+            % Flat road: the car must stay at rest whatever the strategy commands.
+            % Every law slot in the model, so new strategies are checked too.
             P = setup_params();
             t = (0:1e-3:3)';
-            for m = tc.Modes
+            for m = cell2mat(keys(law_names()))
                 Y = simulate_harness(P, t, 0*t, m);
                 for f = {'zs_dot', 'zu_dot', 'zs_ddot', 'susp_travel', 'F_tire_dyn'}
                     tc.verifyLessThan(max(abs(Y.(f{1}))), 1e-9, sprintf('mode %d: %s moves on a flat road', m, f{1}));

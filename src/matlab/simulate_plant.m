@@ -5,7 +5,8 @@ function Y = simulate_plant(P, t, zr, i_cmd)
 %     t      time [s], column, 1 ms step, starting at 0
 %     zr     road height [m], same size as t
 %     i_cmd  current [A]: scalar (held constant) or same size as t
-%   Y.t, Y.zs_dot, Y.zu_dot, Y.zs_ddot, Y.susp_travel, Y.F_tire_dyn (columns)
+%   Y.t, Y.zs_dot, Y.zu_dot, Y.zs_ddot, Y.susp_travel, Y.F_tire_dyn,
+%   Y.zs, Y.zu, Y.F_d (v2, D30) (columns)
 
 % 1) Constant current -> vector
 %    (the passive baseline uses one fixed current, P.I_passive)
@@ -25,8 +26,8 @@ in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', 'Outp
 % 3) Run
 out = sim(in);
 
-% 4) Outputs in port order (zs_dot, zu_dot, zs_ddot, susp_travel, F_tire_dyn)
-names = {'zs_dot', 'zu_dot', 'zs_ddot', 'susp_travel', 'F_tire_dyn'};
+% 4) Outputs in port order (v2 appended zs, zu, F_d)
+names = {'zs_dot', 'zu_dot', 'zs_ddot', 'susp_travel', 'F_tire_dyn', 'zs', 'zu', 'F_d'};
 Y.t = out.yout{1}.Values.Time;
 for k = 1:numel(names)
     Y.(names{k}) = out.yout{k}.Values.Data(:); 

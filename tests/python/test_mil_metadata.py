@@ -13,7 +13,7 @@ import pytest
 
 DATA = Path(__file__).resolve().parents[1] / "data"
 LOGS = sorted(DATA.glob("mil_*.csv"))
-COLUMNS = ["t", "zs_dot", "zu_dot", "fault_flag", "mode", "i_cmd", "fault_active"]
+COLUMNS = ["t", "zs_dot", "zu_dot", "fault_flag", "mode", "zs", "zu", "zr", "F_d", "i_cmd", "fault_active"]
 # Fields without which a log cannot be traced to the model version and
 # scenario that produced it (REQ-V-02 acceptance).
 REQUIRED = ["scenario", "vehicle", "git_commit", "model", "sample_time_s",

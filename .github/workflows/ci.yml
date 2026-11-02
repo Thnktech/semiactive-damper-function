@@ -25,15 +25,17 @@ jobs:
     # MathWorks licenses MATLAB and Simulink products for public repositories in
     # GitHub Actions at no cost, except code-generation products ("transformation
     # products"). These tests need no Coder: Simulink runs the models, Simulink
-    # Control Design provides linearize (TestPlant). The release must match the
-    # models (saved in R2026a).
+    # Control Design provides linearize (TestPlant). Since v2, setup_params also
+    # designs the LQR (Control System Toolbox, dlqr) and the MPC (Model
+    # Predictive Control Toolbox). The release must match the models (saved in
+    # R2026a).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: matlab-actions/setup-matlab@v2
         with:
           release: R2026a
-          products: Simulink Simulink_Control_Design
+          products: Simulink Simulink_Control_Design Control_System_Toolbox Model_Predictive_Control_Toolbox
           # Keep the MATLAB installation between runs: much faster after the first.
           cache: true
       # Same selection as run_tests('dev'): every MATLAB test except the accepted
@@ -43,7 +45,11 @@ jobs:
         with:
           command: |
             openProject(pwd);
-            suite = testsuite('tests/matlab').selectIf(~matlab.unittest.selectors.HasTag('KnownFail'));
+            suite = testsuite('tests/matlab');
+            % A test file with a class error drops out silently: every Test*.m must load
+            f = dir('tests/matlab/Test*.m'); missing = setdiff(erase(string({f.name}), '.m'), unique(extractBefore(string({suite.Name}), '/')));
+            assert(isempty(missing), 'Test files not loaded: %s', strjoin(missing, ', '));
+            suite = suite.selectIf(~matlab.unittest.selectors.HasTag('KnownFail'));
             results = run(testrunner('textoutput'), suite);
             disp(table(results));
             counts = sprintf('passed %d, failed %d, incomplete %d (of %d)', nnz([results.Passed]), nnz([results.Failed]), nnz([results.Incomplete]), numel(results));

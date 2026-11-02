@@ -9,6 +9,20 @@ Version plan: each completed milestone is tagged as a minor release
 
 ## [Unreleased]
 
+### Added
+- v2/M7: prediction model `qc_prediction_model.m` (quarter car, relative
+  states, actuator lag), `design_lqr.m`, `design_mpc.m` (classic MPC,
+  formulation switch), `force_to_damping.m` (passive fallback); `P.mbc`,
+  `P.lqr`, `P.mpc` in `setup_params.m` (T<sub>s,MPC</sub> 5 ms, p = 10,
+  m = 5); `TestModelBasedDesign` (13 tests, REQ-F-06, REQ-F-07);
+  decisions D29–D36; interface v2 in `signals.md`; REQ-F-06/07,
+  REQ-P-05/06; CI installs Control System and MPC toolboxes.
+- v2/M7: models (author): plant outputs `zs`, `zu`, `F_d`; controller inputs
+  5–8; `Law_4_LQR` with `Force_to_damping`. Tests: `TestModelBasedLaws`
+  (LQR slot vs hand calculation, REQ-F-06), `TestPlant/v2_outputs_consistent`,
+  `pad_controller_inputs` for v1 tests, zero-road and REQ-P-03 over all law
+  slots; `run_tests` and CI stop when a test file fails to load.
+
 ### Changed
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
 

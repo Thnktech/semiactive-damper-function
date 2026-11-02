@@ -23,7 +23,12 @@ classdef TestMilLogs < matlab.unittest.TestCase
             P = setup_params();
             in = Simulink.SimulationInput('controller');
             in = in.setVariable('P', P);
-            in = in.setExternalInput([L.t, L.zs_dot, L.zu_dot, L.fault_flag, L.mode]);
+            u = [L.zs_dot, L.zu_dot, L.fault_flag, L.mode];
+            % v2 logs also carry inputs 5-8; v1 logs do not (their modes ignore them)
+            if all(ismember({'zs', 'zu', 'zr', 'F_d'}, L.Properties.VariableNames))
+                u = [u, L.zs, L.zu, L.zr, L.F_d];
+            end
+            in = in.setExternalInput([L.t, pad_controller_inputs(u)]);
             in = in.setModelParameter('StopTime', num2str(L.t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
             out = sim(in);
@@ -36,7 +41,7 @@ classdef TestMilLogs < matlab.unittest.TestCase
             % mil_to_sil.md section 4: the replay only proves what the logs contain
             P = setup_params();
             A = vertcat(tc.readLog('SC-C80'), tc.readLog('SC-BUMP'), tc.readLog('SC-FAULT'));
-            for m = 0:3
+            for m = cell2mat(keys(law_names()))   % every law slot in the model
                 tc.verifyTrue(any(A.mode == m), sprintf('mode %d not exercised', m));
             end
             tc.verifyTrue(any(A.mode == 7) && any(A.mode == 1.5), 'invalid modes not exercised');

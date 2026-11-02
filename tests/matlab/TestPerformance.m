@@ -49,7 +49,8 @@ classdef TestPerformance < matlab.unittest.TestCase
             P = setup_params();
             [t, zr] = road_bump(0.05, 0.5, 18, 6, 2.5);
             worst = 0; at = 0;
-            for m = [0 1 2 3]
+            % "In every mode": all law slots in the model (v2 adds LQR, MPC)
+            for m = cell2mat(keys(law_names()))
                 Y = simulate_harness(P, t, zr, m);
                 K = kpi(Y.t, Y.zs_ddot, Y.F_tire_dyn, Y.susp_travel, P.F_static);
                 tc.verifyLessThanOrEqual(K.max_travel_mm, 100, sprintf( ...

@@ -4,7 +4,8 @@ classdef TestHarness < matlab.unittest.TestCase
     properties (Constant)
         Model = 'harness'
         Outputs = {'zs_ddot', 'susp_travel', 'F_tire_dyn', ...           % KPI signals
-                   'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'i_cmd', 'fault_active'}   % controller I/O log
+                   'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'i_cmd', 'fault_active', ...   % controller I/O log
+                   'zs', 'zu', 'zr', 'F_d'}                                              % v2 inputs 5-8 (D36)
     end
 
     methods (TestClassSetup)
