@@ -10,6 +10,14 @@ Version 2 (model-based control): M7 → `v2.0.0` (interface change = major),
 M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 
 ## [Unreleased]
+### Added
+- v2/M8: models (author): `Law_5_MPC` in `controller.slx` (MPC Controller
+  block `mpc_law5` at 5 ms, rate transitions, road velocity `zr_dot` as
+  measured disturbance, online semi-active force bounds, `Force_to_damping`
+  with QP status). Tests: `TestModelBasedLaws` MPC slot vs `mpcmove` over
+  20 states covering both limits, free optimum and passive (REQ-F-06), and
+  road-velocity input `mpc_uses_road_velocity`; `simulateController` passes
+  `mpc_law5`.
 
 ## [2.0.0] - 2026-11-02
 

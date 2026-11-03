@@ -15,6 +15,12 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
             load_system(tc.Model);
             tc.addTeardown(@() close_system(tc.Model, 0));
         end
+        function quietToolbox(tc)
+            % mpcmove/mpcstate print the toolbox's default assumptions
+            % (documented in D31); keep the test log readable.
+            old = mpcverbosity('off');
+            tc.addTeardown(@() mpcverbosity(old));
+        end
     end
 
     methods (Test, TestTags = {'REQ-F-06'})
@@ -35,6 +41,28 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
             record_evidence('REQ-F-06', 'TestModelBasedLaws/REQ_F_06_lqr_slot_matches_hand_calculation', ...
                 'largest current difference, LQR slot vs rule', err, 'A');
         end
+        function REQ_F_06_mpc_slot_matches_mpcmove(tc)
+            % Random states held for 40 MPC solves each; the settled current must
+            % equal mpcmove -> force_to_damping -> clip -> damper map. The states
+            % must hit both limits, the free optimum and passive.
+            P = setup_params(); mpc = design_mpc(P);
+            rng(5);
+            n = 20; N = 40; Hold = N*round(P.mpc.Ts/1e-3);
+            X = [0.05 0.5 0.005 1 2000].*(2*rand(n, 5) - 1);
+            X(n, 4) = X(n, 2);                                    % v_rel = 0
+            [I_hand, cases] = mpcHand(P, mpc, X, N);
+            tc.assertTrue(all(ismember({'soft limit', 'firm limit', 'between', 'passive'}, cases)), ...
+                'test states must cover every case');
+            % zr = 0 so zr_dot = 0; zu = x3, zs = x1 + x3 give the same states
+            u = [X(:, 2), X(:, 4), zeros(n, 1), 5*ones(n, 1), X(:, 1) + X(:, 3), X(:, 3), zeros(n, 1), X(:, 5)];
+            i_cmd = tc.simulateController(P, repelem(u, Hold, 1));
+            I_model = i_cmd(Hold:Hold:end);
+            err = max(abs(I_model - I_hand));
+            tc.verifyLessThanOrEqual(err, 1e-12, sprintf('largest current difference %.3g A', err));
+            record_evidence('REQ-F-06', 'TestModelBasedLaws/REQ_F_06_mpc_slot_matches_mpcmove', ...
+                'largest current difference, MPC slot vs mpcmove', err, 'A');
+        end
+
     end
 
     methods (Test)
@@ -58,6 +86,23 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
                 tc.verifyEqual(tc.simulateController(P, u1), tc.simulateController(P, u0), sprintf('mode %d', m));
             end
         end
+        function mpc_uses_road_velocity(tc)
+            % Road rising at a = 0.2 m/s with the state unchanged: the slot must
+            % match mpcmove with md = zr_dot (backward difference from 0), and
+            % differ clearly from md = 0, else the md input is not connected.
+            P = setup_params(); mpc = design_mpc(P);
+            rng(5); X = [0.05 0.5 0.005 1 2000].*(2*rand(6, 5) - 1);
+            x = X(6, :);                                          % a state between the limits
+            a = 0.2; N = 40; Hold = N*round(P.mpc.Ts/1e-3);
+            zr = a*(0:Hold - 1)'*1e-3;
+            u = [repmat([x(2) x(4) 0 5], Hold, 1), x(1) + x(3) + zr, x(3) + zr, zr, repmat(x(5), Hold, 1)];
+            i_cmd = tc.simulateController(P, u);
+            with = mpcHand(P, mpc, x, N, a*((1:N)' > 1));
+            without = mpcHand(P, mpc, x, N);
+            tc.verifyEqual(i_cmd(end), with, 'AbsTol', 1e-12);
+            tc.verifyGreaterThan(abs(i_cmd(end) - without), 0.1, 'md has no effect: not connected?');
+        end
+
     end
 
     methods
@@ -90,6 +135,7 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
             t = (0:size(u, 1) - 1)'*1e-3;
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
+            in = in.setVariable('mpc_law5', design_mpc(P));
             in = in.setExternalInput([t u]);
             in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
@@ -103,4 +149,30 @@ function I = current(P, c)
 %CURRENT Hand calculation: clip c to [c_min, c_max], then inverse damper map.
 c = min(max(c, P.c_min), P.c_max);
 I = P.I_min + (c - P.c_min)/(P.c_max - P.c_min)*(P.I_max - P.I_min);
+end
+
+function [I, cases] = mpcHand(P, mpc, X, N, md)
+%MPCHAND Hand calculation: the same chain of N mpcmove calls per state as the block.
+if nargin < 5, md = zeros(N, 1); end
+n = size(X, 1); I = zeros(n, 1); cases = cell(n, 1);
+xs = mpcstate(mpc); o = mpcmoveopt;
+for r = 1:n
+    x = X(r, :)'; v = x(2) - x(4);
+    o.MVMin = min(P.c_min*v, P.c_max*v); o.MVMax = max(P.c_min*v, P.c_max*v);
+    for k = 1:N
+        xs.Plant = x;
+        [F, info] = mpcmove(mpc, xs, [], zeros(1, 3), md(k), o);
+    end
+    c = force_to_damping(F, v, P, info.Iterations);
+    I(r) = current(P, c);
+    if abs(v) < P.eps_vrel
+        cases{r} = 'passive';
+    elseif abs(c - P.c_min) < 1e-9*P.c_min
+        cases{r} = 'soft limit';
+    elseif abs(c - P.c_max) < 1e-9*P.c_max
+        cases{r} = 'firm limit';
+    else
+        cases{r} = 'between';
+    end
+end
 end
