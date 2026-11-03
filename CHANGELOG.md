@@ -24,6 +24,8 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 - v2/M8: SC-BUMP runs the MPC (mode 5) until 4 s, then hybrid, so the MiL
   logs cover the MPC slot; all controller and harness tests pass `mpc_law5`
   (needed in a fresh MATLAB session).
+- v2/M8: MiL reference logs from 410a411: SC-BUMP with the MPC (mode 5);
+  SC-C80 and SC-FAULT data unchanged (provenance only)
 
 ## [2.0.0] - 2026-11-02
 

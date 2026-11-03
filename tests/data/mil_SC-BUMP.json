@@ -1,6 +1,6 @@
 {
   "scenario": "SC-BUMP",
-  "description": "SC-BUMP: half-sine 50 mm x 0.5 m at 18 km/h, bump at 2.5 s; skyhook then hybrid",
+  "description": "SC-BUMP: half-sine 50 mm x 0.5 m at 18 km/h, bump at 2.5 s; MPC then hybrid",
   "vehicle": "sedan_ref",
   "road": {
     "type": "bump",
@@ -10,9 +10,9 @@
     "t0_s": 2.5,
     "duration_s": 6
   },
-  "mode_schedule": "1 [0,4) 3 [4,6]",
+  "mode_schedule": "5 [0,4) 3 [4,6]",
   "fault": "none",
-  "git_commit": "c29d4cac8775f8a03b7aafc2b7c37bdbd6f89099",
+  "git_commit": "410a41149748bf432f5b1761cfe49f9a601090e4",
   "git_dirty": false,
   "model": "controller",
   "harness": "harness",
@@ -35,6 +35,6 @@
   "number_format": "%.17g",
   "matlab_release": "2026a",
   "simulink_version": "26.1",
-  "generated": "2026-11-02T21:37:32Z",
+  "generated": "2026-11-03T12:41:14Z",
   "rules": "docs/mil_to_sil.md; REQ-V-01, REQ-V-02; D7, D19"
 }
