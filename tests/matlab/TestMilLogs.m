@@ -32,7 +32,13 @@ classdef TestMilLogs < matlab.unittest.TestCase
             in = in.setModelParameter('StopTime', num2str(L.t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
             out = sim(in);
-            tc.verifyEqual(out.yout{1}.Values.Data(:), L.i_cmd, sprintf('%s: i_cmd replay', scenario));
+            % i_cmd within the REQ-V-01 tolerance, not bit for bit: model-based laws
+            % compute their gains at run time (dlqr, MPC), and the numerical libraries
+            % differ in the last bits between Windows (where the logs are made) and the
+            % Linux CI machine; seen as 1e-12 A in the LQR window (D37). On the logging
+            % machine the replay is still exact.
+            tc.verifyEqual(out.yout{1}.Values.Data(:), L.i_cmd, 'AbsTol', 1e-9, 'RelTol', 1e-9, ...
+                sprintf('%s: i_cmd replay', scenario));
             tc.verifyEqual(out.yout{2}.Values.Data(:), L.fault_active, sprintf('%s: fault_active replay', scenario));
         end
 

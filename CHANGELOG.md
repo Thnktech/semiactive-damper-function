@@ -56,6 +56,10 @@ back-to-back for the 8-input controller (bit-identical). v1.0.0 stays on
 - `.gitignore`: local teaching report and slides (`docs/teaching/`).
 - v2/M7: release `v2.0.0`; this changelog section and version plan.
 
+### Fixed
+- v2/M7: MiL-log replay test within the REQ-V-01 tolerance (1e-9): the LQR
+  gain from `dlqr` differs in the last bits on the Linux CI machine (D37).
+
 ### Removed
 - Demo GIF plan dropped (README placeholder removed); v1.0.0 is complete
   without it.
