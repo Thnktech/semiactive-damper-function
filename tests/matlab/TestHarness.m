@@ -155,6 +155,7 @@ classdef TestHarness < matlab.unittest.TestCase
         function Y = simulate(tc, P, t, zr, fault, mode_sel)
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
+            in = in.setVariable('mpc_law5', design_mpc(P));
             in = in.setVariable('road_in', [t zr]);
             in = in.setVariable('fault_in', [t fault]);
             if isscalar(mode_sel), mode_sel = mode_sel*ones(size(t)); end

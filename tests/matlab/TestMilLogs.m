@@ -23,6 +23,7 @@ classdef TestMilLogs < matlab.unittest.TestCase
             P = setup_params();
             in = Simulink.SimulationInput('controller');
             in = in.setVariable('P', P);
+            in = in.setVariable('mpc_law5', design_mpc(P));
             u = [L.zs_dot, L.zu_dot, L.fault_flag, L.mode];
             % v2 logs also carry inputs 5-8; v1 logs do not (their modes ignore them)
             if all(ismember({'zs', 'zu', 'zr', 'F_d'}, L.Properties.VariableNames))

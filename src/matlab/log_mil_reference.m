@@ -85,10 +85,10 @@ switch id
         f = zeros(size(t)); sc.faultText = 'none';
     case 'SC-BUMP'
         [t, zr] = road_bump(0.05, 0.5, 18, 6, 2.5);
-        m = ones(size(t)); m(t >= 4) = 3;
-        sc.description = 'SC-BUMP: half-sine 50 mm x 0.5 m at 18 km/h, bump at 2.5 s; skyhook then hybrid';
+        m = 5*ones(size(t)); m(t >= 4) = 3;
+        sc.description = 'SC-BUMP: half-sine 50 mm x 0.5 m at 18 km/h, bump at 2.5 s; MPC then hybrid';
         sc.road = struct('type', 'bump', 'height_m', 0.05, 'length_m', 0.5, 'speed_kmh', 18, 't0_s', 2.5, 'duration_s', 6);
-        sc.modeText = '1 [0,4) 3 [4,6]';
+        sc.modeText = '5 [0,4) 3 [4,6]';
         f = zeros(size(t)); sc.faultText = 'none';
     case 'SC-FAULT'
         [t, zr] = road_iso8608('C', 80, 10, 1);

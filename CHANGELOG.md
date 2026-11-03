@@ -21,6 +21,9 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 - v2/M8: logged signals `F_mpc`, `v_mpc` in `Law_5_MPC` (author);
   `TestModelBasedLaws/REQ_F_07_mpc_force_within_bounds_closed_loop`: every
   MPC force within the semi-active limits, closed loop SC-C80 (REQ-F-07).
+- v2/M8: SC-BUMP runs the MPC (mode 5) until 4 s, then hybrid, so the MiL
+  logs cover the MPC slot; all controller and harness tests pass `mpc_law5`
+  (needed in a fresh MATLAB session).
 
 ## [2.0.0] - 2026-11-02
 
