@@ -62,6 +62,17 @@ end
 assignin('base', 'P', P);
 restoreP = onCleanup(@() restoreBaseP(hadP, oldP));   % runs also on error
 
+% The MPC Controller block reads mpc_law5 from the base workspace in the
+% same way; designed here from the reference P, restored afterwards.
+hadMpc = evalin('base', 'exist(''mpc_law5'', ''var'')') == 1;
+oldMpc = [];
+if hadMpc
+    oldMpc = evalin('base', 'mpc_law5');
+end
+assignin('base', 'mpc_law5', design_mpc(P));
+restoreMpc = onCleanup(@() restoreBaseVar('mpc_law5', hadMpc, oldMpc));   % runs also on error
+
+
 % --- 3. Build in a temporary folder ---
 % slbuild writes controller_grt_rtw/ and slprj/ into the code-generation
 % folder. A temporary folder keeps the repository clean; only the packed
@@ -130,7 +141,8 @@ end
 % compares them with the checked-out files: if controller.slx or the
 % parameters change without regenerating, the test fails.
 inputs = {'model/controller/controller.slx', 'src/matlab/setup_params.m', ...
-    ['src/matlab/vehicles/' cfg.vehicle '.m']};
+    ['src/matlab/vehicles/' cfg.vehicle '.m'],...
+    'src/matlab/design_mpc.m', 'src/matlab/qc_prediction_model.m'};
 hashes = struct('path', inputs, 'sha256', '');
 for k = 1:numel(inputs)
     hashes(k).sha256 = sha256(fullfile(root, inputs{k}));
@@ -166,6 +178,16 @@ else
     evalin('base', 'clear P');
 end
 end
+
+% ---------------------------------------------------------------------
+function restoreBaseVar(name, had, old)
+if had
+    assignin('base', name, old);
+else
+    evalin('base', ['clear ' name]);
+end
+end
+
 
 function h = sha256(file)
 % SHA-256 of a file's bytes, as lowercase hex (same as Python hashlib).

@@ -26,6 +26,9 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   (needed in a fresh MATLAB session).
 - v2/M8: MiL reference logs from 410a411: SC-BUMP with the MPC (mode 5);
   SC-C80 and SC-FAULT data unchanged (provenance only)
+  - v2/M8: `generate_controller_code` puts `mpc_law5` in the base workspace
+  (restored afterwards) and hashes `design_mpc.m` and
+  `qc_prediction_model.m` in the provenance.
 
 ## [2.0.0] - 2026-11-02
 
