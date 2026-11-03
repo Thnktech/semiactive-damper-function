@@ -63,6 +63,20 @@ classdef TestStudy < matlab.unittest.TestCase
         function unknown_mode_and_road_rejected(tc)
             tc.verifyError(@() run_study(struct('modes', 9, 'roads', {{'A50'}}, 'T', 3, 'outDir', tc.Out)), 'run_study:mode');
             tc.verifyError(@() run_study(struct('modes', 1, 'roads', {{'X80'}}, 'T', 3, 'outDir', tc.Out)), 'run_study:road');
+            tc.verifyError(@() run_study(struct('modes', 1, 'roads', {{'A50'}}, 'T', 3, 'outDir', tc.Out, ...
+                'params', struct('mpc', struct('P', 40)))), 'run_study:param');
+        end
+
+        % cfg.params reaches the simulation: a longer MPC horizon changes the MPC
+        % result, passive does not use it, and the summary records the override.
+        function params_override_reaches_simulation(tc)
+            c = struct('name', 't', 'modes', 5, 'roads', {{'C80'}}, 'T', 3, 'outDir', tc.Out);
+            S0 = run_study(c);
+            c.params.mpc.p = 40;
+            S1 = run_study(c);
+            tc.verifyEqual(S1.T.rms_zs_ddot(S1.T.mode == 0), S0.T.rms_zs_ddot(S0.T.mode == 0));
+            tc.verifyNotEqual(S1.T.rms_zs_ddot(S1.T.mode == 5), S0.T.rms_zs_ddot(S0.T.mode == 5));
+            tc.verifySubstring(fileread(fullfile(tc.Out, 'summary_sedan_ref.md')), '`mpc.p = 40`');
         end
     end
 end

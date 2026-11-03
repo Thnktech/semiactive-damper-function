@@ -18,6 +18,10 @@ function S = run_study(cfg)
 %     timePlotRoads roads that also get a time-signal plot      [{}]
 %     timeWindow    time window of those plots [s]              [[10 13]]
 %     outDir        output folder        [results/studies/<name>, git-ignored]
+%     params        overrides of P, nested like P, e.g.         [none]
+%                   params.mpc.p = 40, params.mbc.y_weight = [1; 3; 0.1];
+%                   replaces values after SETUP_PARAMS (derived values are
+%                   not recomputed) and is listed in the summary
 %
 %   S.T        table, one row per road and mode (absolute KPIs + d_*_pct vs passive)
 %   S.signals  time signals per road and mode (struct array)
@@ -26,6 +30,7 @@ function S = run_study(cfg)
 
 cfg = defaults(cfg);
 P = setup_params(cfg.vehicle);
+P = override(P, cfg.params, 'P');
 % Law names come from the model, so a new Law_<n>_ slot can be studied at once.
 names = law_names();
 % Passive (mode 0) is always run: every change in % is relative to passive on
@@ -98,7 +103,8 @@ end
 function cfg = defaults(cfg)
 if nargin < 1 || isempty(cfg), cfg = struct(); end
 d = struct('name', 'study', 'vehicle', getfield(project_config(), 'vehicle'), 'modes', [1 2 3], ...
-    'roads', {{'C80'}}, 'T', 30, 'seed', 1, 'timePlotRoads', {{}}, 'timeWindow', [10 13], 'outDir', '');
+    'roads', {{'C80'}}, 'T', 30, 'seed', 1, 'timePlotRoads', {{}}, 'timeWindow', [10 13], 'outDir', '', ...
+    'params', struct());
 for f = fieldnames(d)'
     if ~isfield(cfg, f{1}) || (isempty(cfg.(f{1})) && ~strcmp(f{1}, 'timePlotRoads'))
         cfg.(f{1}) = d.(f{1});
@@ -108,6 +114,37 @@ if ischar(cfg.roads), cfg.roads = {cfg.roads}; end
 if ischar(cfg.timePlotRoads), cfg.timePlotRoads = {cfg.timePlotRoads}; end
 if isempty(cfg.outDir)
     cfg.outDir = fullfile(project_root(), 'results', 'studies', cfg.name);
+end
+end
+
+% cfg.params -> P: each given field replaces the same field of P; nested
+% structs are merged field by field, so params.mpc.p changes only P.mpc.p.
+% A field P does not have stops the study: a typo would otherwise run the
+% default tuning silently under the study's name.
+function P = override(P, o, path)
+for f = fieldnames(o)'
+    name = [path '.' f{1}];
+    if ~isfield(P, f{1})
+        error('run_study:param', 'Unknown parameter %s in cfg.params.', name);
+    end
+    if isstruct(o.(f{1}))
+        P.(f{1}) = override(P.(f{1}), o.(f{1}), name);
+    else
+        P.(f{1}) = o.(f{1});
+    end
+end
+end
+
+% cfg.params as text for the summary, one 'mpc.p = 40' per overridden value.
+function s = param_list(o, path)
+s = {};
+for f = fieldnames(o)'
+    name = [path f{1}];
+    if isstruct(o.(f{1}))
+        s = [s, param_list(o.(f{1}), [name '.'])]; %#ok<AGROW>
+    else
+        s{end+1} = sprintf('`%s = %s`', name, mat2str(o.(f{1}))); %#ok<AGROW>
+    end
 end
 end
 
@@ -137,6 +174,10 @@ function write_summary(T, cfg, P, file)
 fid = fopen(file, 'w'); c = onCleanup(@() fclose(fid));
 fprintf(fid, '# Study: %s\n\nVehicle `%s` · random roads %g s, seed %d · KPIs: RMS over t >= 2 s, travel over the whole run.\n', ...
     cfg.name, P.name, cfg.T, cfg.seed);
+ov = param_list(cfg.params, '');
+if ~isempty(ov)
+    fprintf(fid, 'Parameter overrides: %s.\n', strjoin(ov, ', '));
+end
 fprintf(fid, 'Change vs passive on the same road; negative = better.\n\n');
 fprintf(fid, '| Road | Strategy | RMS z̈s [m/s²] | Δ comfort | RMS ΔF tire [N] | Δ tire load | Max travel [mm] | Δ travel |\n');
 fprintf(fid, '|---|---|---|---|---|---|---|---|\n');

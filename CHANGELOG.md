@@ -34,6 +34,10 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   comparison with the MPC (SC-C80 vs passive: comfort −4.0 %, tire load
   +10.5 %, travel +33.8 %); README results with the MPC row
   (`readme_results.py` mode 5).
+- v2/M8: `run_study` takes parameter overrides `cfg.params` (nested like
+  `P`, e.g. `params.mpc.p = 40`; unknown fields rejected; listed in the
+  summary) for MPC tuning studies; `TestStudy` checks that an override
+  reaches the simulation and that a misspelled field stops the study.
 
 ## [2.0.0] - 2026-11-02
 
