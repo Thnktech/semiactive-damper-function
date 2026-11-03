@@ -65,6 +65,32 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
 
     end
 
+    methods (Test, TestTags = {'REQ-F-07'})
+        function REQ_F_07_mpc_force_within_bounds_closed_loop(tc)
+            % Closed loop on C80: every MPC solve must return a force between
+            % c_min*v_rel and c_max*v_rel of the same MPC sample (F_mpc and
+            % v_mpc are logged signals in Law_5_MPC).
+            P = setup_params();
+            [t, zr] = road_iso8608('C', 80, 10, 1);
+            in = Simulink.SimulationInput('harness');
+            in = in.setVariable('P', P);
+            in = in.setVariable('mpc_law5', design_mpc(P));
+            in = in.setVariable('road_in', [t zr]);
+            in = in.setVariable('fault_in', [t 0*t]);
+            in = in.setVariable('mode_in', [t 5 + 0*t]);
+            in = in.setModelParameter('StopTime', num2str(t(end)), 'SignalLogging', 'on', 'SignalLoggingName', 'logsout');
+            out = sim(in);
+            F = out.logsout.get('F_mpc').Values.Data(:);
+            v = out.logsout.get('v_mpc').Values.Data(:);
+            tc.assertEqual(numel(F), round(t(end)/P.mpc.Ts) + 1, 'F_mpc must be logged at the MPC rate');
+            lo = min(P.c_min*v, P.c_max*v); hi = max(P.c_min*v, P.c_max*v);
+            worst = max([lo - F; F - hi]);
+            tc.verifyLessThanOrEqual(worst, 1e-6, sprintf('force %.3g N outside the semi-active limits', worst));
+            record_evidence('REQ-F-07', 'TestModelBasedLaws/REQ_F_07_mpc_force_within_bounds_closed_loop', ...
+                'largest bound violation, closed loop SC-C80 10 s', worst, 'N');
+        end
+    end
+
     methods (Test)
         function lqr_at_rest_is_passive(tc)
             % Vehicle at rest: F = -K*0 = 0, so F*v_rel = 0 is not dissipative

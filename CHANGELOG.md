@@ -18,6 +18,9 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   20 states covering both limits, free optimum and passive (REQ-F-06), and
   road-velocity input `mpc_uses_road_velocity`; `simulateController` passes
   `mpc_law5`.
+- v2/M8: logged signals `F_mpc`, `v_mpc` in `Law_5_MPC` (author);
+  `TestModelBasedLaws/REQ_F_07_mpc_force_within_bounds_closed_loop`: every
+  MPC force within the semi-active limits, closed loop SC-C80 (REQ-F-07).
 
 ## [2.0.0] - 2026-11-02
 
