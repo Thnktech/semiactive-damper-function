@@ -6,9 +6,9 @@
     "atol": 1e-09,
     "rtol": 1e-09
   },
-  "recorded": "2026-11-02T21:45:33Z",
-  "git_commit": "de2cd297fd797102649bc7eb072d6d828e2d430d",
-  "code_generated_from": "de2cd297fd797102649bc7eb072d6d828e2d430d",
+  "recorded": "2026-11-03T21:55:54Z",
+  "git_commit": "7aa282f138e70cdb8df9ef53416d003370b00a4d",
+  "code_generated_from": "7aa282f138e70cdb8df9ef53416d003370b00a4d",
   "matlab_release": "2026a",
   "simulink_coder_version": "26.1",
   "compiler": "gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 14.2.0",
@@ -19,7 +19,7 @@
   "sources": [
     {
       "path": "model/controller/controller.slx",
-      "sha256": "1e559fb6fbe1480fa4180cfdba559e02511cd565e17d3f1b1121b06c6f8729f2"
+      "sha256": "e4900bbbe91f56a30586cf976db2994ffa78c832fda6a46b07df0a96c1352398"
     },
     {
       "path": "src/matlab/setup_params.m",
@@ -28,14 +28,22 @@
     {
       "path": "src/matlab/vehicles/sedan_ref.m",
       "sha256": "9507161298d759a983ca9116486ec44f29d0c3b5bcf89d12935166a65835bea0"
+    },
+    {
+      "path": "src/matlab/design_mpc.m",
+      "sha256": "b0ccb3611f5ca1751770b2a8133a0ed28a1427a68a3b4315aa9aa90777f81642"
+    },
+    {
+      "path": "src/matlab/qc_prediction_model.m",
+      "sha256": "f51711b04f4657c8d8f396c250f1033fbd9a635401dbab5cd1af91dea4699e28"
     }
   ],
   "logs": [
     {
       "log": "tests/data/mil_SC-BUMP.csv",
-      "sha256": "24c7a13492c2f8fe14219fe015c5f3d20bb600157a62582209d1b153d1eccde0",
+      "sha256": "67fdd92481d5caf6bc47aab5ff5cb71f0d41d0a18bc734c7bd17700286c14be6",
       "rows": 6001,
-      "max_abs_dev_i_cmd": 0.0,
+      "max_abs_dev_i_cmd": 8.903988657493755e-14,
       "samples_outside_tolerance": 0,
       "fault_active_identical": true,
       "pass": true

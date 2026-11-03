@@ -72,6 +72,7 @@ change versus passive on the same road; **negative = better**.
 | Groundhook | 2.00 | +32.5 % | 630 | −5.7 % | 35.9 | +0.0 % |
 | Hybrid (α = 0.5) | 1.75 | +16.1 % | 632 | −5.4 % | 26.0 | −27.4 % |
 | LQR (v2) | 1.57 | +4.2 % | 654 | −2.2 % | 41.1 | +14.7 % |
+| MPC (v2) | 1.45 | −4.0 % | 739 | +10.5 % | 48.0 | +33.8 % |
 
 **Bump 50 mm × 0.5 m at 18 km/h (SC-BUMP)**
 
@@ -82,6 +83,7 @@ change versus passive on the same road; **negative = better**.
 | Groundhook | 1.76 | +44.8 % | 463 | +3.5 % | 38.4 | −28.0 % |
 | Hybrid (α = 0.5) | 1.38 | +13.2 % | 431 | −3.8 % | 48.0 | −9.9 % |
 | LQR (v2) | 1.22 | +0.2 % | 445 | −0.6 % | 53.3 | +0.0 % |
+| MPC (v2) | 0.99 | −18.3 % | 553 | +23.6 % | 65.2 | +22.3 % |
 
 <sub>Source: [`results/comparison/kpi_comparison_sedan_ref.csv`](results/comparison/kpi_comparison_sedan_ref.csv)</sub>
 <!-- END generated:comparison -->
@@ -93,9 +95,9 @@ Verification:
 <!-- BEGIN generated:verification (src/python/readme_results.py; do not edit by hand) -->
 | Check | Result |
 |---|---|
-| Requirements (17) | **14 Pass, 1 Fail (1 known), 2 Unverified** (commit `de2cd29`) |
+| Requirements (17) | **14 Pass, 1 Fail (1 known), 2 Unverified** (commit `7aa282f-dirty`) |
 | Fault reaction, REQ-S-01 (limit 10 ms) | **5 ms** |
-| Generated C code vs MiL, REQ-V-01 | **max \|Δ i_cmd\| = 0 A** over 26,003 samples (SC-BUMP, SC-C80, SC-FAULT); fault_active identical: yes |
+| Generated C code vs MiL, REQ-V-01 | **max \|Δ i_cmd\| = 8.90399e-14 A** over 26,003 samples (SC-BUMP, SC-C80, SC-FAULT); fault_active identical: yes |
 
 <sub>Source: [`results/traceability.md`](results/traceability.md)</sub> · <sub>Source: [`results/back_to_back.json`](results/back_to_back.json)</sub>
 <!-- END generated:verification -->
