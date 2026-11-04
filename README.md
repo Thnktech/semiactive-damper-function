@@ -100,7 +100,7 @@ Verification:
 <!-- BEGIN generated:verification (src/python/readme_results.py; do not edit by hand) -->
 | Check | Result |
 |---|---|
-| Requirements (19) | **16 Pass, 3 Fail (3 known), 0 Unverified** (commit `600e15d-dirty`) |
+| Requirements (19) | **16 Pass, 3 Fail (3 known), 0 Unverified** (commit `3497953`) |
 | Fault reaction, REQ-S-01 (limit 10 ms) | **5 ms** |
 | Generated C code vs MiL, REQ-V-01 | **max \|Δ i_cmd\| = 2.10054e-13 A** over 26,003 samples (SC-BUMP, SC-C80, SC-FAULT); fault_active identical: yes |
 

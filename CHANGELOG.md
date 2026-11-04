@@ -7,9 +7,17 @@ versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Version plan: each completed milestone is tagged as a minor release
 (M0 → `v0.1.0`, M1 → `v0.2.0`, … M5 → `v0.6.0`); M6 completes the project as `v1.0.0`.
 Version 2 (model-based control): M7 → `v2.0.0` (interface change = major),
-M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
+M8 classic MPC → `v2.1.0`, M9 preview MPC → `v2.2.0`, each further strategy a minor version (D29).
 
 ## [Unreleased]
+
+## [2.2.0] - 2026-11-04
+
+M9: preview MPC law slot (mode 6) with an ideal look-ahead sensor as
+controller input 9; preview verified against the road and `mpcmove`, in
+generated code (back-to-back within REQ-V-01); tuned (p = 40, weights
+1 / 0.25 / 0.1, D42), it meets REQ-P-07/08 (SC-C80: comfort −14.3 %, tire
+load +4.8 %), also on roads it was not tuned on.
 
 ### Added
 - v2/M9: decisions D39 (ideal look-ahead sensor, controller input 9
@@ -62,6 +70,10 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   comfort −14.3 %, tire load +4.8 %, travel +9.2 % vs passive); README
   results, v2 status, interpretation, limitations and next steps; REQ.md
   change note; devlog.
+- v2/M9: back-to-back record and traceability re-run on the clean commit
+  3497953 (the first record was marked `-dirty`: comparison results were
+  uncommitted during the run); same results.
+- v2/M9: release `v2.2.0`; this changelog section.
 
 ## [2.1.0] - 2026-11-04
 
@@ -463,7 +475,8 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.6.0...v1.0.0
