@@ -64,11 +64,12 @@ P.mpc.m  = 5;                                % control horizon [samples]
 P.mpc.du_weight = 0.1;                       % weight on force changes between MPC steps [-]
 P.mpc.F_bound = 3*P.c_max;                   % placeholder |F| limit, replaced online (D32) [N]
 
-% Law_6_MPC_Preview (D39, D40): own settings, so tuning it leaves the classic
-% MPC unchanged; the look-ahead sensor sees (p+1)*Ts ahead (55 ms)
+% Law_6_MPC_Preview (D39, D40, D42): own settings, so tuning it leaves the
+% classic MPC unchanged; the look-ahead sensor sees (p+1)*Ts ahead (205 ms)
 P.mpcp = P.mpc;
 P.mpcp.formulation = 2;                      % 2 = preview (list in design_mpc)
-P.mpcp.y_weight = P.mbc.y_weight;            % own output weights (D42); classic and LQR keep P.mbc
+P.mpcp.p = 40;                               % prediction horizon [samples] -> 200 ms (tuning study, D42)
+P.mpcp.y_weight = [1; 0.25; 0.1];            % own output weights (D42); classic and LQR keep P.mbc
 %
 if nargout == 0
     assignin('base', 'P', P);

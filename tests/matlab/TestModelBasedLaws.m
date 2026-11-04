@@ -45,21 +45,22 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
         function REQ_F_06_mpc_slot_matches_mpcmove(tc)
             % Random states held for 40 MPC solves each; the settled current must
             % equal mpcmove -> force_to_damping -> clip -> damper map. The states
-            % must hit both limits, the free optimum and passive. Both MPC slots:
-            % with a flat road ahead the preview is 0, the classic md is 0, and
-            % mpc_law6 has the settings of mpc_law5, so one hand result serves both.
-            P = setup_params(); mpc = design_mpc(P);
+            % must hit both limits, the free optimum and passive. Both MPC slots,
+            % each against its own object: with zr = 0 and a flat road ahead the
+            % classic md and the whole preview are 0.
+            P = setup_params();
             rng(5);
             n = 20; N = 40; Hold = N*round(P.mpc.Ts/1e-3);
             X = [0.05 0.5 0.005 1 2000].*(2*rand(n, 5) - 1);
             X(n, 4) = X(n, 2);                                    % v_rel = 0
-            [I_hand, cases] = mpcHand(P, mpc, X, N);
-            tc.assertTrue(all(ismember({'soft limit', 'firm limit', 'between', 'passive'}, cases)), ...
-                'test states must cover every case');
             % zr = 0 so zr_dot = 0; zu = x3, zs = x1 + x3 give the same states
             u = [X(:, 2), X(:, 4), zeros(n, 1), 5*ones(n, 1), X(:, 1) + X(:, 3), X(:, 3), zeros(n, 1), X(:, 5)];
             err = 0;
+            settings = {P.mpc, P.mpcp};
             for m = [5 6]
+                [I_hand, cases] = mpcHand(P, design_mpc(P, settings{m - 4}), X, N);
+                tc.assertTrue(all(ismember({'soft limit', 'firm limit', 'between', 'passive'}, cases)), ...
+                    sprintf('mode %d: test states must cover every case', m));
                 u(:, 4) = m;
                 i_cmd = tc.simulateController(P, repelem(u, Hold, 1));
                 I_model = i_cmd(Hold:Hold:end);

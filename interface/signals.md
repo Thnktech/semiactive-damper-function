@@ -36,7 +36,7 @@ checked against M2 simulations.
 | 6 | `zu` | Unsprung-mass vertical position | m | double | 1 ms | ±0.2 [G] | 0 | v2 · Ideal measurement, deviation from static equilibrium (D30) |
 | 7 | `zr` | Road height under the tire | m | double | 1 ms | ±0.2 [G] | 0 | v2 · Ideal measurement (D30); its backward difference gives ż<sub>r</sub> for the MPC |
 | 8 | `F_d` | Damper force | N | double | 1 ms | ±10 000 [G] | 0 | v2 · Ideal measurement, positive when resisting extension (D30) |
-| 9 | `zr_preview` | Road height ahead of the wheel | m | double | 1 ms | ±0.2 [G] | 0 | v2.2 · Ideal look-ahead sensor: z<sub>r</sub>(t + T<sub>L</sub>), T<sub>L</sub> = (p + 1)·T<sub>s,MPC</sub> of `P.mpcp` (55 ms) (D39); used by mode 6 only |
+| 9 | `zr_preview` | Road height ahead of the wheel | m | double | 1 ms | ±0.2 [G] | 0 | v2.2 · Ideal look-ahead sensor: z<sub>r</sub>(t + T<sub>L</sub>), T<sub>L</sub> = (p + 1)·T<sub>s,MPC</sub> of `P.mpcp` (205 ms at p = 40, D39, D42); used by mode 6 only |
 
 ## Outputs
 
@@ -60,7 +60,7 @@ feasibility) and converts it with the inverse damper map to `i_req`.
 | 3 | `Law_3_Hybrid` | α·skyhook part + (1−α)·groundhook part (inactive part = 0), α = 0.5 (D25); α = 1 reproduces skyhook |
 | 4 | `Law_4_LQR` | F<sub>cmd</sub> = −K·x (D34), then Force_to_damping: F<sub>cmd</sub>/v<sub>rel</sub> if dissipative, else c<sub>passive</sub> (D32) |
 | 5 | `Law_5_MPC` | Classic MPC at 5 ms, p = 10, m = 5, force limits [c<sub>min</sub>, c<sub>max</sub>]·v<sub>rel</sub> inside the QP (D31, D32, D33), then Force_to_damping; solver failure → c<sub>passive</sub> |
-| 6 | `Law_6_MPC_Preview` | As mode 5 with its own settings `P.mpcp`, and the road velocity over the horizon from `zr_preview` instead of held constant: (p + 1)×1 preview of forward differences (D39, D40) |
+| 6 | `Law_6_MPC_Preview` | As mode 5 with its own settings `P.mpcp` (p = 40, weights 1 / 0.25 / 0.1, D42), and the road velocity over the horizon from `zr_preview` instead of held constant: (p + 1)×1 preview of forward differences (D39, D40) |
 | 7 … N | `Law_<n>_<Name>` | Reserved for additional strategies (D24) |
 | other | – | Treated as 0 (passive) (D20) |
 

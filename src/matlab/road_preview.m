@@ -1,7 +1,7 @@
 function zp = road_preview(P, zr)
 %ROAD_PREVIEW Ideal look-ahead sensor of the preview MPC (D39).
 %   zp = ROAD_PREVIEW(P, zr) returns the road height the sensor sees at each
-%   1 ms sample: zp(t) = zr(t + T_L), T_L = (p+1)*Ts of P.mpcp (55 ms).
+%   1 ms sample: zp(t) = zr(t + T_L), T_L = (p+1)*Ts of P.mpcp (205 ms at p = 40).
 %   zr is the road under the wheel, one value per 1 ms sample from t = 0.
 %   The harness feeds zp to controller input 9 (zr_preview).
 %

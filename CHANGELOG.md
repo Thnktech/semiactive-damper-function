@@ -47,6 +47,13 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   leaves the classic MPC and the LQR unchanged;
   `TestModelBasedDesign/preview_mpc_has_own_weights`.
 
+### Changed
+- v2/M9: preview MPC defaults from the tuning study (D42): `P.mpcp.p = 40`
+  (look-ahead 205 ms), output weights 1 / 0.25 / 0.1; inside the
+  REQ-P-07/08 box on C80 (seeds 1 and 2), C50 and D80 with 1.4–4.4 points
+  margin. `REQ_F_06_mpc_slot_matches_mpcmove` compares each MPC slot with its
+  own object.
+
 ## [2.1.0] - 2026-11-04
 
 M8: classic MPC law slot (mode 5) with the damper's limits in the QP,
