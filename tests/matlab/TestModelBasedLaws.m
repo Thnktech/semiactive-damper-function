@@ -1,6 +1,7 @@
 classdef TestModelBasedLaws < matlab.unittest.TestCase
     %TESTMODELBASEDLAWS Law slots of the model-based laws in controller.slx (v2).
-    %   The controller is driven alone with all 8 inputs. Each input row is
+    %   The controller is driven alone with all 9 inputs (8-column tests get a
+    %   flat road ahead, PAD_CONTROLLER_INPUTS). Each input row is
     %   held long enough for the rate limiter to settle; the settled current
     %   is compared with a hand calculation that does not use the model:
     %     F = -K*x  ->  force_to_damping  ->  clip [c_min, c_max]  ->  damper map.
@@ -44,7 +45,9 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
         function REQ_F_06_mpc_slot_matches_mpcmove(tc)
             % Random states held for 40 MPC solves each; the settled current must
             % equal mpcmove -> force_to_damping -> clip -> damper map. The states
-            % must hit both limits, the free optimum and passive.
+            % must hit both limits, the free optimum and passive. Both MPC slots:
+            % with a flat road ahead the preview is 0, the classic md is 0, and
+            % mpc_law6 has the settings of mpc_law5, so one hand result serves both.
             P = setup_params(); mpc = design_mpc(P);
             rng(5);
             n = 20; N = 40; Hold = N*round(P.mpc.Ts/1e-3);
@@ -55,39 +58,43 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
                 'test states must cover every case');
             % zr = 0 so zr_dot = 0; zu = x3, zs = x1 + x3 give the same states
             u = [X(:, 2), X(:, 4), zeros(n, 1), 5*ones(n, 1), X(:, 1) + X(:, 3), X(:, 3), zeros(n, 1), X(:, 5)];
-            i_cmd = tc.simulateController(P, repelem(u, Hold, 1));
-            I_model = i_cmd(Hold:Hold:end);
-            err = max(abs(I_model - I_hand));
-            tc.verifyLessThanOrEqual(err, 1e-12, sprintf('largest current difference %.3g A', err));
+            err = 0;
+            for m = [5 6]
+                u(:, 4) = m;
+                i_cmd = tc.simulateController(P, repelem(u, Hold, 1));
+                I_model = i_cmd(Hold:Hold:end);
+                e = max(abs(I_model - I_hand));
+                tc.verifyLessThanOrEqual(e, 1e-12, sprintf('mode %d: largest current difference %.3g A', m, e));
+                err = max(err, e);
+            end
             record_evidence('REQ-F-06', 'TestModelBasedLaws/REQ_F_06_mpc_slot_matches_mpcmove', ...
-                'largest current difference, MPC slot vs mpcmove', err, 'A');
+                'largest current difference, MPC slots (modes 5, 6) vs mpcmove', err, 'A');
         end
 
     end
 
     methods (Test, TestTags = {'REQ-F-07'})
         function REQ_F_07_mpc_force_within_bounds_closed_loop(tc)
-            % Closed loop on C80: every MPC solve must return a force between
-            % c_min*v_rel and c_max*v_rel of the same MPC sample (F_mpc and
-            % v_mpc are logged signals in Law_5_MPC).
+            % Closed loop on C80, both MPC slots: every MPC solve must return a
+            % force between c_min*v_rel and c_max*v_rel of the same MPC sample
+            % (F_mpc/v_mpc logged in Law_5_MPC, F_mpcp/v_mpcp in Law_6_MPC_Preview).
             P = setup_params();
             [t, zr] = road_iso8608('C', 80, 10, 1);
-            in = Simulink.SimulationInput('harness');
-            in = in.setVariable('P', P);
-            in = set_mpc_objects(in, P);
-            in = in.setVariable('road_in', [t zr]);
-            in = in.setVariable('fault_in', [t 0*t]);
-            in = in.setVariable('mode_in', [t 5 + 0*t]);
-            in = in.setModelParameter('StopTime', num2str(t(end)), 'SignalLogging', 'on', 'SignalLoggingName', 'logsout');
-            out = sim(in);
-            F = out.logsout.get('F_mpc').Values.Data(:);
-            v = out.logsout.get('v_mpc').Values.Data(:);
-            tc.assertEqual(numel(F), round(t(end)/P.mpc.Ts) + 1, 'F_mpc must be logged at the MPC rate');
-            lo = min(P.c_min*v, P.c_max*v); hi = max(P.c_min*v, P.c_max*v);
-            worst = max([lo - F; F - hi]);
-            tc.verifyLessThanOrEqual(worst, 1e-6, sprintf('force %.3g N outside the semi-active limits', worst));
+            slots = struct('mode', {5, 6}, 'F', {'F_mpc', 'F_mpcp'}, 'v', {'v_mpc', 'v_mpcp'}, ...
+                'Ts', {P.mpc.Ts, P.mpcp.Ts});
+            worst = -inf;
+            for s = slots
+                logs = tc.simulateHarnessLogs(P, t, zr, s.mode);
+                F = logs.get(s.F).Values.Data(:);
+                v = logs.get(s.v).Values.Data(:);
+                tc.assertEqual(numel(F), round(t(end)/s.Ts) + 1, [s.F ' must be logged at the MPC rate']);
+                lo = min(P.c_min*v, P.c_max*v); hi = max(P.c_min*v, P.c_max*v);
+                w = max([lo - F; F - hi]);
+                tc.verifyLessThanOrEqual(w, 1e-6, sprintf('mode %d: force %.3g N outside the semi-active limits', s.mode, w));
+                worst = max(worst, w);
+            end
             record_evidence('REQ-F-07', 'TestModelBasedLaws/REQ_F_07_mpc_force_within_bounds_closed_loop', ...
-                'largest bound violation, closed loop SC-C80 10 s', worst, 'N');
+                'largest bound violation, closed loop SC-C80 10 s, modes 5 and 6', worst, 'N');
         end
     end
 
@@ -129,6 +136,58 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
             tc.verifyGreaterThan(abs(i_cmd(end) - without), 0.1, 'md has no effect: not connected?');
         end
 
+        function preview_is_the_road_ahead(tc)
+            % Closed loop, mode 6, C80: once the buffer is full, preview row j
+            % (logged md_preview) must be the road velocity over MPC step j,
+            % (zr(t+(j+1)Ts) - zr(t+j*Ts))/Ts, computed from the road input
+            % itself. Proves sensor, buffer order and differences together (D39, D40).
+            P = setup_params(); M = P.mpcp;
+            [t, zr] = road_iso8608('C', 80, 2, 1);
+            md = tc.simulateHarnessLogs(P, t, zr, 6).get('md_preview').Values;
+            d = squeeze(md.Data);
+            if size(d, 1) ~= M.p + 1, d = d.'; end
+            V = d.';                                              % one row per MPC step
+            S = round(M.Ts/1e-3); n = numel(md.Time);
+            k = (M.p + 2:n - M.p - 2)';                           % buffer full, road ahead known
+            i0 = (k - 1)*S + 1;                                   % 1 ms index of the MPC step
+            E = zeros(numel(k), M.p + 1);
+            for j = 0:M.p
+                E(:, j + 1) = (zr(i0 + (j + 1)*S) - zr(i0 + j*S))/M.Ts;
+            end
+            err = max(abs(V(k, :) - E), [], 'all');
+            tc.verifyLessThanOrEqual(err, 1e-9, sprintf('preview differs from the road ahead by %.3g m/s', err));
+        end
+
+        function preview_slot_matches_mpcmove(tc)
+            % Mode 6, a state between the limits, a random road ahead: the force
+            % of every MPC solve (logged F_mpcp) must equal mpcmove with the
+            % (p+1)x1 preview built by hand from the sensor samples (D40). The
+            % same chain with the first row held over the horizon (classic)
+            % must differ, else this test could not see a block that ignores
+            % the preview.
+            P = setup_params(); M = P.mpcp; mpc = design_mpc(P, M);
+            rng(5); X = [0.05 0.5 0.005 1 2000].*(2*rand(6, 5) - 1);
+            x = X(6, :)'; v = x(2) - x(4);
+            K = 80; S = round(M.Ts/1e-3);                         % MPC steps, samples per step
+            zp = cumsum(0.002*randn(K, 1));                       % sensor heights at the MPC steps
+            u = [repmat([x(2) x(4) 0 6 x(1) + x(3) x(3) 0 x(5)], K*S, 1), repelem(zp, S, 1)];
+            [~, logs] = tc.simulateController(P, u);
+            F_model = logs.get('F_mpcp').Values.Data(:);
+            h = [zeros(M.p + 1, 1); zp];                          % buffer starts at 0 (initial condition)
+            D = diff(eye(M.p + 2))/M.Ts;
+            xs = mpcstate(mpc); xh = mpcstate(mpc); o = mpcmoveopt;
+            o.MVMin = min(P.c_min*v, P.c_max*v); o.MVMax = max(P.c_min*v, P.c_max*v);
+            F_hand = zeros(K, 1); F_held = zeros(K, 1);
+            for k = 1:K
+                md = D*h(k:k + M.p + 1);                          % heights zp(k-p-1) ... zp(k)
+                xs.Plant = x; F_hand(k) = mpcmove(mpc, xs, [], zeros(1, 3), md, o);
+                xh.Plant = x; F_held(k) = mpcmove(mpc, xh, [], zeros(1, 3), md(1), o);
+            end
+            tc.assertEqual(numel(F_model), K, 'F_mpcp must be logged once per MPC step');
+            tc.assertGreaterThan(max(abs(F_hand - F_held)), 1, 'preview has no effect on the hand result: test not sensitive');
+            err = max(abs(F_model - F_hand));
+            tc.verifyLessThanOrEqual(err, 1e-8, sprintf('largest force difference %.3g N', err));
+        end
     end
 
     methods
@@ -156,17 +215,33 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
             end
         end
 
-        function i_cmd = simulateController(tc, P, u)
-            % Controller alone, one input row per 1 ms sample (as the C code is driven)
+        function [i_cmd, logs] = simulateController(tc, P, u)
+            % Controller alone, one input row per 1 ms sample (as the C code is
+            % driven); logs = the slots' logged signals
             t = (0:size(u, 1) - 1)'*1e-3;
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
             in = set_mpc_objects(in, P);
-            in = in.setExternalInput([t u]);
+            in = in.setExternalInput([t pad_controller_inputs(u)]);
             in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
-                'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
+                'OutputSaveName', 'yout', 'SaveFormat', 'Dataset', 'SignalLogging', 'on', 'SignalLoggingName', 'logsout');
             out = sim(in);
             i_cmd = out.yout{1}.Values.Data(:);
+            logs = out.logsout;
+        end
+
+        function logs = simulateHarnessLogs(~, P, t, zr, mode)
+            % Closed loop in one mode with signal logging (the slots' logged signals)
+            in = Simulink.SimulationInput('harness');
+            in = in.setVariable('P', P);
+            in = set_mpc_objects(in, P);
+            in = in.setVariable('road_in', [t zr]);
+            in = in.setVariable('road_ahead_in', [t road_preview(P, zr)]);
+            in = in.setVariable('fault_in', [t 0*t]);
+            in = in.setVariable('mode_in', [t mode + 0*t]);
+            in = in.setModelParameter('StopTime', num2str(t(end)), 'SignalLogging', 'on', 'SignalLoggingName', 'logsout');
+            out = sim(in);
+            logs = out.logsout;
         end
     end
 end

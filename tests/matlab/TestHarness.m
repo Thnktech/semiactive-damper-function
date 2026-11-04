@@ -5,7 +5,8 @@ classdef TestHarness < matlab.unittest.TestCase
         Model = 'harness'
         Outputs = {'zs_ddot', 'susp_travel', 'F_tire_dyn', ...           % KPI signals
                    'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'i_cmd', 'fault_active', ...   % controller I/O log
-                   'zs', 'zu', 'zr', 'F_d'}                                              % v2 inputs 5-8 (D36)
+                   'zs', 'zu', 'zr', 'F_d', ...                                          % v2 inputs 5-8 (D36)
+                   'zr_preview'}                                                         % v2.2 input 9 (D39)
     end
 
     methods (TestClassSetup)
@@ -43,6 +44,8 @@ classdef TestHarness < matlab.unittest.TestCase
             tc.verifyEqual(Y.zs - Y.zu, Y.susp_travel, 'AbsTol', 1e-12, 'logged zs - zu ~= susp_travel');
             tc.verifyGreaterThan(max(abs(Y.zs)), 1e-3, 'logged zs stays ~0 on a 50 mm bump');
             tc.verifyEqual(Y.zr, zr, 'AbsTol', 1e-12, 'logged zr ~= road input');
+            tc.verifyEqual(Y.zr_preview, road_preview(P, zr), 'AbsTol', 1e-12, 'logged zr_preview ~= road ahead');
+            tc.verifyGreaterThan(max(abs(Y.zr_preview(Y.t < 0.5))), 0.01, 'the sensor sees the bump (at 0.5 s) before the wheel');
             p = Y.F_d.*(Y.zs_dot - Y.zu_dot);
             tc.verifyGreaterThanOrEqual(min(p), -1e-9, 'logged F_d does not resist the motion (sign or wrong signal)');
             tc.verifyGreaterThan(max(abs(Y.F_d)), 100, 'logged F_d stays ~0 on a 50 mm bump');
@@ -157,6 +160,7 @@ classdef TestHarness < matlab.unittest.TestCase
             in = in.setVariable('P', P);
             in = set_mpc_objects(in, P);
             in = in.setVariable('road_in', [t zr]);
+            in = in.setVariable('road_ahead_in', [t road_preview(P, zr)]);
             in = in.setVariable('fault_in', [t fault]);
             if isscalar(mode_sel), mode_sel = mode_sel*ones(size(t)); end
             in = in.setVariable('mode_in', [t mode_sel(:)]);       % From Workspace 'Mode' (task 6)

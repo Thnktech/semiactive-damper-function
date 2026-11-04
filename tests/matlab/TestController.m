@@ -5,7 +5,8 @@ classdef TestController < matlab.unittest.TestCase
 
     properties (Constant)
         Model = 'controller'
-        Inputs = {'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'zs', 'zu', 'zr', 'F_d'}   % v2: 5-8 appended (D36)
+        Inputs = {'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'zs', 'zu', 'zr', 'F_d', ...   % v2: 5-8 appended (D36)
+                  'zr_preview'}                                                     % v2.2: 9 appended (D39)
         Outputs = {'i_cmd', 'fault_active'}
         PlantOnly = {'P.ms', 'P.mu', 'P.ks', 'P.kt', 'P.l0', 'P.Rt0', 'P.F_static', 'P.g', 'P.tau'}
     end

@@ -13,7 +13,7 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 
 ### Added
 - v2/M9: decisions D39 (ideal look-ahead sensor, controller input 9
-  `zr_ahead`, T<sub>L</sub> = (p + 1)·T<sub>s,MPC</sub>), D40 (`Law_6_MPC_Preview`,
+  `zr_preview`, T<sub>L</sub> = (p + 1)·T<sub>s,MPC</sub>), D40 (`Law_6_MPC_Preview`,
   mode 6, own settings `P.mpcp`, (p + 1)×1 road-velocity preview from
   forward differences), D41 (REQ-P-07/08 for the preview MPC, thresholds of
   REQ-P-05/06; REQ-F-06/07 extended to mode 6); D29 revised: appended inputs
@@ -22,6 +22,17 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   `set_mpc_objects` gives every simulation `mpc_law5` and `mpc_law6`,
   `simulate_harness` provides `road_ahead_in`, code generation sets both
   MPC objects.
+- v2/M9: models (author): controller input 9 `zr_preview`,
+  `Law_6_MPC_Preview` (mpc_law6, `P.mpcp` rates, tapped delay of p + 2
+  sensor heights → (p + 1)×1 forward differences into the MPC's md port,
+  logged `md_preview`, `F_mpcp`, `v_mpcp`), switch index 6; harness
+  look-ahead sensor `road_ahead_in` into input 9 and output 14. Input renamed
+  `zr_preview` by the author (docs follow). `road_preview.m` (ideal sensor).
+  Tests: `preview_is_the_road_ahead` (every preview row = road velocity over
+  its MPC step), `preview_slot_matches_mpcmove` (every MPC force = mpcmove
+  with the hand-built preview; held preview differs), REQ-F-06 and REQ-F-07
+  for modes 5 and 6, 9 controller inputs, 14 harness outputs, logged
+  `zr_preview` = road shifted 55 ms.
 
 ## [2.1.0] - 2026-11-04
 
