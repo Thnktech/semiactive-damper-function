@@ -10,8 +10,6 @@ Version 2 (model-based control): M7 → `v2.0.0` (interface change = major),
 M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 
 ## [Unreleased]
-- v2/M9: MiL reference logs from 2423838 (preview MPC defaults, D42):
-  SC-BUMP changed, SC-C80 and SC-FAULT data unchanged.
 
 ### Added
 - v2/M9: decisions D39 (ideal look-ahead sensor, controller input 9
@@ -55,6 +53,15 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   REQ-P-07/08 box on C80 (seeds 1 and 2), C50 and D80 with 1.4–4.4 points
   margin. `REQ_F_06_mpc_slot_matches_mpcmove` compares each MPC slot with its
   own object.
+- v2/M9: MiL reference logs from 2423838 (600e15d): SC-BUMP changed (mode 6
+  retuned); in SC-C80 and SC-FAULT only the `zr_preview` column changed
+  (sensor now 205 ms ahead), all other columns identical.
+- v2/M9: back-to-back record and traceability at 600e15d: SC-BUMP
+  2.1e-13 A, SC-C80 3.1e-14 A, SC-FAULT 0 A; 16 Pass, 3 known Fail
+  (REQ-P-02/05/06), 0 Unverified; comparison with the preview MPC (SC-C80:
+  comfort −14.3 %, tire load +4.8 %, travel +9.2 % vs passive); README
+  results, v2 status, interpretation, limitations and next steps; REQ.md
+  change note; devlog.
 
 ## [2.1.0] - 2026-11-04
 

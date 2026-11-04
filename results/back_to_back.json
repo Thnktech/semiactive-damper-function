@@ -6,9 +6,9 @@
     "atol": 1e-09,
     "rtol": 1e-09
   },
-  "recorded": "2026-11-04T10:03:30Z",
-  "git_commit": "638812caaf836bcddb1b1ba93f4e2a1f7cd11994",
-  "code_generated_from": "7aa282f138e70cdb8df9ef53416d003370b00a4d",
+  "recorded": "2026-11-04T19:20:23Z",
+  "git_commit": "600e15d53102bab05fb52524c59f7480ab2e7114",
+  "code_generated_from": "600e15d53102bab05fb52524c59f7480ab2e7114",
   "matlab_release": "2026a",
   "simulink_coder_version": "26.1",
   "compiler": "gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 14.2.0",
@@ -19,11 +19,11 @@
   "sources": [
     {
       "path": "model/controller/controller.slx",
-      "sha256": "e4900bbbe91f56a30586cf976db2994ffa78c832fda6a46b07df0a96c1352398"
+      "sha256": "f6a41522815ebf3fc77aa97952674d58f15791de6f40afeca9cb15b7513d92c0"
     },
     {
       "path": "src/matlab/setup_params.m",
-      "sha256": "15c07ed72e41bc009f5167097e5d9eafc2d1397d4229515f2d76a244073cc259"
+      "sha256": "ed726e4cc266b1222fe00f55d7334d63a83c8b434a5670d3c0993e271acad1a8"
     },
     {
       "path": "src/matlab/vehicles/sedan_ref.m",
@@ -31,7 +31,7 @@
     },
     {
       "path": "src/matlab/design_mpc.m",
-      "sha256": "b0ccb3611f5ca1751770b2a8133a0ed28a1427a68a3b4315aa9aa90777f81642"
+      "sha256": "4fd3b4d427c41f5a3afd2832448da90ce706889b654c6e162b1bbd4e1b6b58c3"
     },
     {
       "path": "src/matlab/qc_prediction_model.m",
@@ -41,25 +41,25 @@
   "logs": [
     {
       "log": "tests/data/mil_SC-BUMP.csv",
-      "sha256": "67fdd92481d5caf6bc47aab5ff5cb71f0d41d0a18bc734c7bd17700286c14be6",
+      "sha256": "39b87aca58380a4177e78457f26bbe732981370dfdd18ce85213d8b86958de55",
       "rows": 6001,
-      "max_abs_dev_i_cmd": 8.903988657493755e-14,
+      "max_abs_dev_i_cmd": 2.1005419625907962e-13,
       "samples_outside_tolerance": 0,
       "fault_active_identical": true,
       "pass": true
     },
     {
       "log": "tests/data/mil_SC-C80.csv",
-      "sha256": "89295ad5b936bf0f29a7ece69ceb5ae1263a2117a17414cb38d6ae0b8d7edfb9",
+      "sha256": "da1a3c1b4d1079bb0c307363824a46fad494057087fdd20cec6c608f3e3001eb",
       "rows": 10001,
-      "max_abs_dev_i_cmd": 0.0,
+      "max_abs_dev_i_cmd": 3.108624468950438e-14,
       "samples_outside_tolerance": 0,
       "fault_active_identical": true,
       "pass": true
     },
     {
       "log": "tests/data/mil_SC-FAULT.csv",
-      "sha256": "69f70b94b5d5952b8adff1f515a69e054e8fa9feefa07aad7d64c2b885950a1c",
+      "sha256": "8fcc9e34a15bc4a2432ee050d6bbef6a146b442ba61dd13c01509da64a8d1718",
       "rows": 10001,
       "max_abs_dev_i_cmd": 0.0,
       "samples_outside_tolerance": 0,

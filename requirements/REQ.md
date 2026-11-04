@@ -156,3 +156,7 @@ unchanged; they remain the targets for the preview MPC.
 Change 2026-11-04 (M9, D39–D41): added REQ-P-07, REQ-P-08 (preview MPC comfort and road holding on
 SC-C80, thresholds of REQ-P-05/06, fixed before any preview result). REQ-F-06 and REQ-F-07
 extended to mode 6. REQ-P-05/06 stay the record of the classic MPC.
+
+Change 2026-11-04 (M9, D42): with the tuned preview MPC (p = 40, weights
+1 / 0.25 / 0.1) REQ-P-07 and REQ-P-08 pass on SC-C80 (comfort −14.3 %, tire
+load +4.8 %). Thresholds unchanged.
