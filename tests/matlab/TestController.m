@@ -59,7 +59,7 @@ classdef TestController < matlab.unittest.TestCase
             t = (0:1e-3:0.01)';
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
-            in = in.setVariable('mpc_law5', design_mpc(P));
+            in = set_mpc_objects(in, P);
             in = in.setExternalInput([t zeros(numel(t), numel(tc.Inputs))]);
             in = in.setModelParameter('StopTime', '0.01', 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
@@ -131,7 +131,7 @@ classdef TestController < matlab.unittest.TestCase
             t = (0:1e-3:T)';
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
-            in = in.setVariable('mpc_law5', design_mpc(P));
+            in = set_mpc_objects(in, P);
             in = in.setExternalInput([t pad_controller_inputs(u)]);   % v1 tests give 4 columns
             in = in.setModelParameter('StopTime', num2str(T), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');

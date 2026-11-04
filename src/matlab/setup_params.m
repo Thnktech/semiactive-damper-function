@@ -18,8 +18,9 @@ function P = setup_params(vehicle)
 %     mbc                      weights/scales shared by LQR and MPC    (D30)
 %     lqr                      LQR sample time and gain K              (D34)
 %     mpc                      MPC formulation, Ts, horizons, weights  (D31)
-%   Without an output argument it also puts the MPC object mpc_law5 in the
-%   base workspace (DESIGN_MPC).
+%     mpcp                     the same for the preview MPC (mode 6)   (D40)
+%   Without an output argument it also puts the MPC objects mpc_law5 and
+%   mpc_law6 in the base workspace (DESIGN_MPC).
 
 if nargin < 1
     P = get_vehicle();
@@ -62,11 +63,17 @@ P.mpc.p  = 10;                               % prediction horizon [samples] -> 5
 P.mpc.m  = 5;                                % control horizon [samples]
 P.mpc.du_weight = 0.1;                       % weight on force changes between MPC steps [-]
 P.mpc.F_bound = 3*P.c_max;                   % placeholder |F| limit, replaced online (D32) [N]
+
+% Law_6_MPC_Preview (D39, D40): own settings, so tuning it leaves the classic
+% MPC unchanged; the look-ahead sensor sees (p+1)*Ts ahead (55 ms)
+P.mpcp = P.mpc;
+P.mpcp.formulation = 2;                      % 2 = preview (list in design_mpc)
 %
 if nargout == 0
     assignin('base', 'P', P);
     % The MPC block reads its controller object by this name (D31).
     assignin('base', 'mpc_law5', design_mpc(P));
+    assignin('base', 'mpc_law6', design_mpc(P, P.mpcp));
     clear P
 end
 end

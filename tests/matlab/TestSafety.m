@@ -130,7 +130,7 @@ classdef TestSafety < matlab.unittest.TestCase
             t = (0:size(u, 1) - 1)'*1e-3;
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
-            in = in.setVariable('mpc_law5', design_mpc(P));
+            in = set_mpc_objects(in, P);
             in = in.setExternalInput([t pad_controller_inputs(u)]);   % inputs 5-8 = 0 (D36)
             in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');

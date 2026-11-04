@@ -11,6 +11,18 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 
 ## [Unreleased]
 
+### Added
+- v2/M9: decisions D39 (ideal look-ahead sensor, controller input 9
+  `zr_ahead`, T<sub>L</sub> = (p + 1)·T<sub>s,MPC</sub>), D40 (`Law_6_MPC_Preview`,
+  mode 6, own settings `P.mpcp`, (p + 1)×1 road-velocity preview from
+  forward differences), D41 (REQ-P-07/08 for the preview MPC, thresholds of
+  REQ-P-05/06; REQ-F-06/07 extended to mode 6); D29 revised: appended inputs
+  are a minor version (M9 → `v2.2.0`); interface v2.2 in `signals.md`.
+  Code: `P.mpcp`, `design_mpc(P, M)` (formulation 2 = preview),
+  `set_mpc_objects` gives every simulation `mpc_law5` and `mpc_law6`,
+  `simulate_harness` provides `road_ahead_in`, code generation sets both
+  MPC objects.
+
 ## [2.1.0] - 2026-11-04
 
 M8: classic MPC law slot (mode 5) with the damper's limits in the QP,

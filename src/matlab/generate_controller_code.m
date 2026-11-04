@@ -62,15 +62,21 @@ end
 assignin('base', 'P', P);
 restoreP = onCleanup(@() restoreBaseP(hadP, oldP));   % runs also on error
 
-% The MPC Controller block reads mpc_law5 from the base workspace in the
-% same way; designed here from the reference P, restored afterwards.
-hadMpc = evalin('base', 'exist(''mpc_law5'', ''var'')') == 1;
-oldMpc = [];
-if hadMpc
-    oldMpc = evalin('base', 'mpc_law5');
+% The MPC Controller blocks read mpc_law5 and mpc_law6 from the base
+% workspace in the same way; designed here from the reference P, restored
+% afterwards (as in SET_MPC_OBJECTS).
+mpcNames = {'mpc_law5', 'mpc_law6'};
+mpcObjs = {design_mpc(P), design_mpc(P, P.mpcp)};
+restoreMpc = cell(size(mpcNames));
+for k = 1:numel(mpcNames)
+    had = evalin('base', sprintf('exist(''%s'', ''var'')', mpcNames{k})) == 1;
+    old = [];
+    if had
+        old = evalin('base', mpcNames{k});
+    end
+    assignin('base', mpcNames{k}, mpcObjs{k});
+    restoreMpc{k} = onCleanup(@() restoreBaseVar(mpcNames{k}, had, old));   % runs also on error
 end
-assignin('base', 'mpc_law5', design_mpc(P));
-restoreMpc = onCleanup(@() restoreBaseVar('mpc_law5', hadMpc, oldMpc));   % runs also on error
 
 
 % --- 3. Build in a temporary folder ---

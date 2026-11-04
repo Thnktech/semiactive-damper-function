@@ -74,7 +74,7 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
             [t, zr] = road_iso8608('C', 80, 10, 1);
             in = Simulink.SimulationInput('harness');
             in = in.setVariable('P', P);
-            in = in.setVariable('mpc_law5', design_mpc(P));
+            in = set_mpc_objects(in, P);
             in = in.setVariable('road_in', [t zr]);
             in = in.setVariable('fault_in', [t 0*t]);
             in = in.setVariable('mode_in', [t 5 + 0*t]);
@@ -161,7 +161,7 @@ classdef TestModelBasedLaws < matlab.unittest.TestCase
             t = (0:size(u, 1) - 1)'*1e-3;
             in = Simulink.SimulationInput(tc.Model);
             in = in.setVariable('P', P);
-            in = in.setVariable('mpc_law5', design_mpc(P));
+            in = set_mpc_objects(in, P);
             in = in.setExternalInput([t u]);
             in = in.setModelParameter('StopTime', num2str(t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');
