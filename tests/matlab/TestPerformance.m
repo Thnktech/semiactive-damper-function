@@ -1,11 +1,13 @@
 classdef TestPerformance < matlab.unittest.TestCase
-    %TESTPERFORMANCE Performance requirements REQ-P-01...04 from closed-loop MiL runs (M4).
+    %TESTPERFORMANCE Performance requirements REQ-P-01...06 from closed-loop MiL runs (M4, M8).
     %   Scenarios as defined in requirements/REQ.md: SC-C80 (class C, 80 km/h,
     %   30 s, seed 1, KPIs over t >= 2 s) and SC-BUMP. Reference vehicle unless
-    %   stated. REQ-P-02 is tagged KnownFail: skyhook exceeds the tire-load limit.
+    %   stated. Tagged KnownFail: REQ-P-02 (skyhook exceeds the tire-load limit)
+    %   and REQ-P-05/06 (the classic MPC cannot meet both limits, D38).
 
     properties (Constant)
         Skyhook = 1
+        MPC = 5
     end
 
     properties
@@ -41,6 +43,30 @@ classdef TestPerformance < matlab.unittest.TestCase
             tc.verifyLessThanOrEqual(inc, 10, sprintf( ...
                 'Road holding: increase %.1f %% > 10 %% (passive %.1f, skyhook %.1f N). Known failure: strategy to be improved', ...
                 inc, K.pas.rms_F_tire_dyn, K.sky.rms_F_tire_dyn));
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-P-05', 'KnownFail'})
+        function REQ_P_05_mpc_ride_comfort(tc)
+            K = tc.c80mpc();
+            red = 100*(1 - K.mpc.rms_zs_ddot/K.pas.rms_zs_ddot);
+            record_evidence('REQ-P-05', 'TestPerformance/REQ_P_05_mpc_ride_comfort', ...
+                'RMS body acceleration reduction vs passive (SC-C80, MPC)', red, '%');
+            tc.verifyGreaterThanOrEqual(red, 10, sprintf( ...
+                'MPC comfort: reduction %.1f %% < 10 %% (passive %.3f, MPC %.3f m/s^2). Known failure: classic MPC cannot meet REQ-P-05 and REQ-P-06 together (D38)', ...
+                red, K.pas.rms_zs_ddot, K.mpc.rms_zs_ddot));
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-P-06', 'KnownFail'})
+        function REQ_P_06_mpc_road_holding_penalty(tc)
+            K = tc.c80mpc();
+            inc = 100*(K.mpc.rms_F_tire_dyn/K.pas.rms_F_tire_dyn - 1);
+            record_evidence('REQ-P-06', 'TestPerformance/REQ_P_06_mpc_road_holding_penalty', ...
+                'RMS dynamic tire load increase vs passive (SC-C80, MPC)', inc, '%');
+            tc.verifyLessThanOrEqual(inc, 10, sprintf( ...
+                'MPC road holding: increase %.1f %% > 10 %% (passive %.1f, MPC %.1f N). Known failure: classic MPC cannot meet REQ-P-05 and REQ-P-06 together (D38)', ...
+                inc, K.pas.rms_F_tire_dyn, K.mpc.rms_F_tire_dyn));
         end
     end
 
@@ -91,6 +117,19 @@ classdef TestPerformance < matlab.unittest.TestCase
                 tc.C80(vehicle) = K;
             end
             K = tc.C80(vehicle);
+        end
+
+        function K = c80mpc(tc)
+            % Passive and MPC KPIs on SC-C80, reference vehicle, MPC run once per
+            % class (kept in the same handle map: test methods run on copies)
+            K = tc.c80('sedan_ref');
+            if ~isKey(tc.C80, 'mpc:sedan_ref')
+                P = setup_params('sedan_ref');
+                [t, zr] = road_iso8608('C', 80, 30, 1);
+                Ym = simulate_harness(P, t, zr, tc.MPC);
+                tc.C80('mpc:sedan_ref') = kpi(Ym.t, Ym.zs_ddot, Ym.F_tire_dyn, Ym.susp_travel, P.F_static);
+            end
+            K.mpc = tc.C80('mpc:sedan_ref');
         end
     end
 end

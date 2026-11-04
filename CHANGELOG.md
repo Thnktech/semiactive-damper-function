@@ -38,6 +38,15 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   `P`, e.g. `params.mpc.p = 40`; unknown fields rejected; listed in the
   summary) for MPC tuning studies; `TestStudy` checks that an override
   reaches the simulation and that a misspelled field stops the study.
+- v2/M8: `TestPerformance` REQ-P-05/06 (MPC comfort and road holding on
+  SC-C80), tagged KnownFail; D38: tuning study (tire-load weight at
+  p = 10 and 40, Δu weight) finds no tuning that meets both, defaults kept,
+  preview MPC next; README v2 status, MPC interpretation, limitations and
+  next steps; REQ.md change note; devlog.
+
+### Changed
+- v2/M8: D33 wording revised: "Ensure deterministic data transfer" applies
+  only with data integrity on (model unchanged).
 
 ## [2.0.0] - 2026-11-02
 

@@ -145,3 +145,8 @@ SC-C80). Thresholds fixed before any MPC result, equal to the skyhook ones
 (REQ-P-01, REQ-P-02). Requirements stated "for all inputs" or "in every mode"
 (REQ-F-01…05, REQ-P-03, REQ-S-01/02) now include modes 4 and 5 and the
 inputs 5–8 of interface v2.
+
+Change 2026-11-04 (M8, D38): REQ-P-05 and REQ-P-06 fail for the classic MPC
+(SC-C80: comfort −4.0 %, tire load +10.5 %) and are tagged as known failures.
+A tuning study found no weight or horizon that meets both. Thresholds
+unchanged; they remain the targets for the preview MPC.

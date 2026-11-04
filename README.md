@@ -52,8 +52,9 @@ and generated C code verified back-to-back against the MiL logs (M5).
 a full-state controller interface (body, wheel and road positions plus the
 damper force), a linear prediction model with the damper lag, and an LQR law
 slot that runs through the same safety logic, tests, code generation and
-back-to-back (M7). A classic model predictive controller (MPC) that knows the
-damper's limits follows in M8.
+back-to-back (M7). A classic model predictive controller (MPC) with the
+damper's limits inside its optimization follows the same path, including
+generated QP solver code verified back-to-back (M8).
 
 ## Results
 
@@ -134,7 +135,10 @@ first-order lag τ (nominal 10 ms). Change versus passive at the same lag, SC-C8
   [requirements/REQ.md](requirements/REQ.md) (D11).
 - **Control-law parameters:** c<sub>sky</sub> = c<sub>gnd</sub> = c<sub>max</sub>,
   α = 0.5 (D25); not tuned. LQR: weights 1 / 1 / 0.1 on scaled body
-  acceleration, tire load and travel, the same goal the MPC will use (D34).
+  acceleration, tire load and travel, the same goal as the MPC (D34). MPC:
+  5 ms, prediction horizon 10 steps (50 ms), control horizon 5, same weights,
+  road velocity held constant over the horizon (no preview); the tuning
+  study behind these defaults is in D38.
 
 ### Interpretation
 
@@ -158,6 +162,16 @@ push and pull; on SC-C80 its requested force cannot be produced in about
 (D32), and a further 21 % is clipped. This is the known weakness of
 "design unconstrained, clip afterwards" and the reason for the next step: an
 MPC that has the damper's limits inside its optimization.
+
+The classic MPC (v2) respects the damper's limits in every solve, but the
+limits decide the force in about 81 % of them. It improves comfort slightly
+(−4 %) at a tire-load increase just above the bound (+10.5 %), so REQ-P-05
+and REQ-P-06 both fail. A tuning study shows the reason: the weights trade
+comfort against road holding along one curve that never reaches both limits
+(comfort −10 % costs about +22 % tire load), and a longer horizon moves the
+MPC toward the LQR and loses comfort at every weight. Neither weights nor
+horizon fix it; what the classic MPC lacks is knowledge of the road ahead,
+which is the next formulation: a preview MPC (D38).
 
 ## Traceability
 
@@ -256,8 +270,9 @@ This project does **not** demonstrate:
 - **State estimation:** the controller gets ideal measurements (velocities,
   and in v2 positions, road height and damper force); a real system needs an
   estimator from accelerometers.
-- **Model-based control:** so far an LQR with clipping and passive fallback;
-  the MPC with the damper's limits in the optimization follows in M8.
+- **Model-based control:** an LQR with clipping and passive fallback and a
+  classic MPC without road preview; the MPC misses REQ-P-05/06 (known,
+  reported, D38).
 - **Real time and hardware:** no real-time execution, no PiL/HiL, no target
   hardware; the back-to-back replays logged inputs open loop.
 - **Vehicle validation:** a linear quarter car with tire lift-off, not a
@@ -268,8 +283,9 @@ This project does **not** demonstrate:
 
 ## Next steps
 
-**v2 (in progress):** full-state interface and LQR done (M7); next the classic
-receding-horizon MPC (M8), then further MPC formulations and strategies.
+**v2 (in progress):** full-state interface and LQR (M7) and the classic
+receding-horizon MPC (M8) done; next a preview MPC that uses the road ahead
+over its horizon, then further MPC formulations and strategies.
 Afterwards **v3** a half car and **v4** a full vehicle, each adapting the whole
 workflow of this project. v1.0.0 stays available on the `release/1.x` branch.
 
