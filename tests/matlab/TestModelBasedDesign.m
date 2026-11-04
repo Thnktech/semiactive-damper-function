@@ -121,6 +121,16 @@ classdef TestModelBasedDesign < matlab.unittest.TestCase
             tc.verifyEqual([numel(xs.Plant), numel(xs.Disturbance), numel(xs.Noise)], [5, 0, 0]);
         end
 
+        function preview_mpc_has_own_weights(tc)
+            % D42: P.mpcp.y_weight tunes the preview MPC only; the classic MPC
+            % keeps the shared weights P.mbc (the M8 reference stays unchanged).
+            P = setup_params();
+            P.mpcp.y_weight = [1; 0.3; 0.1];
+            o5 = design_mpc(P); o6 = design_mpc(P, P.mpcp);
+            tc.verifyEqual(o6.Weights.OV, [1 0.3 0.1]);
+            tc.verifyEqual(o5.Weights.OV, P.mbc.y_weight(:)');
+        end
+
         function unknown_formulation_is_rejected(tc)
             % A typo in P.mpc.formulation must stop, not fall back silently.
             P = setup_params();

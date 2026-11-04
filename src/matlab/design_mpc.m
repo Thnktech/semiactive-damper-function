@@ -49,7 +49,12 @@ mpcobj.MV.ScaleFactor = P.mbc.u_scale;
 for j = 1:3
     mpcobj.OV(j).ScaleFactor = P.mbc.y_scale(j);
 end
-mpcobj.Weights.OV = P.mbc.y_weight(:)';
+% Output weights: the settings' own (preview MPC, D42) or the shared ones.
+yw = P.mbc.y_weight;
+if isfield(M, 'y_weight')
+    yw = M.y_weight;
+end
+mpcobj.Weights.OV = yw(:)';
 mpcobj.Weights.MV = P.mbc.u_weight;
 mpcobj.Weights.MVRate = M.du_weight;
 

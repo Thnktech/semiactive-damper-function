@@ -42,6 +42,10 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   SC-FAULT data unchanged apart from the new column.
 - v2/M9: `TestPerformance` REQ-P-07/08 (preview MPC comfort and road
   holding on SC-C80, not tagged KnownFail); `readme_results.py` mode 6.
+- v2/M9: own output weights for the preview MPC (`P.mpcp.y_weight`, used by
+  `design_mpc` when present; initially equal to `P.mbc`), so its tuning
+  leaves the classic MPC and the LQR unchanged;
+  `TestModelBasedDesign/preview_mpc_has_own_weights`.
 
 ## [2.1.0] - 2026-11-04
 

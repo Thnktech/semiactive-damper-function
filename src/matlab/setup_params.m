@@ -68,6 +68,7 @@ P.mpc.F_bound = 3*P.c_max;                   % placeholder |F| limit, replaced o
 % MPC unchanged; the look-ahead sensor sees (p+1)*Ts ahead (55 ms)
 P.mpcp = P.mpc;
 P.mpcp.formulation = 2;                      % 2 = preview (list in design_mpc)
+P.mpcp.y_weight = P.mbc.y_weight;            % own output weights (D42); classic and LQR keep P.mbc
 %
 if nargout == 0
     assignin('base', 'P', P);
