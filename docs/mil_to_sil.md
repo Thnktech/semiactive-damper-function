@@ -57,7 +57,7 @@ Simulink caches referenced models in `slprj/` and `*.slxc`; both are in
 | 1 | `zs_dot` | Plant | Body (sprung mass) vertical velocity | m/s |
 | 2 | `zu_dot` | Plant | Wheel (unsprung mass) vertical velocity | m/s |
 | 3 | `fault_flag` | Harness (test scenario) | Fault indication, > 0.5 = fault | – |
-| 4 | `mode` | Harness (parameter) | 0 passive, 1 skyhook, 2 groundhook, 3 hybrid (signals.md) | – |
+| 4 | `mode` | Harness (parameter) | 0 passive, 1 skyhook, 2 groundhook, 3 hybrid, 4 LQR, 5 MPC, 6 preview MPC (signals.md) | – |
 
 ### Controller outputs
 
@@ -113,7 +113,7 @@ therefore drive the generated C code completely in CI, without a plant.
 | 2.2 | Log the controller's root inputs and outputs **at the Model block boundary**, every 1 ms | The values the controller actually saw and produced, not plant-side signals |
 | 2.3 | One row per controller step, starting at k = 0 (t = 0); no decimation, no interpolation | Row k must equal step k of the replay |
 | 2.4 | **Alignment check:** row k = inputs applied at step k and outputs read at step k. With registered outputs, `i_cmd`(0) = I<sub>default</sub> exactly | The replay sets `controller_U` = row k, calls `controller_step()`, reads `controller_Y`; must give row k's outputs |
-| 2.5 | CSV columns in this order: `t, zs_dot, zu_dot, fault_flag, mode, zs, zu, zr, F_d, i_cmd, fault_active` (v2: inputs 5–8 added, D36) | Matches the wrapper and the test |
+| 2.5 | CSV columns in this order: `t, zs_dot, zu_dot, fault_flag, mode, zs, zu, zr, F_d, zr_preview, i_cmd, fault_active` (v2: inputs 5–8 added, D36; v2.2: input 9, D39) | Matches the wrapper and the test |
 | 2.6 | Write numbers with **`%.17g`** | Full double precision; shorter formats introduce errors far above 1e-9 |
 | 2.7 | File name `tests/data/mil_<scenario>.csv`, e.g. `mil_SC-C80.csv`, `mil_SC-BUMP.csv`, `mil_SC-FAULT.csv` | Scenario IDs from REQ.md |
 | 2.8 | Keep files small: a 10 s window per scenario (10 001 rows) is enough for back-to-back | Fast CI, small repository; KPI tests use full-length runs locally |

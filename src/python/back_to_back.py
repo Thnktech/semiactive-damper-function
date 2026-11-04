@@ -28,7 +28,8 @@ ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "tests" / "data"
 GEN = ROOT / "src" / "generated" / "controller"
 RECORD = ROOT / "results" / "back_to_back.json"
-INPUTS = ["zs_dot", "zu_dot", "fault_flag", "mode", "zs", "zu", "zr", "F_d"]   # controller_U order (D36)
+INPUTS = ["zs_dot", "zu_dot", "fault_flag", "mode", "zs", "zu", "zr", "F_d",   # controller_U order (D36)
+          "zr_preview"]                                                     # v2.2 (D39)
 ATOL = RTOL = 1e-9          # REQ-V-01 acceptance (requirements/REQ.md)
 
 

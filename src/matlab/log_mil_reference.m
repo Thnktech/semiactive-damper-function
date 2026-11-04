@@ -5,8 +5,8 @@ function files = log_mil_reference(scenarios, varargin)
 %   files = LOG_MIL_REFERENCE(..., 'AllowDirty', true) logs from uncommitted
 %   code (for trying out only; such logs must not be committed).
 %
-%   Writes tests/data/mil_<scenario>.csv (columns t, zs_dot, zu_dot,
-%   fault_flag, mode, i_cmd, fault_active; one row per 1 ms step from t = 0;
+%   Writes tests/data/mil_<scenario>.csv (columns t, the 9 controller
+%   inputs zs_dot ... zr_preview, i_cmd, fault_active; one row per 1 ms step from t = 0;
 %   '%.17g') and mil_<scenario>.json (metadata, REQ-V-02).
 %   Rules: docs/mil_to_sil.md sections 2-4. Reference vehicle only (D12, D21).
 
@@ -36,8 +36,8 @@ for s = 1:numel(scenarios)
     sc = define(scenarios{s});
     Y = simulate_harness(P, sc.t, sc.zr, sc.mode, sc.fault);
     % All 8 controller inputs in port order (v2, D36), then both outputs
-    D = [Y.t, Y.zs_dot, Y.zu_dot, Y.fault_flag, Y.mode, Y.zs, Y.zu, Y.zr, Y.F_d, Y.i_cmd, Y.fault_active];
-    cols = {'t', 'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'zs', 'zu', 'zr', 'F_d', 'i_cmd', 'fault_active'};
+    D = [Y.t, Y.zs_dot, Y.zu_dot, Y.fault_flag, Y.mode, Y.zs, Y.zu, Y.zr, Y.F_d, Y.zr_preview, Y.i_cmd, Y.fault_active];
+    cols = {'t', 'zs_dot', 'zu_dot', 'fault_flag', 'mode', 'zs', 'zu', 'zr', 'F_d', 'zr_preview', 'i_cmd', 'fault_active'};
 
     csvFile = fullfile(outDir, sprintf('mil_%s.csv', sc.id));
     % 17 significant digits: every double is written so that reading it back gives
@@ -79,16 +79,19 @@ switch id
         % as passive, D20/D26) and several mode changes: the replay only proves what
         % the log contains (mil_to_sil.md section 4).
         m(t >= 2) = 2; m(t >= 4) = 3; m(t >= 6) = 7; m(t >= 7) = 0; m(t >= 8) = 1.5; m(t >= 9) = 4;   % 4 = LQR (v2)
+        m(t >= 9.5) = 5;                     % classic MPC (v2.1); the preview MPC runs in SC-BUMP
         sc.description = 'Class C, 80 km/h; every law slot, invalid modes 7 and 1.5, mode changes';
         sc.road = struct('type', 'iso8608', 'class', 'C', 'speed_kmh', 80, 'seed', 1, 'duration_s', 10);
-        sc.modeText = '1 [0,2) 2 [2,4) 3 [4,6) 7 [6,7) 0 [7,8) 1.5 [8,9) 4 [9,10]';
+        sc.modeText = '1 [0,2) 2 [2,4) 3 [4,6) 7 [6,7) 0 [7,8) 1.5 [8,9) 4 [9,9.5) 5 [9.5,10]';
         f = zeros(size(t)); sc.faultText = 'none';
     case 'SC-BUMP'
         [t, zr] = road_bump(0.05, 0.5, 18, 6, 2.5);
-        m = 5*ones(size(t)); m(t >= 4) = 3;
-        sc.description = 'SC-BUMP: half-sine 50 mm x 0.5 m at 18 km/h, bump at 2.5 s; MPC then hybrid';
+        % Preview MPC (v2.2) over the bump: the sensor sees it 55 ms early, so the
+        % log holds large preview values and both force limits.
+        m = 6*ones(size(t)); m(t >= 4) = 3;
+        sc.description = 'SC-BUMP: half-sine 50 mm x 0.5 m at 18 km/h, bump at 2.5 s; preview MPC then hybrid';
         sc.road = struct('type', 'bump', 'height_m', 0.05, 'length_m', 0.5, 'speed_kmh', 18, 't0_s', 2.5, 'duration_s', 6);
-        sc.modeText = '5 [0,4) 3 [4,6]';
+        sc.modeText = '6 [0,4) 3 [4,6]';
         f = zeros(size(t)); sc.faultText = 'none';
     case 'SC-FAULT'
         [t, zr] = road_iso8608('C', 80, 10, 1);

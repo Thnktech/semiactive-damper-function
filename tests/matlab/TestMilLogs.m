@@ -29,6 +29,10 @@ classdef TestMilLogs < matlab.unittest.TestCase
             if all(ismember({'zs', 'zu', 'zr', 'F_d'}, L.Properties.VariableNames))
                 u = [u, L.zs, L.zu, L.zr, L.F_d];
             end
+            % v2.2 logs also carry input 9, the road preview (D39)
+            if ismember('zr_preview', L.Properties.VariableNames)
+                u = [u, L.zr_preview];
+            end
             in = in.setExternalInput([L.t, pad_controller_inputs(u)]);
             in = in.setModelParameter('StopTime', num2str(L.t(end)), 'SaveOutput', 'on', ...
                 'OutputSaveName', 'yout', 'SaveFormat', 'Dataset');

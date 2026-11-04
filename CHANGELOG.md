@@ -33,6 +33,10 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   with the hand-built preview; held preview differs), REQ-F-06 and REQ-F-07
   for modes 5 and 6, 9 controller inputs, 14 harness outputs, logged
   `zr_preview` = road shifted 55 ms.
+- v2/M9: MiL logs carry input 9 `zr_preview` (12 columns); SC-BUMP runs the
+  preview MPC (mode 6) until 4 s, SC-C80 the classic MPC (mode 5) from
+  9.5 s; replay (`TestMilLogs`), `back_to_back.py`, `controller_lib.py`,
+  `test_mil_metadata.py` and `mil_to_sil.md` follow the 9 inputs.
 
 ## [2.1.0] - 2026-11-04
 

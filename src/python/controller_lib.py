@@ -28,7 +28,9 @@ class U(ct.Structure):
                 ("fault_flag", ct.c_double), ("mode", ct.c_double),
                 # v2 (D36): ideal states for the model-based laws
                 ("zs", ct.c_double), ("zu", ct.c_double),
-                ("zr", ct.c_double), ("F_d", ct.c_double)]
+                ("zr", ct.c_double), ("F_d", ct.c_double),
+                # v2.2 (D39): road height from the look-ahead sensor
+                ("zr_preview", ct.c_double)]
 
 
 class Y(ct.Structure):
@@ -50,7 +52,7 @@ class Controller:
         self.y = Y.in_dll(self._lib, "controller_Y")
 
     def run(self, inputs):
-        """Replay inputs (N, 8: zs_dot, zu_dot, fault_flag, mode, zs, zu, zr, F_d) from a fresh
+        """Replay inputs (N, 9: zs_dot, zu_dot, fault_flag, mode, zs, zu, zr, F_d, zr_preview) from a fresh
         initialization; returns (N, 2: i_cmd, fault_active).
 
         Row k of the output is read right after step k, i.e. the output of the
