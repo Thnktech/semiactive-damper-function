@@ -1,5 +1,5 @@
 classdef TestPerformance < matlab.unittest.TestCase
-    %TESTPERFORMANCE Performance requirements REQ-P-01...06 from closed-loop MiL runs (M4, M8).
+    %TESTPERFORMANCE Performance requirements REQ-P-01...08 from closed-loop MiL runs (M4, M8, M9).
     %   Scenarios as defined in requirements/REQ.md: SC-C80 (class C, 80 km/h,
     %   30 s, seed 1, KPIs over t >= 2 s) and SC-BUMP. Reference vehicle unless
     %   stated. Tagged KnownFail: REQ-P-02 (skyhook exceeds the tire-load limit)
@@ -8,6 +8,7 @@ classdef TestPerformance < matlab.unittest.TestCase
     properties (Constant)
         Skyhook = 1
         MPC = 5
+        PreviewMPC = 6
     end
 
     properties
@@ -48,7 +49,7 @@ classdef TestPerformance < matlab.unittest.TestCase
 
     methods (Test, TestTags = {'REQ-P-05', 'KnownFail'})
         function REQ_P_05_mpc_ride_comfort(tc)
-            K = tc.c80mpc();
+            K = tc.c80mode(tc.MPC);
             red = 100*(1 - K.mpc.rms_zs_ddot/K.pas.rms_zs_ddot);
             record_evidence('REQ-P-05', 'TestPerformance/REQ_P_05_mpc_ride_comfort', ...
                 'RMS body acceleration reduction vs passive (SC-C80, MPC)', red, '%');
@@ -60,12 +61,36 @@ classdef TestPerformance < matlab.unittest.TestCase
 
     methods (Test, TestTags = {'REQ-P-06', 'KnownFail'})
         function REQ_P_06_mpc_road_holding_penalty(tc)
-            K = tc.c80mpc();
+            K = tc.c80mode(tc.MPC);
             inc = 100*(K.mpc.rms_F_tire_dyn/K.pas.rms_F_tire_dyn - 1);
             record_evidence('REQ-P-06', 'TestPerformance/REQ_P_06_mpc_road_holding_penalty', ...
                 'RMS dynamic tire load increase vs passive (SC-C80, MPC)', inc, '%');
             tc.verifyLessThanOrEqual(inc, 10, sprintf( ...
                 'MPC road holding: increase %.1f %% > 10 %% (passive %.1f, MPC %.1f N). Known failure: classic MPC cannot meet REQ-P-05 and REQ-P-06 together (D38)', ...
+                inc, K.pas.rms_F_tire_dyn, K.mpc.rms_F_tire_dyn));
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-P-07'})
+        function REQ_P_07_preview_mpc_ride_comfort(tc)
+            K = tc.c80mode(tc.PreviewMPC);
+            red = 100*(1 - K.mpc.rms_zs_ddot/K.pas.rms_zs_ddot);
+            record_evidence('REQ-P-07', 'TestPerformance/REQ_P_07_preview_mpc_ride_comfort', ...
+                'RMS body acceleration reduction vs passive (SC-C80, preview MPC)', red, '%');
+            tc.verifyGreaterThanOrEqual(red, 10, sprintf( ...
+                'Preview MPC comfort: reduction %.1f %% < 10 %% (passive %.3f, preview MPC %.3f m/s^2)', ...
+                red, K.pas.rms_zs_ddot, K.mpc.rms_zs_ddot));
+        end
+    end
+
+    methods (Test, TestTags = {'REQ-P-08'})
+        function REQ_P_08_preview_mpc_road_holding_penalty(tc)
+            K = tc.c80mode(tc.PreviewMPC);
+            inc = 100*(K.mpc.rms_F_tire_dyn/K.pas.rms_F_tire_dyn - 1);
+            record_evidence('REQ-P-08', 'TestPerformance/REQ_P_08_preview_mpc_road_holding_penalty', ...
+                'RMS dynamic tire load increase vs passive (SC-C80, preview MPC)', inc, '%');
+            tc.verifyLessThanOrEqual(inc, 10, sprintf( ...
+                'Preview MPC road holding: increase %.1f %% > 10 %% (passive %.1f, preview MPC %.1f N)', ...
                 inc, K.pas.rms_F_tire_dyn, K.mpc.rms_F_tire_dyn));
         end
     end
@@ -119,17 +144,19 @@ classdef TestPerformance < matlab.unittest.TestCase
             K = tc.C80(vehicle);
         end
 
-        function K = c80mpc(tc)
-            % Passive and MPC KPIs on SC-C80, reference vehicle, MPC run once per
-            % class (kept in the same handle map: test methods run on copies)
+        function K = c80mode(tc, mode)
+            % Passive and one MPC mode's KPIs (K.mpc) on SC-C80, reference vehicle;
+            % each mode run once per class (kept in the same handle map: test
+            % methods run on copies)
             K = tc.c80('sedan_ref');
-            if ~isKey(tc.C80, 'mpc:sedan_ref')
+            key = sprintf('mode%d:sedan_ref', mode);
+            if ~isKey(tc.C80, key)
                 P = setup_params('sedan_ref');
                 [t, zr] = road_iso8608('C', 80, 30, 1);
-                Ym = simulate_harness(P, t, zr, tc.MPC);
-                tc.C80('mpc:sedan_ref') = kpi(Ym.t, Ym.zs_ddot, Ym.F_tire_dyn, Ym.susp_travel, P.F_static);
+                Ym = simulate_harness(P, t, zr, mode);
+                tc.C80(key) = kpi(Ym.t, Ym.zs_ddot, Ym.F_tire_dyn, Ym.susp_travel, P.F_static);
             end
-            K.mpc = tc.C80('mpc:sedan_ref');
+            K.mpc = tc.C80(key);
         end
     end
 end

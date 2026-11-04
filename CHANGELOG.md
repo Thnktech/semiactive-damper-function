@@ -37,6 +37,11 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   preview MPC (mode 6) until 4 s, SC-C80 the classic MPC (mode 5) from
   9.5 s; replay (`TestMilLogs`), `back_to_back.py`, `controller_lib.py`,
   `test_mil_metadata.py` and `mil_to_sil.md` follow the 9 inputs.
+- v2/M9: MiL reference logs from 8ba5d3e with `zr_preview` (c117cec):
+  SC-BUMP with the preview MPC, SC-C80 with the classic MPC from 9.5 s;
+  SC-FAULT data unchanged apart from the new column.
+- v2/M9: `TestPerformance` REQ-P-07/08 (preview MPC comfort and road
+  holding on SC-C80, not tagged KnownFail); `readme_results.py` mode 6.
 
 ## [2.1.0] - 2026-11-04
 

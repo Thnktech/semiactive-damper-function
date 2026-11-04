@@ -37,7 +37,8 @@ COMPARISON = ROOT / "results" / "comparison" / "kpi_comparison_sedan_ref.csv"
 LAG = ROOT / "results" / "sensitivity" / "lag_sensitivity_sedan_ref.csv"
 TRACE = ROOT / "results" / "traceability.md"
 B2B = ROOT / "results" / "back_to_back.json"
-NAMES = {0: "Passive", 1: "Skyhook", 2: "Groundhook", 3: "Hybrid (α = 0.5)", 4: "LQR (v2)", 5: "MPC (v2)"}
+NAMES = {0: "Passive", 1: "Skyhook", 2: "Groundhook", 3: "Hybrid (α = 0.5)", 4: "LQR (v2)", 5: "MPC (v2)",
+         6: "Preview MPC (v2)"}
 
 
 # ---------- number formats ----------
