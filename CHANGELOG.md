@@ -10,6 +10,8 @@ Version 2 (model-based control): M7 → `v2.0.0` (interface change = major),
 M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 
 ## [Unreleased]
+- v2/M9: MiL reference logs from 2423838 (preview MPC defaults, D42):
+  SC-BUMP changed, SC-C80 and SC-FAULT data unchanged.
 
 ### Added
 - v2/M9: decisions D39 (ideal look-ahead sensor, controller input 9
