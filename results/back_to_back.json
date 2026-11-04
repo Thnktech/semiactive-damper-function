@@ -6,8 +6,8 @@
     "atol": 1e-09,
     "rtol": 1e-09
   },
-  "recorded": "2026-11-03T21:55:54Z",
-  "git_commit": "7aa282f138e70cdb8df9ef53416d003370b00a4d",
+  "recorded": "2026-11-04T10:03:30Z",
+  "git_commit": "638812caaf836bcddb1b1ba93f4e2a1f7cd11994",
   "code_generated_from": "7aa282f138e70cdb8df9ef53416d003370b00a4d",
   "matlab_release": "2026a",
   "simulink_coder_version": "26.1",

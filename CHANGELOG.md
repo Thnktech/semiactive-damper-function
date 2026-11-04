@@ -43,6 +43,10 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
   p = 10 and 40, Δu weight) finds no tuning that meets both, defaults kept,
   preview MPC next; README v2 status, MPC interpretation, limitations and
   next steps; REQ.md change note; devlog.
+- v2/M8: back-to-back record and traceability at 638812c: generated code
+  with the MPC within REQ-V-01 (SC-BUMP 8.9e-14 A, SC-C80 and SC-FAULT
+  bit-identical); 14 Pass, 3 known Fail (REQ-P-02, REQ-P-05, REQ-P-06),
+  0 Unverified; README results tables regenerated.
 
 ### Changed
 - v2/M8: D33 wording revised: "Ensure deterministic data transfer" applies
