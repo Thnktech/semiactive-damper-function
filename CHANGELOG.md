@@ -10,6 +10,14 @@ Version 2 (model-based control): M7 → `v2.0.0` (interface change = major),
 M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 
 ## [Unreleased]
+
+## [2.1.0] - 2026-11-04
+
+M8: classic MPC law slot (mode 5) with the damper's limits in the QP,
+verified against `mpcmove`, in closed loop (REQ-F-07) and as generated code
+(back-to-back within REQ-V-01); REQ-P-05/06 fail and are known failures
+after a tuning study (D38); preview MPC next.
+
 ### Added
 - v2/M8: models (author): `Law_5_MPC` in `controller.slx` (MPC Controller
   block `mpc_law5` at 5 ms, rate transitions, road velocity `zr_dot` as
@@ -51,6 +59,7 @@ M8 classic MPC → `v2.1.0`, each further strategy a minor version (D29).
 ### Changed
 - v2/M8: D33 wording revised: "Ensure deterministic data transfer" applies
   only with data integrity on (model unchanged).
+- v2/M8: release `v2.1.0`; this changelog section.
 
 ## [2.0.0] - 2026-11-02
 
@@ -402,7 +411,8 @@ M0: repository skeleton and CI.
 ### Fixed
 - Removed a nested-repo link (`semiactive-damper-function`) committed by mistake.
 
-[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.6.0...v1.0.0
 [0.6.0]: https://github.com/Thnktech/semiactive-damper-function/compare/v0.5.0...v0.6.0
